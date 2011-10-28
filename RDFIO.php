@@ -58,9 +58,9 @@ $wgExtensionAliasesFiles['RDFIO'] = $dir . 'RDFIO.alias.php';
  *    RDFIO Components    *
  **************************/
 
-#$rdfioDir = dirname( __FILE__ );
+$rdfioDir = dirname( __FILE__ );
 
-#include_once $rdfioDir . '/specials/SpecialRDFImport.php';
+include_once $rdfioDir . '/specials/SpecialRDFImport.php';
 #include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
 
 #$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';

@@ -16,6 +16,7 @@ $messages['en'] = array(
 	'rdfio-sparqlendpoint-desc' => 'A SPARQL Endpoint provided by the RDFIO extension',
 	'sparqlendpoint' => 'SPARQL Endpoint',
 	'specialarc2admin' => 'ARC2 RDF Store admin page',
+	'rdfio-unknown-error' => 'An unknown error happened!',
 );
 
 /** Message documentation (Message documentation)
