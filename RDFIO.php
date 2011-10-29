@@ -67,4 +67,5 @@ include_once $rdfioDir . '/specials/SpecialRDFImport.php';
 #$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php';
 #$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
 #$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';
- 
+$wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/Parser.php';
+$wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/ARC2Parser.php';
