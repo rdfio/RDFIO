@@ -23,13 +23,4 @@ class RDFIOARC2Parser extends RDFIOParser {
 		$this->mExternalParser->parseData( $this->getInput() );
 		$this->setResults( $this->mExternalParser->getTriples() ); 
 	}
-	
-	# Getters and setters
-	
-	public function setInputType( $inputType ) {
-		$this->mInputType = $inputType;
-	}
-	public function getInputType() {
-		return $this->mInputType;
-	}
 }

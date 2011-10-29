@@ -1,17 +1,17 @@
 <?php
 class RDFImport extends SpecialPage {
 
-	protected $m_action;
-	protected $m_dataformat;
-	protected $m_importdata;
-	protected $m_edittoken;
+	protected $mAction;
+	protected $mEditToken;
 	protected $m_smwbatchwriter;
 	protected $m_haswriteaccess;
-	protected $m_nsprefix_in_wikititles_properties;
-	protected $m_nsprefix_in_wikititles_entities;
-	protected $m_show_abbrscreen_properties;
-	protected $m_show_abbrscreen_entities;
+	protected $mNSPrefixInWikiTitlesProperties;
+	protected $mNSPrefixInWikiTitlesEntities;
+	protected $mShowAbbrScreenProperties;
+	protected $mShowAbbrScreenEntities;
 
+	protected $mRawData = null;
+	
 	function __construct() {
 		global $wgUser;
 
@@ -30,23 +30,8 @@ class RDFImport extends SpecialPage {
 		$this->setHeaders();
 		$this->handleRequestData();
 
-		if ( $this->m_action == 'Import' ) {
-
-			$title = Title::newFromText('Test2');
-			
-			$parser = new RDFIOARC2Parser();
-			$parser->setInput("hej hej");
-			$output = $parser->getInput();
-
-			$article = new Article($title);
-			#$content = "Hejsan hoppsan, 1, 2, 3 ...";
-			$summary = "A Bot edit ...";
-			 
-			$content = $article->fetchContent();
-			$content_new = $content . " ... " . $output;
-			$article->doEdit($content_new, $summary);
-			
-			$wgOut->addHTML('<pre>' . htmlentities( $content_new ) . '</pre>');
+		if ( $this->mAction == 'Import' ) {
+			$wgOut->addHTML('<pre>this is some static text</pre>');
 			
 		} else {
 			$this->outputHTMLForm();
@@ -58,14 +43,18 @@ class RDFImport extends SpecialPage {
 	 */
 	function handleRequestData() {
 		global $wgRequest;
-		$this->m_action = $wgRequest->getText( 'action' );
-		$this->m_dataformat = $wgRequest->getText( 'dataformat' );
-		$this->m_importdata = $wgRequest->getText( 'importdata' );
-		$this->m_edittoken = $wgRequest->getText( 'token' );
-		$this->m_nsprefix_in_wikititles_properties = $wgRequest->getBool( 'nspintitle_prop', false );
-		$this->m_show_abbrscreen_properties = $wgRequest->getBool( 'abbrscr_prop', false );
-		$this->m_nsprefix_in_wikititles_entities = $wgRequest->getBool( 'nspintitle_ent', false );
-		$this->m_show_abbrscreen_entities = $wgRequest->getBool( 'abbrscr_ent', false );
+		$this->mAction = $wgRequest->getText( 'action' );
+		$this->mEditToken = $wgRequest->getText( 'token' );
+		$this->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false );
+		$this->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false );
+		$this->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false );
+		$this->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false );
+		
+		$rawData = new RDFIORawData();
+		$rawData->setData( $wgRequest->getText( 'importdata' ) );
+		$rawData->setDataType( $wgRequest->getText( 'dataformat' ) );
+		
+		$this->setRawData( $rawData );
 	}
 
 	/**
@@ -199,4 +188,15 @@ class RDFImport extends SpecialPage {
 		return $exampleDataJs;
 	}
 
+
+	# Setters and getters
+	
+	public function setRawData( $rawData ) {
+		$this->mRawData = $rawData;
+	}
+	public function getRawData() {
+		return $this->mRawData;		
+	}
+
 }
+
