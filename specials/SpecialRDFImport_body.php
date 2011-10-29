@@ -31,27 +31,19 @@ class RDFImport extends SpecialPage {
 		$this->handleRequestData();
 
 		if ( $this->m_action == 'Import' ) {
-			$wgOut->addHTML('<pre>' . htmlentities( $this->m_importdata ) . '</pre>');
 
-			$title = Title::newFromText('WOM_Function_Test');
-			$wom = WOMProcessor::getPageObject($title);
-			$text_obj = null;
-			try{
-				$oid = WOMProcessor::getObjIdByXPath($title, '//sentence[1]');
-				// use page object functions
-				$text_obj = $wom->getObject($oid[0]);
-			} catch(Exception $e ){
-				return;
-			}
-				
-			$text_obj->setText('Hi, world.');
+			$title = Title::newFromText('Test2');
+
 			$article = new Article($title);
-			$content = $wom->getWikiText();
-			$article->doEdit($content, $summary);
+			#$content = "Hejsan hoppsan, 1, 2, 3 ...";
+			$summary = "A Bot edit ...";
+			 
+			$content = $article->fetchContent();
+			$content_new = $content . " ... and some more conten!";
+			$article->doEdit($content_new, $summary);
 			
-			$new_text_obj = new WOMTextModel('Hi, world.');
-			WOMProcessor::updatePageObject($new_text_obj, $title, $text_obj->getObjectID());
-				
+			$wgOut->addHTML('<pre>' . htmlentities( $content_new ) . '</pre>');
+			
 		} else {
 			$this->outputHTMLForm();
 		}
