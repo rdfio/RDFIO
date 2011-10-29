@@ -72,3 +72,4 @@ $wgAutoloadClasses['RDFIOSMWImporter'] = $rdfioDir . '/classes/SMWImporter.php';
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/Parser.php';
 $wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/ARC2Parser.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/WikiWriter.php';
+$wgAutoloadClasses['RDFIORawData'] = $rdfioDir . '/classes/RawData.php';

@@ -24,7 +24,7 @@ class RDFImport extends SpecialPage {
 	}
 
 	function execute( $par ) {
-		global $wgOut, $wgUser;
+		global $wgOut, $wgUser, $wgRequest;
 
 		$this->setHeaders();
 		$this->handleRequestData();
