@@ -2,12 +2,34 @@
 
 class RDFIOARC2Parser extends RDFIOParser {
 	
+	protected $mInputType = null;
+
 	public function __construct() {
 		parent::__construct();
 	}
 	
 	public function execute() {
-		// Do stuff ...
+		switch ( $this->getInputType() ) {
+			case ( RDFIOSMWImporter::INPUT_TYPE_RDFXML ): 
+				$this->mExternalParser = ARC2::getRDFXMLParser();
+				break;
+			case ( RDFIOSMWImporter::INPUT_TYPE_RDFXML ):
+				$this->mExternalParser = ARC2::getTurtleParser();
+			default:
+				// TODO: Add some error message!
+		}
+		
+		# Execute the external parser
+		$this->mExternalParser->parseData( $this->getInput() );
+		$this->setResults( $this->mExternalParser->getTriples() ); 
 	}
 	
+	# Getters and setters
+	
+	public function setInputType( $inputType ) {
+		$this->mInputType = $inputType;
+	}
+	public function getInputType() {
+		return $this->mInputType;
+	}
 }
