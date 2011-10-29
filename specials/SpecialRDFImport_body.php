@@ -3,8 +3,7 @@ class RDFImport extends SpecialPage {
 
 	protected $mAction;
 	protected $mEditToken;
-	protected $m_smwbatchwriter;
-	protected $m_haswriteaccess;
+	protected $mHasWriteAccess;
 	protected $mNSPrefixInWikiTitlesProperties;
 	protected $mNSPrefixInWikiTitlesEntities;
 	protected $mShowAbbrScreenProperties;
@@ -17,9 +16,9 @@ class RDFImport extends SpecialPage {
 
 		$userrights = $wgUser->getRights();
 		if ( in_array( 'edit', $userrights ) && in_array( 'createpage', $userrights ) ) {
-			$this->m_haswriteaccess = true;
+			$this->mHasWriteAccess = true;
 		} else {
-			$this->m_haswriteaccess = false;
+			$this->mHasWriteAccess = false;
 		}
 		parent::__construct( 'RDFImport' );
 	}
