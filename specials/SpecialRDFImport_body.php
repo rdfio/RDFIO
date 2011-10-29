@@ -40,7 +40,7 @@ class RDFImport extends SpecialPage {
 			$smwImporter->setInput( $rawData );
 			$smwImporter->execute();
 				
-			$wgOut->addHTML('<pre>this is some static text</pre>');
+			$wgOut->addHTML('Tried to import the stuf ...');
 				
 		} else {
 			$this->outputHTMLForm();
