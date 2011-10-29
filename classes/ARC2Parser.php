@@ -23,9 +23,12 @@ class RDFIOARC2Parser extends RDFIOParser {
 		$this->mExternalParser->parseData( $this->getInput()->getData() );
 		
 		# Collect results
-		$resultData = new RDFIORawData();
-		$resultData->setData( $this->mExternalParser->getTriples() );
-		$resultData->setDataType( 'arc2triples' );
-		$this->setResults( $resultData ); 
+		$arc2TriplesData = new RDFIORawData();
+		$arc2TriplesData->setData( $this->mExternalParser->getTriples() );
+		$arc2TriplesData->setDataType( 'arc2triples' );
+		
+		// Send $arc2TriplesData to a ARC2ToSMWParser
+		
+		# $this->setResults(  ); 
 	}
 }
