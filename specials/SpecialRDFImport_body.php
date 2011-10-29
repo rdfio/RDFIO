@@ -11,7 +11,7 @@ class RDFImport extends SpecialPage {
 	protected $mShowAbbrScreenEntities;
 
 	protected $mRawData = null;
-	
+
 	function __construct() {
 		global $wgUser;
 
@@ -22,7 +22,7 @@ class RDFImport extends SpecialPage {
 			$this->m_haswriteaccess = false;
 		}
 		parent::__construct( 'RDFImport' );
-    }
+	}
 
 	function execute( $par ) {
 		global $wgOut, $wgUser;
@@ -30,9 +30,18 @@ class RDFImport extends SpecialPage {
 		$this->setHeaders();
 		$this->handleRequestData();
 
-		if ( $this->mAction == 'Import' ) {
+		if ( $this->mAction == 'import' ) {
+				
+			$rawData = new RDFIORawData();
+			$rawData->setData( $wgRequest->getText( 'importdata' ) );
+			$rawData->setDataType( $wgRequest->getText( 'dataformat' ) );
+				
+			$smwImporter = new RDFIOSMWImporter();
+			$smwImporter->setInput( $rawData );
+			$smwImporter->execute();
+				
 			$wgOut->addHTML('<pre>this is some static text</pre>');
-			
+				
 		} else {
 			$this->outputHTMLForm();
 		}
@@ -49,12 +58,6 @@ class RDFImport extends SpecialPage {
 		$this->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false );
 		$this->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false );
 		$this->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false );
-		
-		$rawData = new RDFIORawData();
-		$rawData->setData( $wgRequest->getText( 'importdata' ) );
-		$rawData->setDataType( $wgRequest->getText( 'dataformat' ) );
-		
-		$this->setRawData( $rawData );
 	}
 
 	/**
@@ -116,7 +119,7 @@ class RDFImport extends SpecialPage {
 
 		// Create the HTML form for RDF/XML Import
 		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:RDFImport"
-			name="createEditQuery"><input type="hidden" name="action" value="Import">
+			name="createEditQuery"><input type="hidden" name="action" value="import">
 			' . $extraFormContent . '
 			<table border="0"><tbody>
 			<tr><td colspan="3">RDF/XML data to import:</td><tr>
@@ -190,12 +193,12 @@ class RDFImport extends SpecialPage {
 
 
 	# Setters and getters
-	
-	public function setRawData( $rawData ) {
+
+	public function setRawData( &$rawData ) {
 		$this->mRawData = $rawData;
 	}
 	public function getRawData() {
-		return $this->mRawData;		
+		return $this->mRawData;
 	}
 
 }
