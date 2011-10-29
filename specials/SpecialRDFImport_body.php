@@ -33,13 +33,17 @@ class RDFImport extends SpecialPage {
 		if ( $this->m_action == 'Import' ) {
 
 			$title = Title::newFromText('Test2');
+			
+			$parser = new RDFIOARC2Parser();
+			$parser->setInput("hej hej");
+			$output = $parser->getInput();
 
 			$article = new Article($title);
 			#$content = "Hejsan hoppsan, 1, 2, 3 ...";
 			$summary = "A Bot edit ...";
 			 
 			$content = $article->fetchContent();
-			$content_new = $content . " ... and some more conten!";
+			$content_new = $content . " ... " . $output;
 			$article->doEdit($content_new, $summary);
 			
 			$wgOut->addHTML('<pre>' . htmlentities( $content_new ) . '</pre>');

@@ -1,8 +1,8 @@
 <?php
 
 class RDFIOParser {
-	public $mInput = null;
-	public $mResults = null;
+	protected $mInput = null;
+	protected $mResults = null;
 	
 	function __construct() {
 		// Nothing so far
