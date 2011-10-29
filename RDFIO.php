@@ -64,12 +64,13 @@ include_once $rdfioDir . '/specials/SpecialRDFImport.php';
 #include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
 
 #$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
-#$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php';
+#$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php'; // TODO: This has to be activated I think
 #$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
 #$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';
 $wgAutoloadClasses['RDFIOIOService'] = $rdfioDir . '/classes/IOService.php';
 $wgAutoloadClasses['RDFIOSMWImporter'] = $rdfioDir . '/classes/SMWImporter.php';
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/Parser.php';
 $wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/ARC2Parser.php';
+$wgAutoloadClasses['RDFIOARC2ToSMWParser'] = $rdfioDir . '/classes/ARC2ToSMWParser.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/WikiWriter.php';
 $wgAutoloadClasses['RDFIORawData'] = $rdfioDir . '/classes/RawData.php';
