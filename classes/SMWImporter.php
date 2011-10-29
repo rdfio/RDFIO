@@ -16,12 +16,10 @@ class RDFIOSMWImporter { // TODO: Think this class needs a better name
 		
 		$this->mTextToObjectsParser->setInput( $this->getInput() );
 		$this->mTextToObjectsParser->execute();
-		$triplesData = $this->mTextToObjectsParser->getResults();
+		$results = $this->mTextToObjectsParser->getResults();
 		
-		// TODO:
-		// Send $triplesData to RDFIOARC2ToSMWInternalsParser ...
-		// ... and then the results from that to RDFIOWikiWriter.
-		
+		// TODO: $results should be in SMW internals format ... 
+		// ... and then be sent to RDFIOWikiWriter
 	}
 
 	
