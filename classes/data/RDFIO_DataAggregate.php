@@ -28,7 +28,20 @@ class RDFIODataAggregate {
 	# Common RDF Formats
 	
 	public function setFromRDFXML( $data ) {
-		// TODO: Add code
+		$rawDataParser = new RDFIORawDataParser();
+		$rawDataParser->setInput( $data );
+		$rawDataParser->execute();
+		
+		# Collect results
+		$arc2TriplesData = new RDFIODataAggregate();
+		$arc2TriplesData->setData( $this->mExternalParser->getTriples() );
+		$arc2TriplesData->setDataType( 'arc2triples' );
+		
+		# Convert ARC2 data structure to SMW (1.6) data structure
+		$arc2ToSMWParser = new RDFIOARC2ToSMWParser();
+		$arc2ToSMWParser->setInput( $arc2TriplesData );
+		$arc2ToSMWParser->execute();
+		
 	}
 	public function getAsRDFXML( $data ) {
 		// TODO: Add code

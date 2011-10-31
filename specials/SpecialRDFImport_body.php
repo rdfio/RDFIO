@@ -31,18 +31,15 @@ class RDFImport extends SpecialPage {
 
 		if ( $this->mAction == 'import' ) {
 			
-			$dataFormat = $wgRequest->getText( 'dataformat' );
 			$data = $wgRequest->getText( 'importdata' );
-			$dataAggregate = new RDFIODataAggregate();
+			$dataFormat = $wgRequest->getText( 'dataformat' );
 			
-			switch( $dataFormat ) {
-				case 'rdfxml':
-					$dataAggregate->setFromRDFXML( $data );
-				case 'turtle':
-					$dataAggregate->setFromTurle( $data );
-				case 'n3':
-					$dataAggregate->setFromNTriples( $data );
-			}
+			$rawData = new RDFIORawData();
+			$rawData->setData( $data );
+			$rawData->setDataFormat( $dataFormat );
+			
+			$dataAggregate = new RDFIODataAggregate();
+			$dataAggregate->setFromRawData( $rawData );
 				
 			$smwImporter = new RDFIOSMWImporter();
 			$smwImporter->setInput( $dataAggregate );
