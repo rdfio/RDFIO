@@ -8,11 +8,22 @@
  * @author samuel lampa
  *
  */
-class RDFIOLiteral {
+class RDFIOLiteral extends RDFIODataItem {
+	
+	protected $mAsString = null;
 		
 	public function __construct() {
 		// TODO: Add code
 	}
 	
+	# Getters and setters
+	
+	public function getAsString() { 
+	    return $this->mAsString;
+	}
+	public function setAsString( $asString ) { 
+	    $this->mAsString = $asString;
+	}
+
 }
 	
