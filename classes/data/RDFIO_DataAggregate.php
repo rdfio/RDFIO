@@ -15,6 +15,7 @@
 class RDFIODataAggregate {
 	protected $mData = null;
 	protected $mDataType = null;
+
 	protected $mARC2TripleSetToSMWParser = null;
 	protected $mSMWToARC2TripleSetParser = null;
 	protected $mARC2ResourceIndexToSMWParser = null;
