@@ -9,13 +9,13 @@ class RDFImport extends SpecialPage {
 	protected $mShowAbbrScreenProperties;
 	protected $mShowAbbrScreenEntities;
 
-	protected $mRawData = null;
+	protected $mDataAggregate = null;
 
 	function __construct() {
 		global $wgUser;
 
-		$userrights = $wgUser->getRights();
-		if ( in_array( 'edit', $userrights ) && in_array( 'createpage', $userrights ) ) {
+		$userRights = $wgUser->getRights();
+		if ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) ) {
 			$this->mHasWriteAccess = true;
 		} else {
 			$this->mHasWriteAccess = false;
@@ -30,17 +30,26 @@ class RDFImport extends SpecialPage {
 		$this->handleRequestData();
 
 		if ( $this->mAction == 'import' ) {
-				
-			$rawData = new RDFIORawData();
-			$rawData->setData( $wgRequest->getText( 'importdata' ) );
-			$rawData->setDataType( $wgRequest->getText( 'dataformat' ) );
+			
+			$dataFormat = $wgRequest->getText( 'dataformat' );
+			$data = $wgRequest->getText( 'importdata' );
+			$dataAggregate = new RDFIODataAggregate();
+			
+			switch( $dataFormat ) {
+				case 'rdfxml':
+					$dataAggregate->setFromRDFXML( $data );
+				case 'turtle':
+					$dataAggregate->setFromTurle( $data );
+				case 'n3':
+					$dataAggregate->setFromNTriples( $data );
+			}
 				
 			$smwImporter = new RDFIOSMWImporter();
-			$smwImporter->setInput( $rawData );
+			$smwImporter->setInput( $dataAggregate );
 			$smwImporter->execute();
 				
-			$wgOut->addHTML('Tried to import the stuf ...');
-				
+			$wgOut->addHTML('Tried to import the stuff ...');
+
 		} else {
 			$this->outputHTMLForm();
 		}
@@ -193,11 +202,11 @@ class RDFImport extends SpecialPage {
 
 	# Setters and getters
 
-	public function setRawData( &$rawData ) {
-		$this->mRawData = $rawData;
+	public function setRawData( &$dataAggregate ) {
+		$this->mDataAggregate = $dataAggregate;
 	}
 	public function getRawData() {
-		return $this->mRawData;
+		return $this->mDataAggregate;
 	}
 
 }
