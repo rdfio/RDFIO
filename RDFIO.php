@@ -73,4 +73,12 @@ $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/RDFIO_Parser.php';
 $wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/RDFIO_ARC2Parser.php';
 $wgAutoloadClasses['RDFIOARC2ToSMWParser'] = $rdfioDir . '/classes/RDFIO_ARC2ToSMWParser.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
+
 $wgAutoloadClasses['RDFIODataAggregate'] = $rdfioDir . '/classes/RDFIO_DataAggregate.php';
+$wgAutoloadClasses['RDFIOSubjectData'] = $rdfioDir . '/classes/RDFIO_SubjectData.php';
+$wgAutoloadClasses['RDFIOTriple'] = $rdfioDir . '/classes/RDFIO_Triple.php';
+$wgAutoloadClasses['RDFIOResource'] = $rdfioDir . '/classes/RDFIO_Resource.php';
+$wgAutoloadClasses['RDFIOLiteral'] = $rdfioDir . '/classes/RDFIO_Literal.php';
+
+
+

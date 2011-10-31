@@ -1,5 +1,17 @@
 <?php 
 
+/**
+ * 
+ * Data container, possibly analogous to the "resource index" (or the "triple set") 
+ * data structure of ARC2. It relates to the SMWSemanticData class of SMW such that
+ * an RDFIODataAggregate class could consist many SMWSemanticData objects, since those
+ * can have only one subject, while the RDFIODataAggregate (as well as ARC2 data 
+ * structures) can always have more than one subject.
+ * 
+ * @author samuel lampa
+ *
+ */
+
 class RDFIODataAggregate {
 	protected $mData = null;
 	protected $mDataType = null;
