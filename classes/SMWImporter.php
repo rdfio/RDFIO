@@ -24,7 +24,7 @@ class RDFIOSMWImporter { // TODO: Think this class needs a better name
 	
 	# Getters and setters
 	
-	public function setInput( RDFIORawData $input ) {
+	public function setInput( RDFIOData $input ) {
 		$this->mInput = $input;	
 	}
 	public function getInput() {
