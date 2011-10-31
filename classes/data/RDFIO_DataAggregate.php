@@ -24,6 +24,29 @@ class RDFIODataAggregate {
 		// TODO: Add code
 	}
 	
+	# Common RDF Formats
+	
+	public function setFromRDFXML( $data ) {
+		// TODO: Add code
+	}
+	public function getAsRDFXML( $data ) {
+		// TODO: Add code
+	}
+	public function getAsTurle( $data ) {
+		// TODO: Add code		
+	}
+	public function setFromTurle( $data ) {
+		// TODO: Add code		
+	}
+	public function setFromNTriples( $data ) {
+		// TODO: Add code		
+	}
+	public function getAsNTriples( $data ) {
+		// TODO: Add code		
+	}
+	
+	# ARC2 data structures
+	
 	public function setFromARC2TripleSet( $arc2triplesData ) {
 		// TODO: Add code
 	}
