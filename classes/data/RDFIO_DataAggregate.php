@@ -25,24 +25,33 @@ class RDFIODataAggregate {
 		// TODO: Add code
 	}
 	
+	public function setFromRawData( $rawData, $dataFormat ) {
+		switch ( $dataFormat ) {
+			case ( 'rdfxml' ): 
+				$this->setFromRDFXML( $rawData );
+				break;
+			case ( 'turtle' ):
+				$this->setFromTurtle( $rawData );
+				break;
+		}
+	}
+	
 	# Common RDF Formats
 	
 	public function setFromRDFXML( $data ) {
-		$rawDataParser = new RDFIORawDataParser();
+		$rawDataParser = new RDFIORDFXMLToARC2Parser();
 		$rawDataParser->setInput( $data );
 		$rawDataParser->execute();
 		
-		# Collect results
-		$arc2TriplesData = new RDFIODataAggregate();
-		$arc2TriplesData->setData( $this->mExternalParser->getTriples() );
-		$arc2TriplesData->setDataType( 'arc2triples' );
+		$arc2Triples = $rawDataParser->getResults();
+		
 		
 		# Convert ARC2 data structure to SMW (1.6) data structure
 		$arc2ToSMWParser = new RDFIOARC2ToSMWParser();
-		$arc2ToSMWParser->setInput( $arc2TriplesData );
+		$arc2ToSMWParser->setInput( $arc2Triples );
 		$arc2ToSMWParser->execute();
-		
 	}
+	
 	public function getAsRDFXML( $data ) {
 		// TODO: Add code
 	}

@@ -34,21 +34,19 @@ class RDFImport extends SpecialPage {
 			$data = $wgRequest->getText( 'importdata' );
 			$dataFormat = $wgRequest->getText( 'dataformat' );
 			
-			$rawData = new RDFIORawData();
-			$rawData->setData( $data );
-			$rawData->setDataFormat( $dataFormat );
-			
-			$dataAggregate = new RDFIODataAggregate();
-			$dataAggregate->setFromRawData( $rawData );
+			$importDataAggregate = new RDFIODataAggregate();
+			$importDataAggregate->setFromRawData( $data, $dataFormat );
 				
-			$smwImporter = new RDFIOSMWImporter();
-			$smwImporter->setInput( $dataAggregate );
+			$smwImporter = new RDFIOSMWDataImporter();
+			$smwImporter->setInput( $importDataAggregate );
 			$smwImporter->execute();
 				
 			$wgOut->addHTML('Tried to import the stuff ...');
 
 		} else {
+
 			$this->outputHTMLForm();
+			
 		}
 	}
 

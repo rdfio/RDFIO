@@ -1,5 +1,7 @@
 <?php 
 
+// TODO: Deprecate ...
+
 class RDFIOARC2ToSMWParser extends RDFIOParser {
 	
 	public function __construct() {

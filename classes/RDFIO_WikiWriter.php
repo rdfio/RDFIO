@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * 
+ * Will be used in a more low-level fashion, I think ...
+ * @author samuel lampa
+ *
+ */
+
 class RDFIOWikiWriter {
 
 	public function __construct() {
