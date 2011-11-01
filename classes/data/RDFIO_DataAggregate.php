@@ -14,7 +14,6 @@
 
 class RDFIODataAggregate {
 	protected $mData = null;
-	protected $mDataType = null;
 
 	protected $mARC2TripleSetToSMWParser = null;
 	protected $mSMWToARC2TripleSetParser = null;
@@ -106,10 +105,4 @@ class RDFIODataAggregate {
 	public function getData() {
 		return $this->mData;
 	}
-	public function setDataType( $dataType ) {
-		$this->mDataType = $dataType;	
-	}
-	public function getDataType() {
-		return $this->mDataType;
-	}	
 }
