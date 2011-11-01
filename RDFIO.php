@@ -72,7 +72,7 @@ $wgAutoloadClasses['RDFIOIOService'] = $rdfioDir . '/classes/RDFIO_IOService.php
 $wgAutoloadClasses['RDFIOSMWDataImporter'] = $rdfioDir . '/classes/RDFIO_SMWDataImporter.php';
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/RDFIO_Parser.php';
 $wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/RDFIO_ARC2Parser.php';
-$wgAutoloadClasses['RDFIOARC2ToSMWParser'] = $rdfioDir . '/classes/RDFIO_ARC2ToSMWParser.php';
+$wgAutoloadClasses['RDFIOARC2ToRDFIOParser'] = $rdfioDir . '/classes/RDFIO_ARC2ToRDFIOParser.php';
 $wgAutoloadClasses['RDFIORDFXMLToARC2Parser'] = $rdfioDir . '/classes/RDFIO_RDFXMLToARC2Parser.php';
 $wgAutoloadClasses['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/RDFIO_TurtleToARC2Parser.php';
 

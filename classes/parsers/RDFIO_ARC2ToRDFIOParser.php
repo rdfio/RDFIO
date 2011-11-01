@@ -2,7 +2,7 @@
 
 // TODO: Deprecate ...
 
-class RDFIOARC2ToSMWParser extends RDFIOParser {
+class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	
 	public function __construct() {
 		parent::__construct();
