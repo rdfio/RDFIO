@@ -8,7 +8,7 @@
  * @author samuel lampa
  *
  */
-class RDFIOLiteral extends RDFIODataItem {
+class RDFIOLiteral extends RDFIOResource {
 	
 	protected $mAsString = null;
 		
