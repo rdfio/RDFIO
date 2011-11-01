@@ -46,9 +46,9 @@ class RDFIODataAggregate {
 		$arc2Triples = $rawDataParser->getResults();
 		
 		# Convert ARC2 data structure to SMW (1.6) data structure
-		$arc2ToSMWParser = new RDFIOARC2ToSMWParser();
-		$arc2ToSMWParser->setInput( $arc2Triples );
-		$arc2ToSMWParser->execute();
+		$arc2ToRDFIOParser = new RDFIOARC2ToSMWParser();
+		$arc2ToRDFIOParser->setInput( $arc2Triples );
+		$arc2ToRDFIOParser->execute();
 		
 		# TODO: Continue here on tuesday ...
 		# Shouln't the arc2 data be parsed to RDFIO internal data
