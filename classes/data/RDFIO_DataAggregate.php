@@ -45,11 +45,16 @@ class RDFIODataAggregate {
 		
 		$arc2Triples = $rawDataParser->getResults();
 		
-		
 		# Convert ARC2 data structure to SMW (1.6) data structure
 		$arc2ToSMWParser = new RDFIOARC2ToSMWParser();
 		$arc2ToSMWParser->setInput( $arc2Triples );
 		$arc2ToSMWParser->execute();
+		
+		# TODO: Continue here on tuesday ...
+		# Shouln't the arc2 data be parsed to RDFIO internal data
+		# structure, and not SWM? Or should it go via SMW data structure
+		# first ... so that we have a general SMW->RDFIO parser as well?
+		
 	}
 	
 	public function getAsRDFXML( $data ) {
