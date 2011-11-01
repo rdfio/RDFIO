@@ -9,7 +9,9 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	}
 	
 	public function execute() {
-		// Do stuff ...
+		$arc2triples = $this->getInput();
+		
+		// TODO: Do stuff ...
 	}
 	
 }

@@ -24,7 +24,7 @@ class RDFIOARC2Parser extends RDFIOParser {
 	}
 	
 	public function getResults() {
-		$this->mArc2Parser->getTriples();
+		return $this->mArc2Parser->getTriples();
 	}
 	
 	public function setResults( $results ) {
