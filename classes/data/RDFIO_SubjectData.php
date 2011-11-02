@@ -19,7 +19,7 @@ class RDFIOSubjectData {
 	public function __construct() {
 		// TODO: Add code
 	}
-	
+
 	# Getters and setters
 	
 	public function getSubject() { 

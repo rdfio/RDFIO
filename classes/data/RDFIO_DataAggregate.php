@@ -39,11 +39,11 @@ class RDFIODataAggregate {
 	
 	public function setFromRDFXML( $data ) {
 		$rawDataParser = new RDFIORDFXMLToARC2Parser();
-		$arc2Triples = $rawDataParser->executeForData( $data );
+		$arc2ResourceIndex = $rawDataParser->executeForData( $data );
 		
 		# Convert ARC2 data structure to SMW (1.6) data structure
 		$arc2ToRDFIOParser = new RDFIOARC2ToRDFIOParser();
-		$rdfioData = $arc2ToRDFIOParser->executeForData( $data );
+		$rdfioData = $arc2ToRDFIOParser->executeForData( $arc2ResourceIndex );
 
 		$this->setData( $rdfioData );
 		
