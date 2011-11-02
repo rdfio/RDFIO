@@ -14,7 +14,8 @@
 class RDFIOSubjectData {
 	
 	protected $mSubject = null;
-		
+	protected $mFacts = array();
+	
 	public function __construct() {
 		// TODO: Add code
 	}
@@ -27,4 +28,13 @@ class RDFIOSubjectData {
 	public function setSubject( $subject ) { 
 	    $this->mSubject = $subject;
 	}
+	public function addFact( $fact ) { 
+	    return $this->mFacts[] = $fact;
+	}
+	public function getFacts() { 
+	    return $this->mFacts;
+	}
+	public function setFacts( $facts ) { 
+	    $this->mFacts = $facts;
+	}	
 }
