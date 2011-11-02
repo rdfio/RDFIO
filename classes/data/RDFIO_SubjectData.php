@@ -11,7 +11,7 @@
  *
  */
 
-class RDFIOSubjectData extends RDFIOResource {
+class RDFIOSubjectData {
 		
 	public function __construct() {
 		// TODO: Add code
