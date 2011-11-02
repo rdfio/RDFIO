@@ -8,21 +8,17 @@
  * @author samuel lampa
  *
  */
+
 class RDFIOURI extends RDFIOResource {
 
-	protected $mURI = null;
-	
 	public function __construct() {
 		// TODO: Add code
 	}
-	
-	# Getters and setters
-	
-	public function getURI() {
-		return $this->mURI;
-	}
-	public function setURI( $uri ) {
-		$this->mURI = $uri;
+
+	public static function newFromString( $identifier ) {
+		$newResource = new RDFIOURI();
+		$newResource->setIdentifier( $identifier );
+		return $newResource;
 	}
 	
 }

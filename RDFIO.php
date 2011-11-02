@@ -84,4 +84,5 @@ $wgAutoloadClasses['RDFIODataAggregate'] = $rdfioDir . '/classes/data/RDFIO_Data
 $wgAutoloadClasses['RDFIOSubjectData'] = $rdfioDir . '/classes/data/RDFIO_SubjectData.php';
 $wgAutoloadClasses['RDFIOTriple'] = $rdfioDir . '/classes/data/RDFIO_Triple.php';
 $wgAutoloadClasses['RDFIOResource'] = $rdfioDir . '/classes/data/RDFIO_Resource.php';
+$wgAutoloadClasses['RDFIOURI'] = $rdfioDir . '/classes/data/RDFIO_URI.php';
 $wgAutoloadClasses['RDFIOLiteral'] = $rdfioDir . '/classes/data/RDFIO_Literal.php';

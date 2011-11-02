@@ -8,7 +8,7 @@
  */
 
 class RDFIOWikiWriter {
-
+	
 	public function __construct() {
 		// ...
 	}
@@ -24,4 +24,5 @@ class RDFIOWikiWriter {
 		$article->doEdit($content_new, $summary);
 		
 	}
+	
 }

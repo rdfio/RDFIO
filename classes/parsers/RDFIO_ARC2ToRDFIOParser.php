@@ -9,7 +9,8 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	}
 	
 	public function execute() {
-		$arc2triples = $this->getInput();
+		$arc2Triples = $this->getInput();
+		$rdfioTriples = array();
 		
 		/**
 		 * Data structure of one ARC2 triple:
@@ -25,14 +26,14 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 		 * )
 		 */
 		
-		foreach ( $arc2triples as $arc2triple ) {
-			$subjectString = $arc2triple['s'];
-			$predicateString = $arc2triple['p'];
-			$objectString = $arc2triple['o'];
-			$subjectTypeString = $arc2triple['s_type'];
-			$objectTypeString = $arc2triple['o_type'];
-			$objectDataTypeString = $arc2triple['o_datatype'];
-			$objectLangString = $arc2triple['o_lang'];
+		foreach ( $arc2Triples as $arc2Triple ) {
+			$subjectString = $arc2Triple['s'];
+			$predicateString = $arc2Triple['p'];
+			$objectString = $arc2Triple['o'];
+			$subjectTypeString = $arc2Triple['s_type'];
+			$objectTypeString = $arc2Triple['o_type'];
+			$objectDataTypeString = $arc2Triple['o_datatype'];
+			$objectLangString = $arc2Triple['o_lang'];
 
 			# Subject			
 			switch ( $subjectTypeString ) {
@@ -55,13 +56,16 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 					$object = RDFIOLiteral::newFromString( $objectString );
 			}
 			
-			# TODO: Ahh ... right ... I maybe shouldnät have a specialized URI/Literal
-			# object, since I need methods to "getAsWikiPage" for both ... and then it
-			# is easier to have just "Resource" class, with the type (uri/literal) stored
-			# as a variable ... or else I'll need to type resolution and stuff ... 
+			$rdfioTriple = array(
+								's' => $subject, 
+								'p' => $predicate, 
+								'o' => $object 
+								);
+								
+			$rdfioTriples[] = $rdfioTriple;
 			
 		} 
-
+		
+		$this->setResults( $rdfioTriples );
 	}
-	
 }

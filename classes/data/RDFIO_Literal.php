@@ -10,20 +10,14 @@
  */
 class RDFIOLiteral extends RDFIOResource {
 	
-	protected $mAsString = null;
-		
 	public function __construct() {
 		// TODO: Add code
 	}
 	
-	# Getters and setters
-	
-	public function getAsString() { 
-	    return $this->mAsString;
+	public static function newFromString( $identifier ) {
+		$newResource = new RDFIOLiteral();
+		$newResource->setIdentifier( $identifier );
+		return $newResource;
 	}
-	public function setAsString( $asString ) { 
-	    $this->mAsString = $asString;
-	}
-
 }
 	
