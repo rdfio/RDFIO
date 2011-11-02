@@ -20,6 +20,14 @@ class RDFIOSubjectData {
 		// TODO: Add code
 	}
 
+	# Factory methods
+	
+	public static function newFromSubject( $subject ) {
+		$newSubjectData = new RDFIOSubjectData();
+		$newSubjectData->setSubject( $subject );
+		return $newSubjectData;
+	}
+	
 	# Getters and setters
 	
 	public function getSubject() { 
