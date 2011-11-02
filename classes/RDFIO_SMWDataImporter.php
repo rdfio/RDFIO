@@ -16,27 +16,26 @@ class RDFIOSMWDataImporter {
 		$title = Title::newFromText('Test2');
 		
 		$wom = WOMProcessor::getPageObject($title);
-		$sentence_obj = null;
+		$property_obj = null;
 		try{
 			$oid = WOMProcessor::getObjIdByXPath($title, '//property[1]');
 			// use page object functions
-			$sentence_obj = $wom->getObject($oid[0]);
+			$property_obj = $wom->getObject($oid[0]);
 		} catch( Exception $e ) {
 			return;
 		}
 		
-		$text_obj = null;
-		foreach( $sentence_obj->getObjects() as $sub_obj) {
-			if($sub_obj->getTypeID() == WOM_TYPE_TEXT) {
-				$text_obj = $sub_obj;
-				break;
-			}
-		}
+		// FIXME: Remove debug code
+		$p_as_wikitext = $property_obj->getWikiText();
 		
-		$text_obj->setText('Hi, world.');
+		$newTitle = Title::newFromText( 'Test3' ); 
+		$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
+		
+		$property_obj->setSMWDataValue( $newSMWPageValue );
+		
 		$article = new Article($title);
 		$content = $wom->getWikiText();
-		$summary = "Edited by WOM...";
+		$summary = "Updated fact ... ?";
 		$article->doEdit( $content, $summary );
 		
 		// $article = new Article($title);
