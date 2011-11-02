@@ -20,8 +20,8 @@ class RDFIOSMWDataImporter {
 		# per wiki page, and that corresponds to one
 		# SemanticData object ...
 		
-		$this->mWikiWriter->setInput( $results );
-		$this->mWikiWriter->execute();
+		// $this->mWikiWriter->setInput( $results );
+		// $this->mWikiWriter->execute();
 	}
 	
 	# Getters and setters

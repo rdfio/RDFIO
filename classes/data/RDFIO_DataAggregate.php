@@ -41,7 +41,7 @@ class RDFIODataAggregate {
 		$rawDataParser = new RDFIORDFXMLToARC2Parser();
 		$arc2ResourceIndex = $rawDataParser->executeForData( $data );
 		
-		# Convert ARC2 data structure to SMW (1.6) data structure
+		# Convert ARC2 data structure to RDFIO:s internal data structure
 		$arc2ToRDFIOParser = new RDFIOARC2ToRDFIOParser();
 		$rdfioData = $arc2ToRDFIOParser->executeForData( $arc2ResourceIndex );
 

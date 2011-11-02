@@ -9,6 +9,15 @@ class RDFIOFact {
 		// ...
 	}
 	
+	# Factory methods 
+	
+	public static function newFromPredicateAndObject( $predicate, $object ) {
+		$newFact = new RDFIOFact();
+		$newFact->setPredicate( $predicate );
+		$newFact->setObject( $object );
+		return $newFact;
+	}
+	
 	# Getters and setters
 	
 	public function getPredicate() { 

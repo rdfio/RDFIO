@@ -10,32 +10,38 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	
 	public function execute() {
 		$arc2ResourceIndex = $this->getInput();
-		$rdfioTriples = array();
+		$subjectDatas = array();
 
-		# TODO: Remove debug code ...
-		echo "<pre>";
-		print_r($arc2ResourceIndex);
-		echo "</pre>";
-		
-		foreach ( $arc2ResourceIndex as $subjectString => $subjectData ) {
+		foreach ( $arc2ResourceIndex as $subjectString => $arc2SubjectData ) {
 			$subject = RDFIOURI::newFromString( $subjectString );
 			$subjectData = RDFIOSubjectData::newFromSubject( $subject );
-			
-			# Predicate
-			$predicate = RDFIOURI::newFromString( $predicateString );
-			
-			# Object
-			switch ( $objectTypeString ) {
-				case 'uri':
-					$object = RDFIOURI::newFromString( $objectString );
-					break;
-				case 'literal':
-					$object = RDFIOLiteral::newFromString( $objectString );
+
+			foreach ( $arc2SubjectData as $predicateString => $arc2PredicateData ) {
+				$predicate = RDFIOURI::newFromString( $predicateString );
+				
+				foreach ( $arc2PredicateData as $arc2ObjectData ) {
+					
+					$objectString = $arc2ObjectData['value'];
+					$objectTypeString = $arc2ObjectData['type'];
+
+					switch ( $objectTypeString ) {
+						case 'uri':
+							$object = RDFIOURI::newFromString( $objectString );
+							break;
+						case 'literal':
+							$object = RDFIOLiteral::newFromString( $objectString );
+					}
+					
+					$fact = RDFIOFact::newFromPredicateAndObject( $predicate, $object );
+					$subjectData->addFact( $fact );
+				}
+				
 			}
 			
-			$rdfioTriple = RDFIOTriple::newFromSPOTriplet( $subject, $predicate, $object );
-			$rdfioTriples[] = $rdfioTriple;
-		} 		
+			$subjectDatas[] = $subjectData;
+		} 	
+
+		$this->setResults( $subjectDatas );
 		
 	}
 
