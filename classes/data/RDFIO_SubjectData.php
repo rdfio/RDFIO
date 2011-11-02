@@ -12,9 +12,19 @@
  */
 
 class RDFIOSubjectData {
+	
+	protected $mSubject = null;
 		
 	public function __construct() {
 		// TODO: Add code
 	}
 	
+	# Getters and setters
+	
+	public function getSubject() { 
+	    return $this->mSubject;
+	}
+	public function setSubject( $subject ) { 
+	    $this->mSubject = $subject;
+	}
 }
