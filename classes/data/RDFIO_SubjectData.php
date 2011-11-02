@@ -10,7 +10,8 @@
  * @author samuel lampa
  *
  */
-class RDFIOSubjectData {
+
+class RDFIOSubjectData extends RDFIOResource {
 		
 	public function __construct() {
 		// TODO: Add code
