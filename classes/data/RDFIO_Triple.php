@@ -21,7 +21,7 @@ class RDFIOTriple {
 	
 	# Creator methods
 	
-	public static function newFromSOPTriple( $subject, $object, $predicate ) {
+	public static function newFromSPOTriplet( $subject, $object, $predicate ) {
 		$newTriple = new RDFIOTriple();
 		$newTriple->setSubject( $subject );
 		$newTriple->setPredicate( $predicate );

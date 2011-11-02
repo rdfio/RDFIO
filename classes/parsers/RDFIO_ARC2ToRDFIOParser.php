@@ -66,14 +66,8 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 					$object = RDFIOLiteral::newFromString( $objectString );
 			}
 			
-			$rdfioTriple = array(
-								's' => $subject, 
-								'p' => $predicate, 
-								'o' => $object 
-								);
-								
+			$rdfioTriple = RDFIOTriple::newFromSPOTriplet( $subject, $predicate, $object );
 			$rdfioTriples[] = $rdfioTriple;
-			
 		} 
 		
 		$this->setResults( $rdfioTriples );
