@@ -12,6 +12,14 @@ class RDFIOIOService {
 		// Do stuff ...
 	}
 	
+	# Convenience methods
+	
+	public function executeForData( $data ) {
+		$this->setInput( $data );
+		$this->execute();
+		return $this->getResults();
+	}
+	
 	# Getters and setters
 	
 	public function setInput( &$input ) {

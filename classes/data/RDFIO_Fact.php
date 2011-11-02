@@ -10,6 +10,7 @@ class RDFIOFact {
 	}
 	
 	# Getters and setters
+	
 	public function getPredicate() { 
 	    return $this->mPredicate;
 	}
