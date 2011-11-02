@@ -9,6 +9,14 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	}
 	
 	public function execute() {
+		
+	}
+	
+	/*
+	 * Saving this method, for possible future use, in case
+	 * one wants triples instead of RDFIOSubejctDatas.
+	 */
+	public function parseToTriples() {
 		$arc2Triples = $this->getInput();
 		$rdfioTriples = array();
 		
