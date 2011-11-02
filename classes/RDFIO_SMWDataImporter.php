@@ -18,7 +18,7 @@ class RDFIOSMWDataImporter {
 		$wom = WOMProcessor::getPageObject($title);
 		$sentence_obj = null;
 		try{
-			$oid = WOMProcessor::getObjIdByXPath($title, '//sentence[1]');
+			$oid = WOMProcessor::getObjIdByXPath($title, '//property[1]');
 			// use page object functions
 			$sentence_obj = $wom->getObject($oid[0]);
 		} catch( Exception $e ) {
