@@ -13,8 +13,9 @@
  */
 
 class RDFIODataAggregate {
-	protected $mData = null;
-
+	protected $mSubjectDatas = null;
+	protected $mNamespaces = null;
+	
 	protected $mARC2TripleSetToSMWParser = null;
 	protected $mSMWToARC2TripleSetParser = null;
 	protected $mARC2ResourceIndexToSMWParser = null;
@@ -39,13 +40,14 @@ class RDFIODataAggregate {
 	
 	public function setFromRDFXML( $data ) {
 		$rawDataParser = new RDFIORDFXMLToARC2Parser();
-		$arc2ResourceIndex = $rawDataParser->executeForData( $data );
+		$arc2RDFData = $rawDataParser->executeForData( $data );
 		
 		# Convert ARC2 data structure to RDFIO:s internal data structure
 		$arc2ToRDFIOParser = new RDFIOARC2ToRDFIOParser();
-		$rdfioData = $arc2ToRDFIOParser->executeForData( $arc2ResourceIndex );
+		$rdfioData = $arc2ToRDFIOParser->executeForData( $arc2RDFData );
 
-		$this->setData( $rdfioData );
+		$this->setSubjectDatas( $rdfioData['subjectdatas'] );
+		$this->setNamespaces( $rdfioData['namespaces'] );
 		
 		# TODO: Continue here on tuesday ...
 		# Shouln't the arc2 data be parsed to RDFIO internal data
@@ -95,13 +97,16 @@ class RDFIODataAggregate {
 	
 	# Getters and setters
 	
-	public function setData( &$data ) {
-		$this->mData = $data;	
-	}
-	public function getData() {
-		return $this->mData;
+	public function setSubjectDatas( &$data ) {
+		$this->mSubjectDatas = $data;	
 	}
 	public function getSubjectDatas() {
-		return $this->mData;
+		return $this->mSubjectDatas;
+	}
+	public function getNamespaces() { 
+	    return $this->mNamespaces;
+	}
+	public function setNamespaces( $namespaces ) { 
+	    $this->mNamespaces = $namespaces;
 	}
 }

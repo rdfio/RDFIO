@@ -24,7 +24,10 @@ class RDFIOARC2Parser extends RDFIOParser {
 	}
 	
 	public function getResults() {
-		return ARC2::getSimpleIndex( $this->mArc2Parser->getTriples(), $flatten_objects = false );
+		$arc2ResultData = array();
+		$arc2ResultData['namespaces'] = $this->mArc2Parser->nsp;
+		$arc2ResultData['resourceindex'] = ARC2::getSimpleIndex( $this->mArc2Parser->getTriples(), $flatten_objects = false );
+		return $arc2ResultData;
 	}
 	
 	public function setResults( $results ) {

@@ -9,7 +9,8 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 	}
 	
 	public function execute() {
-		$arc2ResourceIndex = $this->getInput();
+		$arc2Data = $this->getInput();
+		$arc2ResourceIndex = $arc2Data['resourceindex']; 
 		$subjectDatas = array();
 
 		foreach ( $arc2ResourceIndex as $subjectString => $arc2SubjectData ) {
@@ -41,7 +42,9 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 			$subjectDatas[] = $subjectData;
 		} 	
 
-		$this->setResults( $subjectDatas );
+		$rdfioData['namespaces'] = $arc2Data['namespaces'];
+		$rdfioData['subjectdatas'] = $subjectDatas; 
+		$this->setResults( $rdfioData );
 		
 	}
 

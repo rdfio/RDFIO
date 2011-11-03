@@ -23,7 +23,7 @@ class RDFIOSMWDataImporter {
 
 			if ( !$mwTitleObj->exists() ) {
 				$mwArticleObj = new Article( $mwTitleObj );
-				$content = "";
+				$content = '';
 				$summary = 'Page created by RDFIO';
 				$mwArticleObj->doEdit( $content, $summary );
 			} 
