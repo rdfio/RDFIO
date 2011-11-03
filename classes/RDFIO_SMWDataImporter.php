@@ -9,43 +9,48 @@ class RDFIOSMWDataImporter {
 	}
 
 	public function execute() {
+
+		// FIXME: Hard-coded now, while testing
+		$subjWikiTitle = 'Test2';
 		
-		# TODO: Decide what the WikiWriter should do ...
-		# ... maybe single page edits?
+		$titleObj = Title::newFromText( $subjWikiTitle );
 		
-		$title = Title::newFromText('Test2');
-		
-		$wom = WOMProcessor::getPageObject($title);
-		$property_obj = null;
+		$wom = WOMProcessor::getPageObject( $titleObj );
+		$womPropObjs = array();
 		try{
-			$oid = WOMProcessor::getObjIdByXPath($title, '//property[1]');
+			$objIds = WOMProcessor::getObjIdByXPath( $titleObj, '//property' );
 			// use page object functions
-			$property_obj = $wom->getObject($oid[0]);
+			foreach ( $objIds as $objId ) {
+				$womPropObj = $wom->getObject( $objId );
+				$womPropObjs[] = $womPropObj;
+			}
 		} catch( Exception $e ) {
 			return;
 		}
 		
-		// FIXME: Remove debug code
-		$p_as_wikitext = $property_obj->getWikiText();
+		$propsAndValuesForPage = array();
+
+		foreach ( $womPropObjs as $womPropObj ) {
+			$propName = $womPropObj->getPropertyName();
+			$propValue = $womPropObj->getPropertyValue();
+			// TODO: Figure out what happens if a key already exists
+			$propsAndValuesForPage[$propName] = $propValue; 
+		}
 		
-		$newTitle = Title::newFromText( 'Test3' ); 
-		$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
+		/*
+		 	FIXME: Later remove this test code
+		 	
+		 	$newTitle = Title::newFromText( 'Test3' ); 
+			$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
+			$property_obj->setSMWDataValue( $newSMWPageValue );
+			
+			$article = new Article($titleObj);
+			$content = $wom->getWikiText();
+			$summary = "Updated fact ... ?";
+			$article->doEdit( $content, $summary );
+ 
+		 */
 		
-		$property_obj->setSMWDataValue( $newSMWPageValue );
-		
-		$article = new Article($title);
-		$content = $wom->getWikiText();
-		$summary = "Updated fact ... ?";
-		$article->doEdit( $content, $summary );
-		
-		// $article = new Article($title);
-		// $summary = "A Bot edit ...";
-		// $content = $article->fetchContent();
-		// $content_new = $content . ' ... some more content';
-		// $article->doEdit($content_new, $summary);
-		
-		// $this->mWikiWriter->setInput( $results );
-		// $this->mWikiWriter->execute();
 	}
 	
 	# Getters and setters
