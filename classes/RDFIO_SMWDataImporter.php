@@ -44,24 +44,27 @@ class RDFIOSMWDataImporter {
 				echo( "Exception: " . $e->getMessage() );
 				$foundExistnigProperties = FALSE; 
 			}
+			
+			$newPropertiesAsWikiText = "\n";
 
 			foreach ( $subjectFacts as $subjectFact ) {
-				$propertyName = $subjectFact->getPredicate()->getAsWikiPageName();
-				if ( $foundExistnigProperties && in_array( $propertyName, $womPropertyObjs ) ) {
-					$womPropertyObj = $womPropertyObjs[$propertyName];
-					
-					$objectAsText = $subjectFact->getObject()->getAsText();
-					
+				$predicateAsText = $subjectFact->getPredicate()->getAsWikiPageName();
+				$objectAsText = $subjectFact->getObject()->getAsText();
+				if ( $foundExistnigProperties && in_array( $predicateAsText, $womPropertyObjs ) ) {
+					$womPropertyObj = $womPropertyObjs[$predicateAsText];
 					$newTitle = Title::newFromText( $objectAsText );
 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
 				} else {
-					// Create new property objects
+					// TODO: Need to escape stuff like [] ...
+					$newWomPropertyObj = new WOMPropertyModel( $predicateAsText, $objectAsText );
+					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
+					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n"; 
 				}
 			}			
 			
 			$mwArticleObj = new Article( $mwTitleObj );
-			$content = $womWikiPage->getWikiText();
+			$content = $womWikiPage->getWikiText() . $newPropertiesAsWikiText;
 			$summary = 'Update by RDFIO';
 			$mwArticleObj->doEdit( $content, $summary );
 		}
