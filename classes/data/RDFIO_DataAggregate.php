@@ -101,4 +101,7 @@ class RDFIODataAggregate {
 	public function getData() {
 		return $this->mData;
 	}
+	public function getSubjectDatas() {
+		return $this->mData;
+	}
 }

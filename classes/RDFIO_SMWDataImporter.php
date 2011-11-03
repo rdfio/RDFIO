@@ -1,6 +1,6 @@
 <?php
 
-class RDFIOSMWDataImporter { 
+class RDFIOSMWDataImporter {
 	protected $mImportData = null;
 	protected $mWikiWriter = null;
 
@@ -10,53 +10,67 @@ class RDFIOSMWDataImporter {
 
 	public function execute() {
 
-		// FIXME: Hard-coded now, while testing
-		$subjWikiTitle = 'Test2';
-		
-		$titleObj = Title::newFromText( $subjWikiTitle );
-		
-		$wom = WOMProcessor::getPageObject( $titleObj );
-		$womPropObjs = array();
-		try{
-			$objIds = WOMProcessor::getObjIdByXPath( $titleObj, '//property' );
-			// use page object functions
-			foreach ( $objIds as $objId ) {
-				$womPropObj = $wom->getObject( $objId );
-				$womPropObjs[] = $womPropObj;
-			}
-		} catch( Exception $e ) {
-			return;
-		}
-		
-		$propsAndValuesForPage = array();
+		$dataAggregate = $this->getImportData();
+		$subjectDatas = $dataAggregate->getSubjectDatas();
 
-		foreach ( $womPropObjs as $womPropObj ) {
-			$propName = $womPropObj->getPropertyName();
-			$propValue = $womPropObj->getPropertyValue();
-			// TODO: Figure out what happens if a key already exists
-			$propsAndValuesForPage[$propName] = $propValue; 
-		}
-		
-		/*
-		 	FIXME: Later remove this test code
-		 	
-		 	$newTitle = Title::newFromText( 'Test3' ); 
-			$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
-			$property_obj->setSMWDataValue( $newSMWPageValue );
+		foreach ( $subjectDatas as $subjectData ) {
+			$subject = $subjectData->getSubject();
+			$subjectWikiTitle = $subject->getAsWikiPageName();
+
+			$subjectFacts = $subjectData->getFacts();
 			
-			$article = new Article($titleObj);
-			$content = $wom->getWikiText();
-			$summary = "Updated fact ... ?";
-			$article->doEdit( $content, $summary );
- 
-		 */
-		
+			$mwTitleObj = Title::newFromText( $subjectWikiTitle );
+
+			if ( !$mwTitleObj->exists() ) {
+				$mwArticleObj = new Article( $mwTitleObj );
+				$content = "";
+				$summary = 'Page created by RDFIO';
+				$mwArticleObj->doEdit( $content, $summary );
+			} 
+			
+			$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
+			$womPropertyObjs = array();
+			
+			try{
+				$objIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
+				// use page object functions
+				foreach ( $objIds as $objId ) {
+					$womPropertyObj = $womWikiPage->getObject( $objId );
+					$womPropertyName = $womPropertyObj->getPropertyName();
+					$womPropertyObjs[$womPropertyName] = $womPropertyObj;
+				}
+				$foundExistnigProperties = TRUE; 
+			} catch( Exception $e ) {
+				echo( "Exception: " . $e->getMessage() );
+				$foundExistnigProperties = FALSE; 
+			}
+
+			foreach ( $subjectFacts as $subjectFact ) {
+				$propertyName = $subjectFact->getPredicate()->getAsWikiPageName();
+				if ( $foundExistnigProperties && in_array( $propertyName, $womPropertyObjs ) ) {
+					$womPropertyObj = $womPropertyObjs[$propertyName];
+					
+					$objectAsText = $subjectFact->getObject()->getAsText();
+					
+					$newTitle = Title::newFromText( $objectAsText );
+					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
+					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
+				} else {
+					// Create new property objects
+				}
+			}			
+			
+			$mwArticleObj = new Article( $mwTitleObj );
+			$content = $womWikiPage->getWikiText();
+			$summary = 'Update by RDFIO';
+			$mwArticleObj->doEdit( $content, $summary );
+		}
 	}
-	
+
 	# Getters and setters
-	
+
 	public function setImportData( RDFIODataAggregate $importData ) {
-		$this->mImportData = $importData;	
+		$this->mImportData = $importData;
 	}
 	public function getImportData() {
 		return $this->mImportData;

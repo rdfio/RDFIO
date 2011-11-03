@@ -14,6 +14,10 @@ class RDFIOLiteral extends RDFIOResource {
 		// TODO: Add code
 	}
 	
+	public function getAsText() {
+		return $this->getIdentifier();
+	}
+	
 	public static function newFromString( $identifier ) {
 		$newResource = new RDFIOLiteral();
 		$newResource->setIdentifier( $identifier );

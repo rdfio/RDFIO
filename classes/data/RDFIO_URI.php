@@ -14,6 +14,15 @@ class RDFIOURI extends RDFIOResource {
 	public function __construct() {
 		// TODO: Add code
 	}
+	
+	public function getAsText() {
+		return $this->getAsWikiPageName();
+	}
+	
+	public function getAsWikiPageName() {
+		// FIXME: Call a URI-to-WikiPageName converter here, later on
+		return $this->getIdentifier();
+	}
 
 	public static function newFromString( $identifier ) {
 		$newResource = new RDFIOURI();
