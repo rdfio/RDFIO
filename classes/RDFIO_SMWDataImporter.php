@@ -50,16 +50,19 @@ class RDFIOSMWDataImporter {
 			foreach ( $subjectFacts as $subjectFact ) {
 				$predicateAsText = $subjectFact->getPredicate()->getAsWikiPageName();
 				$objectAsText = $subjectFact->getObject()->getAsText();
-				if ( $foundExistnigProperties && in_array( $predicateAsText, $womPropertyObjs ) ) {
+				$predicateAsText = $this->escapeCharsForWikiTitle( $predicateAsText );
+				$objectAsText = $this->escapeCharsForWikiTitle( $objectAsText );
+
+				if ( array_key_exists( $predicateAsText, $womPropertyObjs ) ) {
 					$womPropertyObj = $womPropertyObjs[$predicateAsText];
 					$newTitle = Title::newFromText( $objectAsText );
 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
 				} else {
-					// TODO: Need to escape stuff like [] ...
-					$newWomPropertyObj = new WOMPropertyModel( $predicateAsText, $objectAsText );
+					$newWomPropertyObj = new WOMPropertyModel( $predicateAsText, $objectAsText, ' ' );
+
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
-					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n"; 
+					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 				}
 			}			
 			
@@ -70,6 +73,39 @@ class RDFIOSMWDataImporter {
 		}
 	}
 
+	# Convenience methods
+	
+	public function escapeCharsForWikiTitle( $wikiTitle ) {
+		$wikiTitle = str_replace( '[', '', $wikiTitle );
+		$wikiTitle = str_replace( ']', '', $wikiTitle );
+		return $wikiTitle;
+	}
+	
+	/**
+	 * This function escapes symbols that might be problematic in XML in a uniform
+	 * and injective way. It is used to encode URIs. 
+	 */
+	static public function encodeURI( $uri ) {
+		$uri = str_replace( '-', '-2D', $uri );
+		// $uri = str_replace( '_', '-5F', $uri); //not necessary
+		$uri = str_replace( array( ':', '"', '#', '&', "'", '+', '!', '%' ),
+		                    array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+		                    $uri );
+		return $uri;
+	}
+
+	/**
+	 * This function unescapes URIs generated with SMWExporter::encodeURI. This
+	 * allows services that receive a URI to extract e.g. the according wiki page.
+	 */
+	static public function decodeURI( $uri ) {
+		$uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+		                    array( ':', '"', '#', '&', "'", '+', '!', '%' ),
+		                   $uri );
+		$uri = str_replace( '%2D', '-', $uri );
+		return $uri;
+	}
+	
 	# Getters and setters
 
 	public function setImportData( RDFIODataAggregate $importData ) {
