@@ -12,6 +12,7 @@ class RDFIOSMWDataImporter {
 
 		$dataAggregate = $this->getImportData();
 		$subjectDatas = $dataAggregate->getSubjectDatas();
+		$namespaces = $dataAggregate->getNamespaces();
 
 		foreach ( $subjectDatas as $subjectData ) {
 			$subject = $subjectData->getSubject();
