@@ -13,6 +13,14 @@ class RDFIOResource {
 		// TODO: Add code
 	}
 	
+	# Convenience methods
+	
+	public function escapeProblemanticCharsInFacts( $wikiTitle ) {
+		$wikiTitle = str_replace( '[', '', $wikiTitle );
+		$wikiTitle = str_replace( ']', '', $wikiTitle );
+		return $wikiTitle;
+	}
+	
 	# Getters and setters
 
 	public function getIdentifier() { 

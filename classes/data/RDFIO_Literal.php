@@ -15,7 +15,9 @@ class RDFIOLiteral extends RDFIOResource {
 	}
 	
 	public function getAsText() {
-		return $this->getIdentifier();
+		$wikiPageName = $this->getIdentifier();
+		$wikiPageName = $this->escapeProblemanticCharsInFacts( $wikiPageName );
+		return $wikiPageName;
 	}
 	
 	public static function newFromString( $identifier ) {

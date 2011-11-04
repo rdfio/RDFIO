@@ -51,8 +51,6 @@ class RDFIOSMWDataImporter {
 			foreach ( $subjectFacts as $subjectFact ) {
 				$predicateAsText = $subjectFact->getPredicate()->getAsWikiPageName();
 				$objectAsText = $subjectFact->getObject()->getAsText();
-				$predicateAsText = $this->escapeCharsForWikiTitle( $predicateAsText );
-				$objectAsText = $this->escapeCharsForWikiTitle( $objectAsText );
 
 				if ( array_key_exists( $predicateAsText, $womPropertyObjs ) ) {
 					$womPropertyObj = $womPropertyObjs[$predicateAsText];
@@ -74,13 +72,6 @@ class RDFIOSMWDataImporter {
 		}
 	}
 
-	# Convenience methods
-	
-	public function escapeCharsForWikiTitle( $wikiTitle ) {
-		$wikiTitle = str_replace( '[', '', $wikiTitle );
-		$wikiTitle = str_replace( ']', '', $wikiTitle );
-		return $wikiTitle;
-	}
 	
 	/**
 	 * This function escapes symbols that might be problematic in XML in a uniform

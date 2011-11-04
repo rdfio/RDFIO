@@ -16,7 +16,9 @@ class RDFIOURI extends RDFIOResource {
 	}
 	
 	public function getAsText() {
-		return $this->getAsWikiPageName();
+		$wikiPageName = $this->getAsWikiPageName();
+		$wikiPageName = $this->escapeProblemanticCharsInFacts( $wikiPageName );
+		return $wikiPageName;
 	}
 	
 	public function getAsWikiPageName() {
