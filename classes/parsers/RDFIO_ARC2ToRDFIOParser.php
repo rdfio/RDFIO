@@ -2,15 +2,14 @@
 
 // TODO: Deprecate ...
 
-class RDFIOARC2ToRDFIOParser extends RDFIOParser {
+class RDFIOARC2ToRDFIOParser {
 	
 	public function __construct() {
-		parent::__construct();
+		// ...
 	}
 	
-	public function execute() {
-		$arc2Data = $this->getInput();
-		$arc2ResourceIndex = $arc2Data['resourceindex']; 
+	public function execute( $arc2ResourceIndex, $arc2NameSpacePrefixes ) {
+
 		$subjectDatas = array();
 
 		foreach ( $arc2ResourceIndex as $subjectString => $arc2SubjectData ) {
@@ -42,10 +41,11 @@ class RDFIOARC2ToRDFIOParser extends RDFIOParser {
 			$subjectDatas[] = $subjectData;
 		} 	
 
-		$rdfioData['namespaces'] = $arc2Data['namespaces'];
-		$rdfioData['subjectdatas'] = $subjectDatas; 
-		$this->setResults( $rdfioData );
+		$newDataAggregate = new RDFIODataAggregate();
+		$newDataAggregate->setSubjectDatas( $subjectDatas );
+		$newDataAggregate->setNamespacePrefixesFromParser( $arc2NameSpacePrefixes );
 		
+		return $newDataAggregate;
 	}
 
 }

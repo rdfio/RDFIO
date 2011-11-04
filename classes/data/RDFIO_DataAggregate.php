@@ -25,30 +25,29 @@ class RDFIODataAggregate {
 		// TODO: Add code
 	}
 	
-	public function setFromRawData( $rawData, $dataFormat ) {
+	# Factory methods, from RDF text formats
+
+	public static function newFromRawData( $rawData, $dataFormat ) {
 		switch ( $dataFormat ) {
 			case ( 'rdfxml' ): 
-				$this->setFromRDFXML( $rawData );
-				break;
+				return RDFIODataAggregate::newFromRDFXML( $rawData );
 			case ( 'turtle' ):
-				$this->setFromTurtle( $rawData );
-				break;
+				return RDFIODataAggregate::newFromTurtle( $rawData );
 		}
 	}
 	
-	# Common RDF Formats
-	
-	public function setFromRDFXML( $data ) {
+	public static function newFromRDFXML( $rdfXmlData ) {
 		$rawDataParser = new RDFIORDFXMLToARC2Parser();
-		$arc2RDFData = $rawDataParser->executeForData( $data );
+		$rawDataParser->execute( $rdfXmlData );
+		
+		$arc2ResourceIndex = $rawDataParser->getArc2ResourceIndex();
+		$arc2NameSpacePrefixes = $rawDataParser->getArc2NamespacePrefixes();
 		
 		# Convert ARC2 data structure to RDFIO:s internal data structure
 		$arc2ToRDFIOParser = new RDFIOARC2ToRDFIOParser();
-		$rdfioData = $arc2ToRDFIOParser->executeForData( $arc2RDFData );
-
-		$this->setSubjectDatas( $rdfioData['subjectdatas'] );
-		$this->setNamespacePrefixesFromParser( $rdfioData['namespaces'] );
+		$newDataAggregate = $arc2ToRDFIOParser->execute($arc2ResourceIndex, $arc2NameSpacePrefixes);
 		
+		return $newDataAggregate;
 	}
 	
 	public function getAsRDFXML( $data ) {
@@ -57,25 +56,25 @@ class RDFIODataAggregate {
 	public function getAsTurle( $data ) {
 		// TODO: Add code		
 	}
-	public function setFromTurle( $data ) {
+	public static function newFromTurle( $data ) {
 		// TODO: Add code		
 	}
-	public function setFromNTriples( $data ) {
+	public static function newFromNTriples( $data ) {
 		// TODO: Add code		
 	}
 	public function getAsNTriples( $data ) {
 		// TODO: Add code		
 	}
 	
-	# ARC2 data structures
+	# Factory methods, from ARC2 data structures
 	
-	public function setFromARC2TripleSet( $arc2triplesData ) {
+	public static function newFromARC2TripleSet( $arc2triplesData ) {
 		// TODO: Add code
 	}
 	public function getAsARC2TripleSet( $arc2triplesData ) {
 		// TODO: Add code		
 	}
-	public function setFromARC2ResourceIndex( $arc2triplesData ) {
+	public static function newFromARC2ResourceIndex( $arc2triplesData ) {
 		// TODO: Add code		
 	}
 	public function getAsARC2ResourceIndex( $arc2triplesData ) {

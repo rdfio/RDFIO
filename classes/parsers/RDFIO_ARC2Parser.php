@@ -10,35 +10,49 @@
  *
  */
 
-class RDFIOARC2Parser extends RDFIOParser {
+class RDFIOARC2Parser {
 	
 	protected $mArc2Parser = null;
+	protected $mArc2ResourceIndex = null;
+	protected $mArc2NamespacePrefixes = null;
 	
 	public function __construct() {
-		parent::__construct();
-		$this->mArc2Parser = ARC2::getRDFXMLParser();
+		// ..
 	}
 	
-	public function execute() {
-		$this->mArc2Parser->parseData( $this->getInput() );
-	}
-	
-	public function getResults() {
-		$arc2ResultData = array();
-		
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param string $rawData
+	 */
+	public function execute( $rawData ) {
+		$this->mArc2Parser->parseData( $rawData );
+
 		// TODO: Figure out if this is needed, since we add it to the 
 		//       converter singleton below, anyway
-		$arc2ResultData['namespaces'] = $this->mArc2Parser->nsp;
+		$arc2NamespacePrefixes = $this->setArc2NamespacePrefixes = $this->mArc2Parser->nsp;
 
+		// Set this in the single ton URIToWikiTltle converter, so that it can later be used
+		// by URI resources for convertnig themselves to Wiki Titles 
 		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
-		$uriToTitleConverter->setNamespacePrefixesFromParser	( $arc2ResultData['namespaces'] );
+		$uriToTitleConverter->setNamespacePrefixesFromParser( $arc2NamespacePrefixes );
+
+		$this->setArc2NamespacePrefixes( $arc2NamespacePrefixes );
 		
-		$arc2ResultData['resourceindex'] = ARC2::getSimpleIndex( $this->mArc2Parser->getTriples(), $flatten_objects = false );
-		return $arc2ResultData;
+		$arc2ResourceIndex = ARC2::getSimpleIndex( $this->mArc2Parser->getTriples(), $flatten_objects = false );
+		$this->setArc2ResourceIndex( $arc2ResourceIndex );
 	}
 	
-	public function setResults( $results ) {
-		// Nothing ... should not be possible to set anything here.
+	public function getArc2ResourceIndex() { 
+	    return $this->mArc2ResourceIndex;
 	}
-	
+	public function setArc2ResourceIndex( $arc2ResourceIndex ) { 
+	    $this->mArc2ResourceIndex = $arc2ResourceIndex;
+	}
+	public function getArc2NamespacePrefixes() { 
+	    return $this->mArc2NamespacePrefixes;
+	}
+	public function setArc2NamespacePrefixes( $arc2NamespacePrefixes ) { 
+	    $this->mArc2NamespacePrefixes = $arc2NamespacePrefixes;
+	}
 }
