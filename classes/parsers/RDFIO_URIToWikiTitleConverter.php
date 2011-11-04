@@ -4,7 +4,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 	
     private static $instance;
 	
-    protected $mNamespaces = null;
+    protected $mNamespacePrefixesFromParser = null;
     	
 	public function __construct() {
 		// ...
@@ -13,7 +13,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
     public static function singleton()
     {
         if (!isset(self::$instance)) {
-            echo 'Creating new instance.';
+            // echo 'Creating new instance.';
             $className = __CLASS__;
             self::$instance = new $className;
         }
@@ -38,9 +38,9 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
      * @return string $uri
      */
     public function abbreviateNamespaceForURI( $uri ) {
-        $prefixes = $this->getNamespaces();
+        $namespacePrefixesFromParser = $this->getNamespacePrefixesFromParser();
 
-		$prefixAndLocalPart = $this->applyNamespacePrefixesFromParser( $uri, $prefixes );
+		$prefixAndLocalPart = $this->applyNamespacePrefixesFromParser( $uri, $namespacePrefixesFromParser );
 		$basepart = $prefixAndLocalPart['basepart']; 
 		$localpart = $prefixAndLocalPart['localpart'];
 
@@ -51,25 +51,42 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
         }
 
         if ( $localpart == '' ) {
-            $uri = $basepart;
-        } elseif ( substr( $basepart, 0, 1 ) == '_' ) {
+            $abbreviatedUri = $basepart;
+        } elseif ( RDFIOURIToWikiTitleConverter::startsWithUnderscore( $basepart ) ) {
+        	// FIXME: Shouldn't the above check the local part instead?? 
+        	
             // Change ARC:s default "random string", to indicate more clearly that
             // it lacks title
-            $uri = str_replace( 'arc', 'untitled', $localpart );
-        } elseif ( substr( $basepart, 0, 7 ) == 'http://' ) {
+            $abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
+
+        } elseif ( RDFIOURIToWikiTitleConverter::startsWithHttpOrHttps( $basepart ) ) {
             // If the abbreviation does not seem to have succeeded,
             // fall back to use only the local part
-            $uri = $localpart;
-        } elseif ( substr( $basepart, -1 ) == ':' ) {
+            $abbreviatedUri = $localpart;
+            
+        } elseif ( RDFIOURIToWikiTitleConverter::endsWithColon( $basepart ) ) {
             // Don't add another colon
-            $uri = $basepart . $localpart;
+            $abbreviatedUri = $basepart . $localpart;
+            
         } elseif ( $basepart == false || $basepart == '' ) {
-            $uri = $localpart;
+            $abbreviatedUri = $localpart;
+            
         } else {
-            $uri = $basepart . ':' . $localpart;
+            $abbreviatedUri = $basepart . ':' . $localpart;
+            
         }
 
-        return $uri;
+        return $abbreviatedUri;
+    }
+    
+    public static function startsWithUnderscore( $str ) {
+    	return substr( $str, 0, 1 ) == '_';
+    }
+    public static function startsWithHttpOrHttps( $str ) {
+    	return ( substr( $str, 0, 7 ) == 'http://' || substr( $str, 0, 8 ) == 'https://' );
+    }
+    public static function endsWithColon( $str ) {
+    	return substr( $str, -1 ) == ':';
     }
     
     public function applyNamespacePrefixesFromParser( $uri, $prefixesFromParser ) {
@@ -135,10 +152,10 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 
     # Getters and setters
     
-	public function getNamespaces() { 
-	    return $this->mNamespaces;
+	public function getNamespacePrefixesFromParser() { 
+	    return $this->mNamespacePrefixesFromParser;
 	}
-	public function setNamespaces( $namespaces ) { 
-	    $this->mNamespaces = $namespaces;
+	public function setNamespacePrefixesFromParser( $namespacePrefixesFromParser ) { 
+	    $this->mNamespacePrefixesFromParser = $namespacePrefixesFromParser;
 	}    
 }

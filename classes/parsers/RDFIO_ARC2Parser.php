@@ -31,7 +31,7 @@ class RDFIOARC2Parser extends RDFIOParser {
 		$arc2ResultData['namespaces'] = $this->mArc2Parser->nsp;
 
 		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
-		$uriToTitleConverter->setNamespaces( $arc2ResultData['namespaces'] );
+		$uriToTitleConverter->setNamespacePrefixesFromParser	( $arc2ResultData['namespaces'] );
 		
 		$arc2ResultData['resourceindex'] = ARC2::getSimpleIndex( $this->mArc2Parser->getTriples(), $flatten_objects = false );
 		return $arc2ResultData;
