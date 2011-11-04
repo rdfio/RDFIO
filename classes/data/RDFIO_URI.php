@@ -21,9 +21,12 @@ class RDFIOURI extends RDFIOResource {
 	
 	public function getAsWikiPageName() {
 		// FIXME: Call a URI-to-WikiPageName converter here, later on
-		$asWikiPageName = $this->getIdentifier();
-		$asWikiPageName = ucfirst( $asWikiPageName );
-		$asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
+		
+		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
+		$asWikiPageName = $uriToTitleConverter->convert( $this->getIdentifier() );
+		
+		// $asWikiPageName = ucfirst( $asWikiPageName );
+		// $asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
 		return $asWikiPageName;
 	}
 
