@@ -22,7 +22,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 
     public function execute() {
     	$uri = $this->getInput();
-    	$wikiTitle = $this->abbreviateNSFromURI( $uri );
+    	$wikiTitle = $this->abbreviateNamespaceForURI( $uri );
     	$this->setResults( $wikiTitle );
     }
 	
@@ -37,7 +37,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
      * @param string $uri
      * @return string $uri
      */
-    public function abbreviateNSFromURI( $uri ) {
+    public function abbreviateNamespaceForURI( $uri ) {
         $prefixes = $this->getNamespaces();
 
 		$prefixAndLocalPart = $this->applyNamespacePrefixesFromParser( $uri, $prefixes );
