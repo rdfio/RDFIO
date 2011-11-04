@@ -40,17 +40,9 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
     public function abbreviateNSFromURI( $uri ) {
         $prefixes = $this->getNamespaces();
 
-        foreach ( $prefixes as $ns => $prefix ) {
-            $nslength = strlen( $ns );
-            $uricontainsns = substr( $uri, 0, $nslength ) === $ns;
-            if ( $uricontainsns ) {
-                $basepart = $prefix;
-                $localpart = substr( $uri, $nslength );
-            } else {
-            	$basepart = '';
-            	$localpart = '';
-            }
-        }
+		$prefixAndLocalPart = $this->applyNamespacePrefixesFromParser( $uri, $prefixes );
+		$basepart = $prefixAndLocalPart['basepart']; 
+		$localpart = $prefixAndLocalPart['localpart'];
 
         if ( $basepart == '' &&  $localpart == '' ) {
             $uriParts = $this->splitURI( $uri );
@@ -80,6 +72,21 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
         return $uri;
     }
     
+    public function applyNamespacePrefixesFromParser( $uri, $prefixesFromParser ) {
+        foreach ( $prefixesFromParser as $namespace => $prefix ) {
+            $nslength = strlen( $namespace );
+            $basepart = '';
+            $localpart = '';
+            $uriContainsNamepace = substr( $uri, 0, $nslength ) === $namespace;
+            if ( $uriContainsNamepace ) {
+                $localpart = substr( $uri, $nslength );
+                $prefixAndLocalPart = array( 'basepart' => $prefix, 'localpart' => $localpart );
+                return $prefixAndLocalPart;
+            }
+        }
+    }
+    
+    
     /**
      * Customized version of the splitURI($uri) of the ARC2 library (http://arc.semsol.org)
      * Splits a URI into its base part and local part, and returns them as an
@@ -87,7 +94,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
      * @param string $uri
      * @return array
      */
-    static function splitURI( $uri ) {
+    public function splitURI( $uri ) {
         global $rdfiogBaseURIs;
         /* ADAPTED FROM ARC2 WITH SOME MODIFICATIONS
          * the following namespaces may lead to conflated URIs,
