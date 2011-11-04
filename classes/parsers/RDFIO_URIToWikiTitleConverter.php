@@ -29,6 +29,22 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 	# Convenience method, for clearer code
 	
 	public function convert( $uri ) {
+		
+		/**
+		 * This is how to do it:
+		 * 
+		 * 1. Check if the uri exists as Equiv URI already (Overrides everything)
+		 * 2. Apply facts suitable for naming (such as dc:title)
+		 * 3. Shorten the Namespace (even for entities, optionally) into an NS Prefix
+		 *    according to mappings from parser
+		 *    (Such as chenInf:Blabla ...)
+		 * 4. The same, but according to mappings from LocalSettings.php
+		 * 5. The same, but according to abbreviation screen
+		 * 
+		 *    (In all the above, keep properties and normal entities separately)
+		 * 
+		 */
+		
 		return $this->executeForData( $uri );
 	}
 	
