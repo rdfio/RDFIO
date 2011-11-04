@@ -24,9 +24,8 @@ class RDFIOURI extends RDFIOResource {
 		
 		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
 		$asWikiPageName = $uriToTitleConverter->convert( $this->getIdentifier() );
-		
-		// $asWikiPageName = ucfirst( $asWikiPageName );
-		// $asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
+		$asWikiPageName = ucfirst( $asWikiPageName );
+		$asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
 		return $asWikiPageName;
 	}
 

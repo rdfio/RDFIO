@@ -46,6 +46,9 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
             if ( $uricontainsns ) {
                 $basepart = $prefix;
                 $localpart = substr( $uri, $nslength );
+            } else {
+            	$basepart = '';
+            	$localpart = '';
             }
         }
 
@@ -92,9 +95,9 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
          */
         if ( strpos( $uri, 'www.w3.org' ) ) {
             $specials = array(
-        'http://www.w3.org/XML/1998/namespace',
-        'http://www.w3.org/2005/Atom',
-        'http://www.w3.org/1999/xhtml',
+		        'http://www.w3.org/XML/1998/namespace',
+		        'http://www.w3.org/2005/Atom',
+		        'http://www.w3.org/1999/xhtml',
             );
             if ( $rdfiogBaseURIs != '' ) {
                 $specials = array_merge( $specials, $rdfiogBaseURIs );
