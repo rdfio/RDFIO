@@ -49,19 +49,6 @@ class RDFIODataAggregate {
 		$this->setSubjectDatas( $rdfioData['subjectdatas'] );
 		$this->setNamespacePrefixesFromParser( $rdfioData['namespaces'] );
 		
-		# TODO: Continue here on tuesday ...
-		# Shouln't the arc2 data be parsed to RDFIO internal data
-		# structure, and not SWM? Or should it go via SMW data structure
-		# first ... so that we have a general SMW->RDFIO parser as well?
-		# Answer: Of course directly to RDFIO structure, since SMW ditto
-		# does not handle URI:s. More valid question is whether to parse
-		# via SMW structure before sending to a writer class, but I guess
-		# that would be preferred, for maximum interoperability (not for
-		# performance though ... which is why I'm wondering ... maybe start
-		# with direct write, from RDFIO internals, and instead make an
-		# SMW->RDFIO parser, for doing writes of SMW objects?!! 
-		# Well, sounds quite reasonable ... probly go for that ...)
-		
 	}
 	
 	public function getAsRDFXML( $data ) {
