@@ -16,9 +16,7 @@ class RDFIOURI extends RDFIOResource {
 	}
 	
 	public function getAsText() {
-		$wikiPageName = $this->getAsWikiPageName();
-		$wikiPageName = $this->escapeProblemanticCharsInFacts( $wikiPageName );
-		return $wikiPageName;
+		return $this->getAsWikiPageName();
 	}
 	
 	public function getAsWikiPageName() {
@@ -28,6 +26,7 @@ class RDFIOURI extends RDFIOResource {
 		$asWikiPageName = $uriToTitleConverter->convert( $this->getIdentifier() );
 		$asWikiPageName = ucfirst( $asWikiPageName );
 		$asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
+		$asWikiPageName = $this->escapeProblemanticCharsInFacts( $asWikiPageName );
 		return $asWikiPageName;
 	}
 
