@@ -68,7 +68,7 @@ class RDFIOURIToWikiTitleConverter {
 		if ( empty( $wikiTitle ) )
 			$wikiTitle = $this->abbreviateWithNamespacePrefixesFromParser( $uriStr );
 
-		$this->setResults( $wikiTitle );
+		return $wikiTitle;
 	}
 
 	public function tryToGetExistingWikiTitleForURI( $uri ) {
@@ -153,8 +153,8 @@ class RDFIOURIToWikiTitleConverter {
         foreach ( $naturalLanguagePropertyURIs as $naturalLanguagePropertyURI ) {
         	$importedDataAggregate = $this->getCurrentURIObject()->getOwningDataAggregate();
         	$subjectData = $importedDataAggregate->getSubjectDataFromURI( $subjectURI );
-        	$fact = $subjectData->getFactFromPropertyURI( $naturalLanguagePropertyURI );
-
+        	if ( isset( $subjectData ) )
+        		$fact = $subjectData->getFactFromPropertyURI( $naturalLanguagePropertyURI );
         	if ( isset( $fact ) )
         		$wikiTitle = $fact->getObject()->getAsText();
             if ( !empty( $wikiTitle ) ) {

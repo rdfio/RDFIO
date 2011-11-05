@@ -19,6 +19,17 @@ class RDFIOSubjectData {
 	public function __construct() {
 		// TODO: Add code
 	}
+	
+	# Data access methods 
+	
+	public function getFactFromPropertyURI( $uriStr ) {
+		foreach ( $this->getFacts() as $fact ) {
+			$factPredicate = $fact->getPredicate()->getIdentifier();
+			if ( $uriStr == $factPredicate )
+				return $fact;
+		}
+		return null;
+	}
 
 	# Factory methods
 	

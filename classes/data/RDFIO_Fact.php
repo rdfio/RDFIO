@@ -11,7 +11,7 @@ class RDFIOFact {
 	
 	# Factory methods 
 	
-	public static function newFromPredicateAndObject( $predicate, $object ) {
+	public static function newFromPredicateAndObject( &$predicate, &$object ) {
 		$newFact = new RDFIOFact();
 		$newFact->setPredicate( $predicate );
 		$newFact->setObject( $object );
@@ -23,13 +23,13 @@ class RDFIOFact {
 	public function getPredicate() { 
 	    return $this->mPredicate;
 	}
-	public function setPredicate( $predicate ) { 
+	public function setPredicate( &$predicate ) { 
 	    $this->mPredicate = $predicate;
 	}
 	public function getObject() { 
 	    return $this->mObject;
 	}
-	public function setObject( $object ) { 
+	public function setObject( &$object ) { 
 	    $this->mObject = $object;
 	}
 }
