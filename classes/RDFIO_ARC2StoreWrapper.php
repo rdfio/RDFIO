@@ -158,6 +158,7 @@ class RDFIOARC2StoreWrapper {
         $wikititleresolveruri = $this->getURIForOrigURI( $uri );
         $resolveruri = $this->getURIResolverURI();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
+        // TODO: What's really happening here below?
         $wikititle = str_replace( 'Property-3A', '', $wikititle );
         $wikititle = str_replace( 'Property:', '', $wikititle );
         $wikititle = $this->decodeURI( $wikititle );
