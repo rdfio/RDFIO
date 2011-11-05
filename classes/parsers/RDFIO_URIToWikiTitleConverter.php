@@ -151,11 +151,10 @@ class RDFIOURIToWikiTitleConverter {
         $wikiTitle = '';
         $naturalLanguagePropertyURIs = $this->getNaturalLanguagePropertyURIs();
         foreach ( $naturalLanguagePropertyURIs as $naturalLanguagePropertyURI ) {
-        	// TODO: Hmm ... how to get access to the imported triples from here?
-        	
         	$importedDataAggregate = $this->getCurrentURIObject()->getOwningDataAggregate();
         	$subjectData = $importedDataAggregate->getSubjectDataFromURI( $subjectURI );
         	$fact = $subjectData->getFactFromPropertyURI( $naturalLanguagePropertyURI );
+
         	if ( isset( $fact ) )
         		$wikiTitle = $fact->getObject()->getAsText();
             if ( !empty( $wikiTitle ) ) {

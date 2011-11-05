@@ -25,6 +25,19 @@ class RDFIODataAggregate {
 		// TODO: Add code
 	}
 	
+	# Data access methods
+	
+	/**
+	 * @param string $uriStr
+	 */
+	public function getSubjectDataFromURI( $uriStr ) {
+		foreach ( $this->getSubjectDatas() as $subjectData ) {
+			if ( $uriStr == $subjectData->getSubject()->getIdentifier() )
+				return $subjectData;
+		}
+		return null;
+	}
+	
 	# Factory methods, from RDF text formats
 
 	public static function newFromRawData( $rawData, $dataFormat ) {
