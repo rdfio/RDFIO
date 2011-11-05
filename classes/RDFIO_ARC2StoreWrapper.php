@@ -6,7 +6,7 @@
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
-class RDFIOStore {
+class RDFIOARC2StoreWrapper {
     protected $m_store;
 
     function __construct() {
@@ -160,7 +160,32 @@ class RDFIOStore {
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
         $wikititle = str_replace( 'Property-3A', '', $wikititle );
         $wikititle = str_replace( 'Property:', '', $wikititle );
-        $wikititle = RDFIOUtils::unXmlifyUris( $wikititle );
+        $wikititle = $this->decodeURI( $wikititle );
         return $wikititle;
     }
+    
+	/**
+	 * This function escapes symbols that might be problematic in XML in a uniform
+	 * and injective way. It is used to encode URIs. 
+	 */
+	static public function encodeURI( $uri ) {
+		$uri = str_replace( '-', '-2D', $uri );
+		// $uri = str_replace( '_', '-5F', $uri); //not necessary
+		$uri = str_replace( array( ':', '"', '#', '&', "'", '+', '!', '%' ),
+		                    array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+		                    $uri );
+		return $uri;
+	}
+
+	/**
+	 * This function unescapes URIs generated with SMWExporter::encodeURI. This
+	 * allows services that receive a URI to extract e.g. the according wiki page.
+	 */
+	static public function decodeURI( $uri ) {
+		$uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+		                    array( ':', '"', '#', '&', "'", '+', '!', '%' ),
+		                   $uri );
+		$uri = str_replace( '%2D', '-', $uri );
+		return $uri;
+	}    
 }

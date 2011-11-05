@@ -40,19 +40,19 @@ $wgExtensionAliasesFiles['RDFIO'] = $dir . 'RDFIO.alias.php';
  *  ARC2 RDF Store config *
  **************************/
 
-#$smwgARC2StoreConfig = array(
-#              /* Customize these details if you   *
-#               * want to use an external database */
-#                'db_host' => $wgDBserver,
-#                'db_name' => $wgDBname,
-#                'db_user' => $wgDBuser,
-#                'db_pwd' =>  $wgDBpassword,
-#                'store_name' => $wgDBprefix . 'arc2store',
-#);
-#$smwgDefaultStore = 'SMWARC2Store'; // Determines database table prefix
-#
-#require_once( "$IP/extensions/RDFIO/stores/SMW_ARC2Store.php" );
-#require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
+$smwgARC2StoreConfig = array(
+              /* Customize these details if you   *
+               * want to use an external database */
+                'db_host' => $wgDBserver,
+                'db_name' => $wgDBname,
+                'db_user' => $wgDBuser,
+                'db_pwd' =>  $wgDBpassword,
+                'store_name' => $wgDBprefix . 'arc2store',
+);
+$smwgDefaultStore = 'SMWARC2Store'; // Determines database table prefix
+
+require_once( "$IP/extensions/RDFIO/stores/SMW_ARC2Store.php" );
+require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
 
 /**************************
  *    RDFIO Components    *
