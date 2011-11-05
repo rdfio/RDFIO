@@ -20,9 +20,10 @@ class RDFIOLiteral extends RDFIOResource {
 		return $wikiPageName;
 	}
 	
-	public static function newFromString( $identifier ) {
+	public static function newFromString( $identifier, $owningDataAggregate ) {
 		$newResource = new RDFIOLiteral();
 		$newResource->setIdentifier( $identifier );
+		$newResource->setOwningDataAggregate( $owningDataAggregate );
 		return $newResource;
 	}
 }

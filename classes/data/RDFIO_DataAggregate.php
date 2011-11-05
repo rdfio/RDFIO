@@ -13,7 +13,7 @@
  */
 
 class RDFIODataAggregate {
-	protected $mSubjectDatas = null;
+	protected $mSubjectDatas = array();
 	protected $mNamespacePrefixesFromParser = null;
 	
 	protected $mARC2TripleSetToSMWParser = null;
@@ -88,6 +88,9 @@ class RDFIODataAggregate {
 	}
 	public function getSubjectDatas() {
 		return $this->mSubjectDatas;
+	}
+	public function addSubjectData( $mSubjectData ) {
+		$this->mSubjectDatas[] = $mSubjectData;
 	}
 	public function getNamespacePrefixesFromParser() { 
 	    return $this->mNamespacePrefixesFromParser;

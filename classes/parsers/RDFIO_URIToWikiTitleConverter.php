@@ -1,14 +1,33 @@
 <?php
 
-class RDFIOURIToWikiTitleConverter extends RDFIOParser {
+class RDFIOURIToWikiTitleConverter {
 
 	private static $instance;
 
-	protected $mNamespacePrefixesFromParser = null;
 	protected $mArc2Store = null;
+	protected $mNamespacePrefixesFromParser = null;
+	protected $mNaturalLanguagePropertyURIs = null;
+	protected $mCurrentURIObject = null;
 
 	public function __construct() {
+		# Enable access to global settings variables
+		global $rdfiogPropertiesToUseAsWikiTitle;
+		
+		# Init ARC2 Store Wrapper
 		$this->setArc2Store( new RDFIOARC2StoreWrapper() );
+		
+	    if ( isset( $rdfiogPropertiesToUseAsWikiTitle ) ) {
+            $this->setNaturalLanguagePropertyURIs( $rdfiogPropertiesToUseAsWikiTitle );
+        } else {
+        	# Some defaults
+            $this->m_wikititlepropertyuris = array(
+            	'http://semantic-mediawiki.org/swivt/1.0#page', // Suggestion for new property
+            	'http://www.w3.org/2000/01/rdf-schema#label',
+            	'http://purl.org/dc/elements/1.1/title',
+            	'http://www.w3.org/2004/02/skos/core#preferredLabel',
+            	'http://xmlns.com/foaf/0.1/name'
+            );
+        }		
 	}
 
 	public static function singleton()
@@ -21,7 +40,11 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 		return self::$instance;
 	}
 
-	public function execute() {
+	public function convert( &$uriObj ) {
+		
+		$uriStr = $uriObj->getIdentifier();
+		$this->setCurrentURIObject( $uriObj ); // Needed in order to access Imported data		
+		
 		/**
 		 * This is how to do it:
 		 *
@@ -35,25 +58,17 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 		 *    (In all the above, keep properties and normal entities separately)
 		 *
 		 */
-			
-		$uri = $this->getInput();
 
-		if ( !$this->isURIResolverURI( $uri ) )
-			$wikiTitle = $this->tryToGetExistingWikiTitleForURI( $uri );
+		if ( !$this->isURIResolverURI( $uriStr ) )
+			$wikiTitle = $this->tryToGetExistingWikiTitleForURI( $uriStr );
 
 		if ( empty( $wikiTitle ) )
-			$wikiTitle = $this->getWikiTitleByNaturalLanguageProperty( $uri );
+			$wikiTitle = $this->getWikiTitleByNaturalLanguageProperty( $uriStr );
 			
 		if ( empty( $wikiTitle ) )
-			$wikiTitle = $this->abbreviateWithNamespacePrefixesFromParser( $uri );
+			$wikiTitle = $this->abbreviateWithNamespacePrefixesFromParser( $uriStr );
 
 		$this->setResults( $wikiTitle );
-	}
-
-	# Convenience method, for clearer code
-
-	public function convert( $uri ) {
-		return $this->executeForData( $uri );
 	}
 
 	public function tryToGetExistingWikiTitleForURI( $uri ) {
@@ -126,23 +141,30 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
     /**
      * Use a "natural language" property, such as dc:title or similar, as wiki title
      * @param string $subject
-     * @return string $title
+     * @return string $wikiTitle
      */
-    function getWikiTitleByNaturalLanguageProperty( $subject ) {
+    function getWikiTitleByNaturalLanguageProperty( $subjectURI ) {
         // Looks through, in order, the uri:s in $this->m_wikititlepropertyuris
-        // to see if any of them is set for $subject. if so, return corresponding
+        // to see if any of them is set for $subjectURI. if so, return corresponding
         // value as title.
         // FIXME: Update to work with RDFIO2 Data structures
-        $title = '';
-        foreach ( $this->m_wikititlepropertyuris as $wikititlepropertyuri ) {
-            $title = $this->m_tripleindex[$subject][$wikititlepropertyuri][0]['value'];
-            if ( $title != '' ) {
-                // When we have found a "$wikititlepropertyuri" that matches,
+        $wikiTitle = '';
+        $naturalLanguagePropertyURIs = $this->getNaturalLanguagePropertyURIs();
+        foreach ( $naturalLanguagePropertyURIs as $naturalLanguagePropertyURI ) {
+        	// TODO: Hmm ... how to get access to the imported triples from here?
+        	
+        	$importedDataAggregate = $this->getCurrentURIObject()->getOwningDataAggregate();
+        	$subjectData = $importedDataAggregate->getSubjectDataFromURI( $subjectURI );
+        	$fact = $subjectData->getFactFromPropertyURI( $naturalLanguagePropertyURI );
+        	if ( isset( $fact ) )
+        		$wikiTitle = $fact->getObject()->getAsText();
+            if ( !empty( $wikiTitle ) ) {
+                // When we have found a "$naturalLanguagePropertyURI" that matches,
                 // return the value immediately
-                return $title;
+                return $wikiTitle;
             }
         }
-        return $title;
+        return $wikiTitle;
     }
 
 	/**
@@ -210,5 +232,17 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 	}
 	public function setArc2Store( $arc2Store ) {
 		$this->mArc2Store = $arc2Store;
+	}
+	public function getNaturalLanguagePropertyURIs() { 
+	    return $this->mNaturalLanguagePropertyURIs;
+	}
+	public function setNaturalLanguagePropertyURIs( $naturalLanguagePropertyURIs ) { 
+	    $this->mNaturalLanguagePropertyURIs = $naturalLanguagePropertyURIs;
+	}
+	public function &getCurrentURIObject() { 
+	    return $this->mCurrentURIObject;
+	}
+	public function setCurrentURIObject( &$currentURIObject ) { 
+	    $this->mCurrentURIObject = $currentURIObject;
 	}
 }

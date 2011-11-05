@@ -10,14 +10,15 @@ class RDFIOARC2ToRDFIOParser {
 	
 	public function execute( $arc2ResourceIndex, $arc2NameSpacePrefixes ) {
 
+		$newDataAggregate = new RDFIODataAggregate();
 		$subjectDatas = array();
-
+		
 		foreach ( $arc2ResourceIndex as $subjectString => $arc2SubjectData ) {
-			$subject = RDFIOURI::newFromString( $subjectString );
+			$subject = RDFIOURI::newFromString( $subjectString, $newDataAggregate );
 			$subjectData = RDFIOSubjectData::newFromSubject( $subject );
 
 			foreach ( $arc2SubjectData as $predicateString => $arc2PredicateData ) {
-				$predicate = RDFIOURI::newFromString( $predicateString );
+				$predicate = RDFIOURI::newFromString( $predicateString, $newDataAggregate );
 				
 				foreach ( $arc2PredicateData as $arc2ObjectData ) {
 					
@@ -26,10 +27,10 @@ class RDFIOARC2ToRDFIOParser {
 
 					switch ( $objectTypeString ) {
 						case 'uri':
-							$object = RDFIOURI::newFromString( $objectString );
+							$object = RDFIOURI::newFromString( $objectString, $newDataAggregate );
 							break;
 						case 'literal':
-							$object = RDFIOLiteral::newFromString( $objectString );
+							$object = RDFIOLiteral::newFromString( $objectString, $newDataAggregate );
 					}
 					
 					$fact = RDFIOFact::newFromPredicateAndObject( $predicate, $object );
@@ -41,7 +42,6 @@ class RDFIOARC2ToRDFIOParser {
 			$subjectDatas[] = $subjectData;
 		} 	
 
-		$newDataAggregate = new RDFIODataAggregate();
 		$newDataAggregate->setSubjectDatas( $subjectDatas );
 		$newDataAggregate->setNamespacePrefixesFromParser( $arc2NameSpacePrefixes );
 		

@@ -8,7 +8,8 @@
 class RDFIOResource {
 	
 	protected $mIdentifier = null;
-		
+	protected $mOwningDataAggregate = null;
+	
 	public function __construct() {
 		// TODO: Add code
 	}
@@ -29,6 +30,11 @@ class RDFIOResource {
 	public function setIdentifier( $identifier ) { 
 	    $this->mIdentifier = $identifier;
 	}
-	
+	public function &getOwningDataAggregate() { 
+	    return $this->mOwningDataAggregate;
+	}
+	public function setOwningDataAggregate( &$owningDataAggregate ) { 
+	    $this->mOwningDataAggregate = $owningDataAggregate;
+	}
 }
 	

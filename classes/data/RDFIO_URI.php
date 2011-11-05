@@ -23,16 +23,17 @@ class RDFIOURI extends RDFIOResource {
 		// FIXME: Call a URI-to-WikiPageName converter here, later on
 		
 		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
-		$asWikiPageName = $uriToTitleConverter->convert( $this->getIdentifier() );
+		$asWikiPageName = $uriToTitleConverter->convert( $this );
 		$asWikiPageName = ucfirst( $asWikiPageName );
 		$asWikiPageName = str_replace( '_', ' ', $asWikiPageName );
 		$asWikiPageName = $this->escapeProblemanticCharsInFacts( $asWikiPageName );
 		return $asWikiPageName;
 	}
 
-	public static function newFromString( $identifier ) {
+	public static function newFromString( $identifier, &$owningDataAggregate ) {
 		$newResource = new RDFIOURI();
 		$newResource->setIdentifier( $identifier );
+		$newResource->setOwningDataAggregate( $owningDataAggregate );
 		return $newResource;
 	}
 	
