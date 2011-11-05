@@ -15,18 +15,11 @@ class RDFIOARC2StoreWrapper {
     }
 
     /**
-     * Get SMWs internal URI for the "Original URI" property used by RDFIO
-     * @return string
-     */
-    function getOrigURIURI() {
-        return $this->getURIResolverURI() . 'Property-3AOriginal_URI';
-    }
-
-    /**
      * Get SMWs internal URI for corresponding to the "Equivalent URI" property
      * @return string
      */
     function getEquivURIURI() {
+    	// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
         return 'http://www.w3.org/2002/07/owl#sameAs';
     }
 
@@ -45,10 +38,10 @@ class RDFIOARC2StoreWrapper {
      * @param string $uri
      * @return string $origuri
      */
-    function getOrigURIForUri( $uri ) {
+    function getEquivURIForUri( $uri ) {
         $origuri = '';
         $store = $this->m_arcstore;
-        $origuriuri = $this->getOrigURIURI();
+        $origuriuri = $this->getEquivURIURI();
         $q = "SELECT ?origuri WHERE { <$uri> <$origuriuri> ?origuri }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
@@ -94,30 +87,6 @@ class RDFIOARC2StoreWrapper {
     }
 
     /**
-     * @param string $ouri
-     * @return string $uri
-     */
-    function getURIForOrigURI( $origuri ) {
-        $uri = '';
-        $store = $this->m_arcstore;
-        $origuriuri = $this->getOrigURIURI();
-        $q = "SELECT ?uri WHERE { ?uri <$origuriuri> <$origuri> }";
-        $rs = $store->query( $q );
-        if ( !$store->getErrors() ) {
-            if ( $rs !== '' ) {
-                $rows = $rs['result']['rows'];
-                if (count( $rows ) > 0) {
-                	$row = $rows[0];
-                	$uri = $row['uri'];
-                }
-            }
-        } else {
-            die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
-        }
-        return $uri;
-    }
-
-    /**
      * Given an Equivalent URI (ast defined in a wiki article, return the URI used by SMW
      * @param string $equivuri
      * @return string $uri
@@ -130,8 +99,10 @@ class RDFIOARC2StoreWrapper {
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
             $rows = $rs['result']['rows'];
-            $row = $rows[0];
-            $uri = $row['uri'];
+            if ( count($rows) > 0 ) {
+	            $row = $rows[0];
+	            $uri = $row['uri'];
+            }
         } else {
             die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
         }
@@ -155,7 +126,7 @@ class RDFIOARC2StoreWrapper {
      * @return string $wikititle;
      */
     function getWikiTitleByOriginalURI( $uri ) {
-        $wikititleresolveruri = $this->getURIForOrigURI( $uri );
+        $wikititleresolveruri = $this->getURIForEquivURI( $uri );
         $resolveruri = $this->getURIResolverURI();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
         // TODO: What's really happening here below?
