@@ -41,7 +41,10 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 		if ( !$this->isURIResolverURI( $uri ) )
 			$wikiTitle = $this->tryToGetExistingWikiTitleForURI( $uri );
 
-		if ( $wikiTitle == '' )
+		if ( empty( $wikiTitle ) )
+			$wikiTitle = $this->getWikiTitleByNaturalLanguageProperty( $uri );
+			
+		if ( empty( $wikiTitle ) )
 			$wikiTitle = $this->abbreviateWithNamespacePrefixesFromParser( $uri );
 
 		$this->setResults( $wikiTitle );
@@ -120,6 +123,27 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 		return $abbreviatedUri;
 	}
 
+    /**
+     * Use a "natural language" property, such as dc:title or similar, as wiki title
+     * @param string $subject
+     * @return string $title
+     */
+    function getWikiTitleByNaturalLanguageProperty( $subject ) {
+        // Looks through, in order, the uri:s in $this->m_wikititlepropertyuris
+        // to see if any of them is set for $subject. if so, return corresponding
+        // value as title.
+        // FIXME: Update to work with RDFIO2 Data structures
+        $title = '';
+        foreach ( $this->m_wikititlepropertyuris as $wikititlepropertyuri ) {
+            $title = $this->m_tripleindex[$subject][$wikititlepropertyuri][0]['value'];
+            if ( $title != '' ) {
+                // When we have found a "$wikititlepropertyuri" that matches,
+                // return the value immediately
+                return $title;
+            }
+        }
+        return $title;
+    }
 
 	/**
 	 * Customized version of the splitURI($uri) of the ARC2 library (http://arc.semsol.org)
