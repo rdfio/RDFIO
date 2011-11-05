@@ -73,7 +73,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 		$localpart = $prefixAndLocalPart['localpart'];
 
 		if ( $basepart == '' &&  $localpart == '' ) {
-			$uriParts = $this->splitURI( $uri );
+			$uriParts = $this->splitURIIntoBaseAndLocalPart( $uri );
 			$basepart = $uriParts[0];
 			$localpart = $uriParts[1];
 		}
@@ -139,7 +139,7 @@ class RDFIOURIToWikiTitleConverter extends RDFIOParser {
 	 * @param string $uri
 	 * @return array
 	 */
-	public function splitURI( $uri ) {
+	public function splitURIIntoBaseAndLocalPart( $uri ) {
 		global $rdfiogBaseURIs;
 		/* ADAPTED FROM ARC2 WITH SOME MODIFICATIONS
 		 * the following namespaces may lead to conflated URIs,
