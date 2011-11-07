@@ -39,7 +39,17 @@ class RDFIODataAggregate {
 	}
 	
 	public function getAllURIs() {
-		// TODO: Implement
+		$allURIs = array();
+		foreach( $this->getSubjectDatas() as $subjectData ) {
+			$allURIs[] = $subjectData->getSubject();
+			foreach( $subjectData->getFacts() as $fact ) {
+				$allURIs[] = $fact->getPredicate();
+				$object =  $fact->getObject();
+				if ( has_class($object) == 'RDFIOURI' )
+					$allURIs[] = $object;
+			}
+		}
+		return $allURIs;
 	}
 	
 	# Factory methods, from RDF text formats
