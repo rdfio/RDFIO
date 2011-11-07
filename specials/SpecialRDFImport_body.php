@@ -36,8 +36,12 @@ class RDFImport extends SpecialPage {
 			
 			$importDataAggregate = RDFIODataAggregate::newFromRawData( $data, $dataFormat );
 				
+			$equivURIPropertyCreator = new RDFIOEquivalentURIPropertyCreator();
+			$equivURIsDataAggregate = $equivURIPropertyCreator->execute( $importDataAggregate );
+			
 			$smwImporter = new RDFIOSMWDataImporter();
 			$smwImporter->import( $importDataAggregate );
+			$smwImporter->import( $equivURIsDataAggregate );
 				
 			$wgOut->addHTML('Tried to import the stuff ...');
 
