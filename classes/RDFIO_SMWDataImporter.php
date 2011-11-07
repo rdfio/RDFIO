@@ -8,11 +8,10 @@ class RDFIOSMWDataImporter {
 		$this->mWikiWriter = new RDFIOWikiWriter();
 	}
 
-	public function execute() {
+	public function import( RDFIODataAggregate &$importData ) {
 
-		$dataAggregate = $this->getImportData();
-		$subjectDatas = $dataAggregate->getSubjectDatas();
-		$namespaces = $dataAggregate->getNamespacePrefixesFromParser();
+		$subjectDatas = $importData->getSubjectDatas();
+		$namespaces = $importData->getNamespacePrefixesFromParser();
 
 		foreach ( $subjectDatas as $subjectData ) {
 			$subject = $subjectData->getSubject();
@@ -74,7 +73,7 @@ class RDFIOSMWDataImporter {
 
 	# Getters and setters
 
-	public function setImportData( RDFIODataAggregate $importData ) {
+	public function setImportData( RDFIODataAggregate &$importData ) {
 		$this->mImportData = $importData;
 	}
 	public function getImportData() {
