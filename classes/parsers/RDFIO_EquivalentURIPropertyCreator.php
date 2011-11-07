@@ -8,6 +8,9 @@ class RDFIOEquivalentURIPropertyCreator {
 	
 	public function execute( RDFIODataAggregate $dataAggregate ) {
 		$origDataURIs = $dataAggregate->getAllURIs();
+		foreach( $origDataURIs as $origDataURI ) {
+			// TODO: Do stuff ...
+		}
 	}
 	
 }

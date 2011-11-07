@@ -41,12 +41,12 @@ class RDFIODataAggregate {
 	public function getAllURIs() {
 		$allURIs = array();
 		foreach( $this->getSubjectDatas() as $subjectData ) {
-			$allURIs[] = $subjectData->getSubject();
+			$allURIs[$subjectData->getSubject()->getIdentifier()] = $subjectData->getSubject();
 			foreach( $subjectData->getFacts() as $fact ) {
-				$allURIs[] = $fact->getPredicate();
+				$allURIs[$fact->getPredicate()->getIdentifier()] = $fact->getPredicate();
 				$object =  $fact->getObject();
-				if ( has_class($object) == 'RDFIOURI' )
-					$allURIs[] = $object;
+				if ( get_class( $object ) == 'RDFIOURI' )
+					$allURIs[$object->getIdentifier()] = $object;
 			}
 		}
 		return $allURIs;
