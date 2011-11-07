@@ -113,7 +113,7 @@ class RDFIOARC2StoreWrapper {
      * Get the base URI used by SMW to identify wiki articles
      * @return string $uriresolveruri
      */
-    function getURIResolverURI() {
+    static function getURIResolverURI() {
         $resolver = SpecialPage::getTitleFor( 'URIResolver' );
         $uriresolveruri = $resolver->getFullURL() . '/';
         return $uriresolveruri;
