@@ -38,6 +38,10 @@ class RDFIODataAggregate {
 		return null;
 	}
 	
+	public function getAllURIs() {
+		// TODO: Implement
+	}
+	
 	# Factory methods, from RDF text formats
 
 	public static function newFromRawData( $rawData, $dataFormat ) {

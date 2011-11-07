@@ -7,7 +7,7 @@ class RDFIOEquivalentURIPropertyCreator {
 	}
 	
 	public function execute( RDFIODataAggregate $dataAggregate ) {
-		// TODO: Do stuff ...
+		$origDataURIs = $dataAggregate->getAllURIs();
 	}
 	
 }
