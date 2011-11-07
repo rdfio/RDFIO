@@ -1,6 +1,6 @@
 <?php 
 
-class RDFIOEquivalentURILinkCreator {
+class RDFIOEquivalentURIPropertyCreator {
 	
 	public function __construct() {
 		// ...
