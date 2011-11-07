@@ -18,6 +18,8 @@ class RDFIOEquivalentURIPropertyCreator {
 			
 			# Predicate
 			// TODO: Should one use the Equivalent URI resolver URI, or rather the owl#sameAs at once?
+			// TODO: Add "Property:" namespace here as well, somewhere?
+			// TODO: Add "type:URL" to the property, somehow?
 			$equivURIPropertyURIStr = $uriResolverURI . 'Equivalent_URI';
 			$equivURIpropURI = RDFIOURI::newFromString($equivURIPropertyURIStr, $equivURIFactsDataAggregate);
 			
