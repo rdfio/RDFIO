@@ -11,7 +11,9 @@ class RDFIOEquivalentURIPropertyCreator {
 		$origDataURIs = $dataAggregate->getAllURIs();
 		foreach( $origDataURIs as $origDataURI ) {
 			# Subject
-			$uriResolverURI = RDFIOARC2StoreWrapper::getURIResolverURI();	
+			$uriResolverURI = RDFIOARC2StoreWrapper::getURIResolverURI();
+			// FIXME: The following is completely wrong, it does not result in the same Wiki Page Title
+			//        as the page in the original import data	
 			$subjectURIStr = $uriResolverURI . $origDataURI->getAsWikiPageName();
 			$subjectURIStr = str_replace( ' ', '_', $subjectURIStr ); // TODO: Replace with xmlify method!
 			$subjectURI = RDFIOURI::newFromString($subjectURIStr, $equivURIFactsDataAggregate);
