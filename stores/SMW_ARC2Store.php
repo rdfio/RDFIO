@@ -225,8 +225,8 @@ class SMWARC2Store extends SMWSQLStore2 {
             $dv = SMWDataValueFactory::newTypeIDValue( '_wpg' );
             $dv->setTitle( $title );
             // FIXME: Crashes here!!!
-            $exp = $dv->getExportData();
-            $uri = $exp->getSubject()->getUri();
+            // $exp = $dv->getExportData();
+            // $uri = $exp->getSubject()->getUri();
         } else {
             // There could be other types as well that we do NOT handle here
         }
