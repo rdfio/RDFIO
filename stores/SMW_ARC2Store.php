@@ -222,11 +222,9 @@ class SMWARC2Store extends SMWSQLStore2 {
     protected function getURI( $title ) {
         $uri = "";
         if ( $title instanceof Title ) {
-            $dv = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-            $dv->setTitle( $title );
-            // FIXME: Crashes here!!!
-            // $exp = $dv->getExportData();
-            // $uri = $exp->getSubject()->getUri();
+            $wikiPageDI = SMWDIWikiPage::newFromTitle( $title );
+            $exp = SMWExporter::makeExportDataForSubject( $wikiPageDI ); 
+            $uri = $exp->getSubject()->getUri();
         } else {
             // There could be other types as well that we do NOT handle here
         }
