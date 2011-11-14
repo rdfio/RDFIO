@@ -38,10 +38,8 @@ class RDFIOSMWDataImporter {
 					$womPropertyName = $womPropertyObj->getPropertyName();
 					$womPropertyObjs[$womPropertyName] = $womPropertyObj;
 				}
-				$foundExistnigProperties = TRUE; 
 			} catch( Exception $e ) {
 				echo( "Exception: " . $e->getMessage() );
-				$foundExistnigProperties = FALSE; 
 			}
 			
 			$newPropertiesAsWikiText = "\n";
