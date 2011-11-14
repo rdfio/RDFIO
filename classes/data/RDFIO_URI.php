@@ -20,8 +20,6 @@ class RDFIOURI extends RDFIOResource {
 	}
 	
 	public function getAsWikiPageName() {
-		// FIXME: Call a URI-to-WikiPageName converter here, later on
-		
 		$uriToTitleConverter = RDFIOURIToWikiTitleConverter::singleton();
 		$asWikiPageName = $uriToTitleConverter->convert( $this );
 		$asWikiPageName = ucfirst( $asWikiPageName );
