@@ -1,7 +1,6 @@
 <?php
 
 class RDFIOSMWDataImporter {
-	protected $mImportData = null;
 	protected $mWikiWriter = null;
 
 	public function __construct() {
@@ -71,12 +70,4 @@ class RDFIOSMWDataImporter {
 		}
 	}
 
-	# Getters and setters
-
-	public function setImportData( RDFIODataAggregate &$importData ) {
-		$this->mImportData = $importData;
-	}
-	public function getImportData() {
-		return $this->mImportData;
-	}
 }
