@@ -33,8 +33,13 @@ $wgExtensionAliasesFiles['RDFIO'] = $dir . 'RDFIO.alias.php';
  * ARC2 RDF library for PHP *
  ****************************/
 
-#$smwgARC2Path = $smwgIP . '/libs/arc/';
-#require_once( $smwgARC2Path . '/ARC2.php' );
+$smwgARC2Path = $smwgIP . '/libs/arc/';
+$smwgARC2MainFile = $smwgARC2Path . '/ARC2.php';
+if ( ! file_exists( $smwgARC2MainFile )) {
+    die("ARC2 library is not installed in Semantic Mediawiki libs folder!<br>Please refer to the installation instructions, to fix that: http://www.mediawiki.org/wiki/Extension:RDFIO#Installation");
+} else {
+    require_once( $smwgARC2MainFile );
+}
 
 /**************************
  *  ARC2 RDF Store config *
