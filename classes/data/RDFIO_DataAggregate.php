@@ -45,8 +45,9 @@ class RDFIODataAggregate {
 			foreach( $subjectData->getFacts() as $fact ) {
 				$allURIs[$fact->getPredicate()->getIdentifier()] = $fact->getPredicate();
 				$object =  $fact->getObject();
-				if ( get_class( $object ) == 'RDFIOURI' )
+				if ( $tmp_clsname == 'RDFIOURI' ) {
 					$allURIs[$object->getIdentifier()] = $object;
+				}
 			}
 		}
 		return $allURIs;
