@@ -3,6 +3,7 @@
 class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	
 	protected $mARC2ResourceIndex = null;
+	protected $mArc2NSPrefixes = null;
 	protected $mWikiPages = null;
 	protected $mPropPages = null;
 	protected $mArc2Store = null;
@@ -14,6 +15,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	public function parseData( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		
 		$this->mARC2ResourceIndex = $arc2ResourceIndex;
+		$this->mArc2NSPrefixes = $arc2NSPrefixes;
 		
 		$wikiPages = array();
 		$propPages = array();
@@ -111,31 +113,47 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
             );
 		}
 		
-		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
-		
-		if ( $existingWikiTitle != "" ) {
 		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
-			$wikiTitle = $existingWikiTitle;
-		} else {
-		 // 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
-			$index = $this->mARC2ResourceIndex;
-			foreach ( $index as $s => $ps ) {
-				if ( $s == $uri ) {
-					foreach ( $ps as $p => $o ) {
-						if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-							$wikiTitle = $o[0];
-						}
+		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
+		if ( $existingWikiTitle != "" ) {
+			return $existingWikiTitle;
+		} 
+
+		// 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
+		$index = $this->mARC2ResourceIndex;
+		foreach ( $index as $s => $ps ) {
+			if ( $s == $uri ) {
+				foreach ( $ps as $p => $o ) {
+					if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+						$wikiTitle = $o[0];
 					}
 				}
 			}
-		} 
-		if ( $wikiTitle == "" ) {
-			$wikiTitle = preg_replace("/http.*\//", "", $uri); // @FIXME Dummy method for testing
 		}
-		 // 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
-		 //        according to mappings from parser (Such as chenInf:Blabla ...)
+		if ( $wikiTitle != "" ) {
+			return $wikiTitle;
+		}
+		
+		// 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
+		//        according to mappings from parser (Such as chenInf:Blabla ...)
+		
+		$abbreviatedUri = $this->abbreviateWithNamespacePrefixesFromParser( $uri );
+		if ( $abbreviatedUri != "" ) {
+			return $abbreviatedUri;
+		}
+		
 		 // 4. [ ] The same, but according to mappings from LocalSettings.php
+		
 		 // 5. [ ] The same, but according to abbreviation screen
+		
+		 // 6. [ ] As a default, just try to get the local part of the URL
+		
+		if ( $wikiTitle == "" ) {
+			$parts = $this->splitURIIntoBaseAndLocalPart( $uri );
+			if ( $parts[1] != "" ) {
+				return $parts[1];
+			}
+		}
 		 //
 		 //    (In all the above, keep properties and normal entities separately)
 		
@@ -146,18 +164,18 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	// ---------- SOME JUNK THAT MIGHT BE USED OR NOT ----------------
 	//
 	
-	public static function startsWithUnderscore( $str ) {
+	function startsWithUnderscore( $str ) {
 		return substr( $str, 0, 1 ) == '_';
 	}
-	public static function startsWithHttpOrHttps( $str ) {
+	function startsWithHttpOrHttps( $str ) {
 		return ( substr( $str, 0, 7 ) == 'http://' || substr( $str, 0, 8 ) == 'https://' );
 	}
-	public static function endsWithColon( $str ) {
+	function endsWithColon( $str ) {
 		return substr( $str, -1 ) == ':';
 	}
 
-	public function abbreviateWithNamespacePrefixesFromParser( $uri ) {
-		$nsPrefixesFromParser = $this->getNamespacePrefixesFromParser();
+	function abbreviateWithNamespacePrefixesFromParser( $uri ) {
+		$nsPrefixesFromParser = $this->mArc2NSPrefixes;
 		foreach ( $nsPrefixesFromParser as $namespace => $prefix ) {
 			$nslength = strlen( $namespace );
 			$basepart = '';
@@ -181,19 +199,19 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 		if ( $localpart == '' ) {
 			$abbreviatedUri = $basepart;
-		} elseif ( RDFIOURIToWikiTitleConverter::startsWithUnderscore( $basepart ) ) {
+		} elseif ( $this->startsWithUnderscore( $basepart ) ) {
 			// FIXME: Shouldn't the above check the local part instead??
 
 			// Change ARC:s default "random string", to indicate more clearly that
 			// it lacks title
 			$abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
 
-		} elseif ( RDFIOURIToWikiTitleConverter::startsWithHttpOrHttps( $basepart ) ) {
+		} elseif ( $this->startsWithHttpOrHttps( $basepart ) ) {
 			// If the abbreviation does not seem to have succeeded,
 			// fall back to use only the local part
 			$abbreviatedUri = $localpart;
 
-		} elseif ( RDFIOURIToWikiTitleConverter::endsWithColon( $basepart ) ) {
+		} elseif ( $this->endsWithColon( $basepart ) ) {
 			// Don't add another colon
 			$abbreviatedUri = $basepart . $localpart;
 
