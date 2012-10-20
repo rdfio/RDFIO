@@ -37,9 +37,13 @@ class RDFImport extends SpecialPage {
 			$arc2rdfxmlparser = ARC2::getRDFXMLParser();
 			$arc2rdfxmlparser->parseData( $data );
 			
+			$triples = $arc2rdfxmlparser->triples;
 			$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
+			$namespaces = $arc2rdfxmlparser->nsp;
 			
 			$arc2tordfparser = new RDFIOARC2ToWikiConverter();
+			
+			$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
 			
 			
 			
