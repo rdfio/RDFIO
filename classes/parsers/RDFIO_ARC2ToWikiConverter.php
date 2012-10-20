@@ -25,10 +25,14 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$objURI = $triple['o'];
 
 			# Convert URI:s to wiki titles
-			$wikiTitle = $this->getWikiTitleFromURI($subjURI);
-			$propTitle = $this->getPropertyWikiTitleFromURI($triple['p']);
+			$wikiTitle = $this->convertURIToWikiTitle( $subjURI );
+			$propTitle = $this->convertURIToPropertyTitle( $propURI );
 			$propTitleWithNS = 'Property:' . $propTitle; 
-			$objTitle = $this->getWikiTitleFromURI($triple['o']);
+			if ( $triple['o_type'] == "uri" ) {
+				$objTitle = $this->convertURIToWikiTitle( $objURI );
+			} else {
+				$objTitle = $objURI;
+			}
 			
 			$fact = array( 'p' => $propTitle, 'o' => $objTitle );
 				
@@ -77,9 +81,19 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		return $pagesArray;
 	}
 	
-	private function getWikiTitleFromURI( $uri ) {
+	private function convertURIToPropertyTitle( $propURI ) {
+		$propertyTitle = '';
+		$existingPropTitle = $this->mArc2Store->getWikiTitleByEquivalentURI($propURI, $is_property=true);
+		if ( $existingPropTitle != "" ) {
+			$propertyTitle = $existingPropTitle;
+		} else {
+			$propertyTitle = preg_replace("/http.*\//", "", $propURI); 
+		}
+		return $propertyTitle;
+	}
+	
+	private function convertURIToWikiTitle( $uri ) {
 		# @TODO: Create some "conversion index", from URI:s to wiki titles?
-		
 		global $rdfiogPropertiesToUseAsWikiTitle;
 		
 		if ( !isset( $rdfiogPropertiesToUseAsWikiTitle ) ) {
@@ -93,39 +107,28 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
             );
 		}
 		
-		/**
-		 * This is how to do it:
-		 *
-		 * 1. [ ] Check if the uri exists as Equiv URI already (Overrides everything)
-		 * 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
-		 * 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
-		 *        according to mappings from parser (Such as chenInf:Blabla ...)
-		 * 4. [ ] The same, but according to mappings from LocalSettings.php
-		 * 5. [ ] The same, but according to abbreviation screen
-		 *
-		 *    (In all the above, keep properties and normal entities separately)
-		 *
-		 */
+		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
+		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
+		if ( $existingWikiTitle != "" ) {
+			return $existingWikiTitle;
+		}
+		 // 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
+		 // 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
+		 //        according to mappings from parser (Such as chenInf:Blabla ...)
+		 // 4. [ ] The same, but according to mappings from LocalSettings.php
+		 // 5. [ ] The same, but according to abbreviation screen
+		 //
+		 //    (In all the above, keep properties and normal entities separately)
 		
 		$wikiTitle = "";
 		$wikiTitle = preg_replace("/http.*\//", "", $uri); // @FIXME Dummy method for testing
 		return $wikiTitle;
 	}
-	
-	private function getPropertyWikiTitleFromURI( $uri ) {
-		$propWikiTitle = $this->getWikiTitleFromURI($uri);
-		return $propWikiTitle;
-	}
-	
+
 	//
 	// ---------- SOME JUNK THAT MIGHT BE USED OR NOT ----------------
 	//
 	
-	public function tryToGetExistingWikiTitleForURI( $uri ) {
-		$wikititle = $this->getArc2Store()->getWikiTitleByOriginalURI( $uri );
-		return $wikititle;
-	}
-
 	public static function startsWithUnderscore( $str ) {
 		return substr( $str, 0, 1 ) == '_';
 	}
@@ -187,34 +190,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 		return $abbreviatedUri;
 	}
-
-    /**
-     * Use a "natural language" property, such as dc:title or similar, as wiki title
-     * @param string $subject
-     * @return string $wikiTitle
-     */
-    function getWikiTitleByNaturalLanguageProperty( $subjectURI ) {
-        // Looks through, in order, the uri:s in $this->m_wikititlepropertyuris
-        // to see if any of them is set for $subjectURI. if so, return corresponding
-        // value as title.
-        // FIXME: Update to work with RDFIO2 Data structures
-        $wikiTitle = '';
-        $naturalLanguagePropertyURIs = $this->getNaturalLanguagePropertyURIs();
-        foreach ( $naturalLanguagePropertyURIs as $naturalLanguagePropertyURI ) {
-        	$importedDataAggregate = $this->getCurrentURIObject()->getOwningDataAggregate();
-        	$subjectData = $importedDataAggregate->getSubjectDataFromURI( $subjectURI );
-        	if ( isset( $subjectData ) )
-        		$fact = $subjectData->getFactFromPropertyURI( $naturalLanguagePropertyURI );
-        	if ( isset( $fact ) )
-        		$wikiTitle = $fact->getObject()->getAsText();
-            if ( !empty( $wikiTitle ) ) {
-                // When we have found a "$naturalLanguagePropertyURI" that matches,
-                // return the value immediately
-                return $wikiTitle;
-            }
-        }
-        return $wikiTitle;
-    }
 
 	/**
 	 * Customized version of the splitURI($uri) of the ARC2 library (http://arc.semsol.org)

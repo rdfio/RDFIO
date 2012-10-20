@@ -36,26 +36,29 @@ class RDFIOARC2StoreWrapper {
      * For a given RDF URI, return it's original URI, as defined in wiki articles
      * by the "Original URI" property
      * @param string $uri
-     * @return string $origuri
+     * @return string $equivuri
      */
     function getEquivURIForUri( $uri ) {
-        $origuri = '';
+        $equivuri = '';
         $store = $this->m_arcstore;
-        $origuriuri = $this->getEquivURIURI();
-        $q = "SELECT ?origuri WHERE { <$uri> <$origuriuri> ?origuri }";
+        $equivuriuri = $this->getEquivURIURI();
+        $q = "SELECT ?origuri WHERE { <$uri> <$equivuriuri> ?origuri }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
             $rows = $rs['result']['rows'];
             // @todo FIXME: Handle this case more nicely
             if (count($rows) == 0) {
-	            die( "No rows returned" );
+	            echo( "<pre>No rows returned in getEquivURIForUri() for $uri</pre>" );
+            } else {
+	            $row = $rows[0];
+	            $equivuri = $row['origuri'];
             }
-            $row = $rows[0];
-            $origuri = $row['origuri'];
         } else {
-            die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
+        	foreach ( $store->getErrors() as $error ) {
+        		echo( "<pre>Error in getEquivURIForUri: " . $error . "</pre>" );
+        	}
         }
-        return $origuri;
+        return $equivuri;
     }
 
     /**
@@ -81,7 +84,9 @@ class RDFIOARC2StoreWrapper {
                 $equivuris[$equivuriid] = $equivuri['equivuri'];
             }
         } else {
-            die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
+            foreach ( $store->getErrors() as $error ) {
+        		echo( "<pre>Error in getEquivURIsForURI: " . $error . "</pre>" );
+        	}
         }
         return $equivuris;
     }
@@ -91,10 +96,14 @@ class RDFIOARC2StoreWrapper {
      * @param string $equivuri
      * @return string $uri
      */
-    function getURIForEquivURI( $equivuri ) {
+    function getURIForEquivURI( $equivuri, $is_property ) {
         $uri = '';
         $store = $this->m_arcstore;
-        $equivuriuri = $this->getEquivURIURI();
+        if ( $is_property ) {
+        	$equivuriuri = $this->getEquivURIURIForProperty();
+        } else {
+        	$equivuriuri = $this->getEquivURIURI();
+        }
         $q = "SELECT ?uri WHERE { ?uri <$equivuriuri> <$equivuri> }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
@@ -104,7 +113,9 @@ class RDFIOARC2StoreWrapper {
 	            $uri = $row['uri'];
             }
         } else {
-            die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
+            foreach ( $store->getErrors() as $error ) {
+        		echo( "<pre>Error in getURIForEquivURI: " . $error . "</pre>" );
+        	}
         }
         return $uri;
     }
@@ -125,13 +136,10 @@ class RDFIOARC2StoreWrapper {
      * @param string $uri
      * @return string $wikititle;
      */
-    function getWikiTitleByOriginalURI( $uri ) {
-        $wikititleresolveruri = $this->getURIForEquivURI( $uri );
+    function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
+   		$wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
         $resolveruri = $this->getURIResolverURI();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
-        // TODO: What's really happening here below?
-        $wikititle = str_replace( 'Property-3A', '', $wikititle );
-        $wikititle = str_replace( 'Property:', '', $wikititle );
         $wikititle = $this->decodeURI( $wikititle );
         return $wikititle;
     }
