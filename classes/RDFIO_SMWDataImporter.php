@@ -18,14 +18,15 @@ class RDFIOSMWDataImporter {
 			}
 			
 			$mwTitleObj = Title::newFromText( $wikiTitle );
-
+			
 			if ( !$mwTitleObj->exists() ) {
-				$this->createStubArticle( $mwTitleObj );
+				// Create stub article 
+				$this->writeToArticle( $wikiTitle, '', 'Article Created by RDFIO' );
 			} 
 			
 			$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
-			
 			$womPropertyObjs = array();
+
 			try{
 				$objIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
 				// use page object functions
@@ -45,31 +46,43 @@ class RDFIOSMWDataImporter {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
 
-				if ( array_key_exists( $pred, $womPropertyObjs ) ) {
+				if ( !array_key_exists( $pred, $womPropertyObjs ) ) {
+					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' );
+					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
+					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
+					
+					$wikiContent = $womWikiPage->getWikiText() . $newPropertiesAsWikiText;
+				} else {
 					$womPropertyObj = $womPropertyObjs[$pred];
+					
+					// Store the old wiki text for the fact, in order to replace later
+					$oldPropertyText = $womPropertyObj->getWikiText();
+					
+					// Create an updated property
 					$objTitle = Title::newFromText( $obj );
 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
-				} else {
-					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' );
-
-					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
-					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
+					$newPropertyText = $womPropertyObj->getWikiText();
+						
+					// Replace the existing property with new value
+					$wikiContent = $womWikiPage->getWikiText();
+					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
 				}
+				
+				// Write changes (or additions) to article
+				$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
+				
 			}			
 			
-			$mwArticleObj = new Article( $mwTitleObj );
-			$content = $womWikiPage->getWikiText() . $newPropertiesAsWikiText;
-			$summary = 'Update by RDFIO';
-			$mwArticleObj->doEdit( $content, $summary );
+			
 		}
 	}
 	
-	protected function createStubArticle( $mwTitleObj ) {
+	protected function writeToArticle( $wikiTitle, $content, $summary ) {
+		$mwTitleObj = Title::newFromText( $wikiTitle );
 		$mwArticleObj = new Article( $mwTitleObj );
-		$content = '';
-		$summary = 'Page created by RDFIO';
 		$mwArticleObj->doEdit( $content, $summary );
 	}
+
 
 }

@@ -26,12 +26,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			# Convert URI:s to wiki titles
 			$wikiTitle = $this->getWikiTitleFromURI($subjURI);
 			$propTitle = $this->getPropertyWikiTitleFromURI($triple['p']);
+			$propTitleWithNS = 'Property:' . $propTitle; 
 			$objTitle = $this->getWikiTitleFromURI($triple['o']);
 			
 			$fact = array( 'p' => $propTitle, 'o' => $objTitle );
 				
 			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $subjURI, $fact, $wikiPages );
-			$propPages = $this->mergeIntoPagesArray( $propTitle, $propURI, null, $propPages );
+			$propPages = $this->mergeIntoPagesArray( $propTitleWithNS, $propURI, null, $propPages );
 			# if o is an URI, also create object page
 			if ( $triple['o_type'] == "uri" ) {
 				// @TODO: Should the o_type also decide data type of the property (i.e. page, or value?)
