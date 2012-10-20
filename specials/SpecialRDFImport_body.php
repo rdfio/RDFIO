@@ -34,14 +34,48 @@ class RDFImport extends SpecialPage {
 			$data = $wgRequest->getText( 'importdata' );
 			$dataFormat = $wgRequest->getText( 'dataformat' );
 			
-			$importDataAggregate = RDFIODataAggregate::newFromRawData( $data, $dataFormat );
-				
-			$equivURIPropertyCreator = new RDFIOEquivalentURIPropertyCreator();
-			$equivURIsDataAggregate = $equivURIPropertyCreator->execute( $importDataAggregate );
+			$arc2rdfxmlparser = ARC2::getRDFXMLParser();
+			$arc2rdfxmlparser->parseData( $data );
 			
-			$smwImporter = new RDFIOSMWDataImporter();
-			$smwImporter->import( $importDataAggregate );
-			$smwImporter->import( $equivURIsDataAggregate );
+			$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
+			
+			$arc2tordfparser = new RDFIOARC2ToWikiConverter();
+			
+			
+			
+			# 1. Build "conversion index", based on accepted "labelling URI:s"
+			
+			// Convert to MediaWiki pages array
+/* 			$pages = array();
+			foreach( $triples as $triple ) {
+				$wikiTitle = figureOutSuitableWikiTitle( $triple, $triples );
+				$page = array( 'title' => $wikiTitle );
+				$pages[] = $page;
+			}		
+			
+			function figureOutSuitableWikiTitle( $triple, $triples ) {
+				# 1. Check database
+				# 2. ...
+				
+				// Default case
+				$wikititle = $triple;
+				foreach( $triples as $temptriple ) {
+					if ( $temptriple['p'] == "http://www.w3.org/2000/01/rdf-schema#label" ) {
+						$wikititle = $temptriple['o']; 
+					}
+				}
+				return $wikititle;
+			} */
+			
+			
+#			$importDataAggregate = RDFIODataAggregate::newFromRawData( $data, $dataFormat );
+				
+#			$equivURIPropertyCreator = new RDFIOEquivalentURIPropertyCreator();
+#			$equivURIsDataAggregate = $equivURIPropertyCreator->execute( $importDataAggregate );
+			
+#			$smwImporter = new RDFIOSMWDataImporter();
+#			$smwImporter->import( $importDataAggregate );
+#			$smwImporter->import( $equivURIsDataAggregate );
 				
 			$wgOut->addHTML('Tried to import the stuff ...');
 
