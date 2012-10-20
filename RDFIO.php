@@ -66,7 +66,7 @@ require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
 $rdfioDir = dirname( __FILE__ );
 
 include_once $rdfioDir . '/specials/SpecialRDFImport.php';
-#include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
+// include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated yet ...
 
 #$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
 #$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php'; // TODO: This has to be activated I think
@@ -77,22 +77,12 @@ $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.p
 $wgAutoloadClasses['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
 
 # Parsers
-$wgAutoloadClasses['RDFIOIOService'] = $rdfioDir . '/classes/parsers/RDFIO_IOService.php';
+#$wgAutoloadClasses['RDFIOIOService'] = $rdfioDir . '/classes/parsers/RDFIO_IOService.php';
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
-$wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2Parser.php';
-$wgAutoloadClasses['RDFIOARC2ToRDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToRDFIOParser.php';
+#$wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2Parser.php';
+#$wgAutoloadClasses['RDFIOARC2ToRDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToRDFIOParser.php';
 $wgAutoloadClasses['RDFIORDFXMLToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_RDFXMLToARC2Parser.php';
 $wgAutoloadClasses['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_TurtleToARC2Parser.php';
-$wgAutoloadClasses['RDFIOEquivalentURIPropertyCreator'] = $rdfioDir . '/classes/parsers/RDFIO_EquivalentURIPropertyCreator.php';
+#$wgAutoloadClasses['RDFIOEquivalentURIPropertyCreator'] = $rdfioDir . '/classes/parsers/RDFIO_EquivalentURIPropertyCreator.php';
 $wgAutoloadClasses['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToWikiConverter.php';
 include_once $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
-
-# Data objects
-$wgAutoloadClasses['RDFIORawData'] = $rdfioDir . '/classes/data/RDFIO_RawData.php';
-$wgAutoloadClasses['RDFIODataAggregate'] = $rdfioDir . '/classes/data/RDFIO_DataAggregate.php';
-$wgAutoloadClasses['RDFIOTriple'] = $rdfioDir . '/classes/data/RDFIO_Triple.php';
-$wgAutoloadClasses['RDFIOSubjectData'] = $rdfioDir . '/classes/data/RDFIO_SubjectData.php';
-$wgAutoloadClasses['RDFIOFact'] = $rdfioDir . '/classes/data/RDFIO_Fact.php';
-$wgAutoloadClasses['RDFIOResource'] = $rdfioDir . '/classes/data/RDFIO_Resource.php';
-$wgAutoloadClasses['RDFIOURI'] = $rdfioDir . '/classes/data/RDFIO_URI.php';
-$wgAutoloadClasses['RDFIOLiteral'] = $rdfioDir . '/classes/data/RDFIO_Literal.php';

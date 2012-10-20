@@ -1,6 +1,6 @@
 <?php
 
-class RDFIOParser extends RDFIOIOService {
+class RDFIOParser {
 	
 	protected $mExternalParser = null;
 	
