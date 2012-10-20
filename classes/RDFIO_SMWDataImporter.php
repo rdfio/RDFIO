@@ -1,10 +1,9 @@
 <?php
 
 class RDFIOSMWDataImporter {
-	protected $mWikiWriter = null;
 
 	public function __construct() {
-		$this->mWikiWriter = new RDFIOWikiWriter();
+		// ...
 	}
 
 	public function import( $wikiPages ) {
@@ -12,18 +11,21 @@ class RDFIOSMWDataImporter {
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			$facts = $wikiPage['facts'];
 			$equivuris = $wikiPage['equivuris'];
+			
+			# Populate the facts array also with the equivalent URI "facts"
+			foreach ( $equivuris as $equivuri ) {
+				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivuri );
+			}
+			
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 
 			if ( !$mwTitleObj->exists() ) {
-				$mwArticleObj = new Article( $mwTitleObj );
-				$content = '';
-				$summary = 'Page created by RDFIO';
-				$mwArticleObj->doEdit( $content, $summary );
+				$this->createStubArticle( $mwTitleObj );
 			} 
 			
 			$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
-			$womPropertyObjs = array();
 			
+			$womPropertyObjs = array();
 			try{
 				$objIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
 				// use page object functions
@@ -33,7 +35,8 @@ class RDFIOSMWDataImporter {
 					$womPropertyObjs[$womPropertyName] = $womPropertyObj;
 				}
 			} catch( Exception $e ) {
-				echo( "Exception: " . $e->getMessage() );
+				// @TODO Take better care of this?
+				// echo( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' ); 
 			}
 			
 			$newPropertiesAsWikiText = "\n";
@@ -60,6 +63,13 @@ class RDFIOSMWDataImporter {
 			$summary = 'Update by RDFIO';
 			$mwArticleObj->doEdit( $content, $summary );
 		}
+	}
+	
+	protected function createStubArticle( $mwTitleObj ) {
+		$mwArticleObj = new Article( $mwTitleObj );
+		$content = '';
+		$summary = 'Page created by RDFIO';
+		$mwArticleObj->doEdit( $content, $summary );
 	}
 
 }
