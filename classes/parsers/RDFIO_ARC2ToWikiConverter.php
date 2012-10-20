@@ -134,22 +134,25 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			return $wikiTitle;
 		}
 		
-		// 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
+		// 3. [x] Shorten the Namespace (even for entities, optionally) into an NS Prefix
 		//        according to mappings from parser (Such as chenInf:Blabla ...)
+		$nsPrefixes = $this->mArc2NSPrefixes;
+		// 4. [x] The same, but according to mappings from LocalSettings.php
+		global $rdfiogBaseURIs;
+		if ( is_array($rdfiogBaseURIs) ) {
+			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
+		}
+		// 5. [ ] The same, but according to abbreviation screen
 		
-		$abbreviatedUri = $this->abbreviateWithNamespacePrefixesFromParser( $uri );
+		// Collect all the inputs for abbreviation, and apply:
+		$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri, $nsPrefixes );
 		if ( $abbreviatedUri != "" ) {
 			return $abbreviatedUri;
 		}
 		
-		 // 4. [ ] The same, but according to mappings from LocalSettings.php
-		
-		 // 5. [ ] The same, but according to abbreviation screen
-		
-		 // 6. [ ] As a default, just try to get the local part of the URL
-		
+		 // 6. [x] As a default, just try to get the local part of the URL
 		if ( $wikiTitle == "" ) {
-			$parts = $this->splitURIIntoBaseAndLocalPart( $uri );
+			$parts = $this->splitURI( $uri );
 			if ( $parts[1] != "" ) {
 				return $parts[1];
 			}
@@ -164,19 +167,8 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	// ---------- SOME JUNK THAT MIGHT BE USED OR NOT ----------------
 	//
 	
-	function startsWithUnderscore( $str ) {
-		return substr( $str, 0, 1 ) == '_';
-	}
-	function startsWithHttpOrHttps( $str ) {
-		return ( substr( $str, 0, 7 ) == 'http://' || substr( $str, 0, 8 ) == 'https://' );
-	}
-	function endsWithColon( $str ) {
-		return substr( $str, -1 ) == ':';
-	}
-
-	function abbreviateWithNamespacePrefixesFromParser( $uri ) {
-		$nsPrefixesFromParser = $this->mArc2NSPrefixes;
-		foreach ( $nsPrefixesFromParser as $namespace => $prefix ) {
+	function abbreviateParserNSPrefixes( $uri, $nsPrefixes ) {
+		foreach ( $nsPrefixes as $namespace => $prefix ) {
 			$nslength = strlen( $namespace );
 			$basepart = '';
 			$localpart = '';
@@ -187,12 +179,12 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			}
 		}
 
-		# ----------------------------------------------------
-		# Take care of some special cases:
-		# ----------------------------------------------------
+		// ----------------------------------------------------
+		// Take care of some special cases:
+		// ----------------------------------------------------
 		
 		if ( $basepart == '' &&  $localpart == '' ) {
-			$uriParts = $this->splitURIIntoBaseAndLocalPart( $uri );
+			$uriParts = $this->splitURI( $uri );
 			$basepart = $uriParts[0];
 			$localpart = $uriParts[1];
 		}
@@ -226,6 +218,16 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		return $abbreviatedUri;
 	}
 
+	function startsWithUnderscore( $str ) {
+		return substr( $str, 0, 1 ) == '_';
+	}
+	function startsWithHttpOrHttps( $str ) {
+		return ( substr( $str, 0, 7 ) == 'http://' || substr( $str, 0, 8 ) == 'https://' );
+	}
+	function endsWithColon( $str ) {
+		return substr( $str, -1 ) == ':';
+	}
+	
 	/**
 	 * Customized version of the splitURI($uri) of the ARC2 library (http://arc.semsol.org)
 	 * Splits a URI into its base part and local part, and returns them as an
@@ -233,7 +235,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	 * @param string $uri
 	 * @return array
 	 */
-	public function splitURIIntoBaseAndLocalPart( $uri ) {
+	public function splitURI( $uri ) {
 		global $rdfiogBaseURIs;
 		/* ADAPTED FROM ARC2 WITH SOME MODIFICATIONS
 		 * the following namespaces may lead to conflated URIs,
