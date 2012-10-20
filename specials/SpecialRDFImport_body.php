@@ -56,7 +56,6 @@ class RDFImport extends SpecialPage {
 			$smwDataImporter->import( $wikipages );
 			$smwDataImporter->import( $proppages );
 			
-			
 			$wgOut->addHTML('Tried to import the stuff ...');
 
 		} else {
