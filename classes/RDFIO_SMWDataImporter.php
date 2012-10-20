@@ -9,6 +9,11 @@ class RDFIOSMWDataImporter {
 	public function import( $wikiPages ) {
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
+			
+			// Sanitize the title a bit
+			$wikiTitle = str_replace('[','',$wikiTitle);
+			$wikiTitle = str_replace(']','',$wikiTitle);
+			
 			$facts = $wikiPage['facts'];
 			$equivuris = $wikiPage['equivuris'];
 			
@@ -68,13 +73,9 @@ class RDFIOSMWDataImporter {
 					$wikiContent = $womWikiPage->getWikiText();
 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
 				}
-				
-				// Write changes (or additions) to article
-				$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
-				
 			}			
-			
-			
+			// Write changes (or additions) to article
+			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 		}
 	}
 	

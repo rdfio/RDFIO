@@ -24,7 +24,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$propURI = $triple['p'];
 			$objURI = $triple['o'];
 
-			# Convert URI:s to wiki titles
+			// Convert URI:s to wiki titles
 			$wikiTitle = $this->convertURIToWikiTitle( $subjURI );
 			$propTitle = $this->convertURIToPropertyTitle( $propURI );
 			$propTitleWithNS = 'Property:' . $propTitle; 
@@ -38,14 +38,16 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				
 			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $subjURI, $fact, $wikiPages );
 			$propPages = $this->mergeIntoPagesArray( $propTitleWithNS, $propURI, null, $propPages );
-			# if o is an URI, also create object page
+			// if o is an URI, also create object page
 			if ( $triple['o_type'] == "uri" ) {
-				// @TODO: Should the o_type also decide data type of the property (i.e. page, or value?)
+				// @TODO: Should the o_type also decide data type of the property like these: 
+				//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
+				//        ?
 				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $objURI, null, $wikiPages );
 			} 
-			
 		}
-		# Store in class variable
+		
+		// Store in class variable
 		$this->mWikiPages = $wikiPages;
 		$this->mPropPages = $propPages;
 	}
@@ -61,7 +63,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	// PRIVATE FUNCTIONS
 	
 	private function mergeIntoPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
-		if ( !array_key_exists($pageTitle, $pagesArray) ) {
+		if ( !array_key_exists( $pageTitle, $pagesArray ) ) {
 			$page = array();
 			$page['equivuris'] = array( $equivURI );
 			if ( $fact != null ) {
@@ -72,7 +74,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$pagesArray[$pageTitle] = $page;
 		} else {
 			# Just merge data into existing page
-			$page = $pagesArray[$pageTitle];
+			$page = &$pagesArray[$pageTitle];
 			$page['equivuris'][] = $equivURI;
 			if ( $fact != null ) {
 				$page['facts'][] = $fact;
@@ -91,8 +93,10 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		}
 		return $propertyTitle;
 	}
+
 	
 	private function convertURIToWikiTitle( $uri ) {
+		$wikiTitle = "";
 		# @TODO: Create some "conversion index", from URI:s to wiki titles?
 		global $rdfiogPropertiesToUseAsWikiTitle;
 		
@@ -107,12 +111,25 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
             );
 		}
 		
-		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
 		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
+		
 		if ( $existingWikiTitle != "" ) {
-			return $existingWikiTitle;
-		}
+		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
+			$wikiTitle = $existingWikiTitle;
+		} else {
 		 // 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
+			$index = $this->mARC2ResourceIndex;
+			foreach ( $index as $s => $ps ) {
+				foreach ( $ps as $p => $o ) {
+					if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+						$wikiTitle = $o[0];
+					}
+				}
+			}
+		} 
+		if ( $wikiTitle == "" ) {
+			$wikiTitle = preg_replace("/http.*\//", "", $uri); // @FIXME Dummy method for testing
+		}
 		 // 3. [ ] Shorten the Namespace (even for entities, optionally) into an NS Prefix
 		 //        according to mappings from parser (Such as chenInf:Blabla ...)
 		 // 4. [ ] The same, but according to mappings from LocalSettings.php
@@ -120,8 +137,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		 //
 		 //    (In all the above, keep properties and normal entities separately)
 		
-		$wikiTitle = "";
-		$wikiTitle = preg_replace("/http.*\//", "", $uri); // @FIXME Dummy method for testing
 		return $wikiTitle;
 	}
 
