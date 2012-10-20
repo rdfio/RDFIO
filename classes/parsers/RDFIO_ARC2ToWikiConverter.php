@@ -28,8 +28,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$wikiTitle = $this->convertURIToWikiTitle( $subjURI );
 			$propTitle = $this->convertURIToPropertyTitle( $propURI );
 			$propTitleWithNS = 'Property:' . $propTitle; 
+			$objTitle = "";
 			if ( $triple['o_type'] == "uri" ) {
+				// @TODO: Should the o_type also decide data type of the property like these: 
+				//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
+				//        ?
 				$objTitle = $this->convertURIToWikiTitle( $objURI );
+				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $objURI, null, $wikiPages );
 			} else {
 				$objTitle = $objURI;
 			}
@@ -39,12 +44,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $subjURI, $fact, $wikiPages );
 			$propPages = $this->mergeIntoPagesArray( $propTitleWithNS, $propURI, null, $propPages );
 			// if o is an URI, also create object page
-			if ( $triple['o_type'] == "uri" ) {
-				// @TODO: Should the o_type also decide data type of the property like these: 
-				//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
-				//        ?
-				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $objURI, null, $wikiPages );
-			} 
 		}
 		
 		// Store in class variable
@@ -74,10 +73,11 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$pagesArray[$pageTitle] = $page;
 		} else {
 			# Just merge data into existing page
-			$page = &$pagesArray[$pageTitle];
-			$page['equivuris'][] = $equivURI;
+			if ( !in_array($equivURI, $pagesArray[$pageTitle]['equivuris']) ) {
+				$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
+			}
 			if ( $fact != null ) {
-				$page['facts'][] = $fact;
+				$pagesArray[$pageTitle]['facts'][] = $fact;
 			}
 		}
 		return $pagesArray;
@@ -120,9 +120,11 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		 // 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
 			$index = $this->mARC2ResourceIndex;
 			foreach ( $index as $s => $ps ) {
-				foreach ( $ps as $p => $o ) {
-					if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-						$wikiTitle = $o[0];
+				if ( $s == $uri ) {
+					foreach ( $ps as $p => $o ) {
+						if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+							$wikiTitle = $o[0];
+						}
 					}
 				}
 			}

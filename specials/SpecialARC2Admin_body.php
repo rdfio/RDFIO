@@ -48,7 +48,7 @@ class ARC2Admin extends SpecialPage {
 						$output .= "* Done!\n";
 					} else {
 						$errormessage = "Only sysops can perform this operation!";
-						$wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Permission Error", $errormessage ) );
+						$wgOut->addHTML( "<pre>Permission Error: " . $errormessage . "</pre>" );
 					}
 				}
 			}
