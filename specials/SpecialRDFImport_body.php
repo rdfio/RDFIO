@@ -34,54 +34,29 @@ class RDFImport extends SpecialPage {
 			$data = $wgRequest->getText( 'importdata' );
 			$dataFormat = $wgRequest->getText( 'dataformat' );
 			
+			# Parse RDF/XML to triples
 			$arc2rdfxmlparser = ARC2::getRDFXMLParser();
 			$arc2rdfxmlparser->parseData( $data );
-			
+
+			# Receive the data
 			$triples = $arc2rdfxmlparser->triples;
 			$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
 			$namespaces = $arc2rdfxmlparser->nsp;
 			
+			# Parse data from ARC2 triples to custom data structure holding wiki pages
 			$arc2tordfparser = new RDFIOARC2ToWikiConverter();
-			
 			$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
 			
+			# Get data from parser
 			$wikipages = $arc2tordfparser->getWikiPages();
 			$proppages = $arc2tordfparser->getPropertyPages();
 			
-			# 1. Build "conversion index", based on accepted "labelling URI:s"
-			
-			// Convert to MediaWiki pages array
-/* 			$pages = array();
-			foreach( $triples as $triple ) {
-				$wikiTitle = figureOutSuitableWikiTitle( $triple, $triples );
-				$page = array( 'title' => $wikiTitle );
-				$pages[] = $page;
-			}		
-			
-			function figureOutSuitableWikiTitle( $triple, $triples ) {
-				# 1. Check database
-				# 2. ...
-				
-				// Default case
-				$wikititle = $triple;
-				foreach( $triples as $temptriple ) {
-					if ( $temptriple['p'] == "http://www.w3.org/2000/01/rdf-schema#label" ) {
-						$wikititle = $temptriple['o']; 
-					}
-				}
-				return $wikititle;
-			} */
+			# Import pages into wiki
+			$smwDataImporter = new RDFIOSMWDataImporter();
+			$smwDataImporter->import( $wikipages );
+			$smwDataImporter->import( $proppages );
 			
 			
-#			$importDataAggregate = RDFIODataAggregate::newFromRawData( $data, $dataFormat );
-				
-#			$equivURIPropertyCreator = new RDFIOEquivalentURIPropertyCreator();
-#			$equivURIsDataAggregate = $equivURIPropertyCreator->execute( $importDataAggregate );
-			
-#			$smwImporter = new RDFIOSMWDataImporter();
-#			$smwImporter->import( $importDataAggregate );
-#			$smwImporter->import( $equivURIsDataAggregate );
-				
 			$wgOut->addHTML('Tried to import the stuff ...');
 
 		} else {

@@ -7,18 +7,12 @@ class RDFIOSMWDataImporter {
 		$this->mWikiWriter = new RDFIOWikiWriter();
 	}
 
-	public function import( RDFIODataAggregate &$importData ) {
+	public function import( $wikiPages ) {
 
-		$subjectDatas = $importData->getSubjectDatas();
-		$namespaces = $importData->getNamespacePrefixesFromParser();
-
-		foreach ( $subjectDatas as $subjectData ) {
-			$subject = $subjectData->getSubject();
-			$subjectWikiTitle = $subject->getAsWikiPageName();
-
-			$subjectFacts = $subjectData->getFacts();
-			
-			$mwTitleObj = Title::newFromText( $subjectWikiTitle );
+		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
+			$facts = $wikiPage['facts'];
+			$equivuris = $wikiPage['equivuris'];
+			$mwTitleObj = Title::newFromText( $wikiTitle );
 
 			if ( !$mwTitleObj->exists() ) {
 				$mwArticleObj = new Article( $mwTitleObj );
@@ -44,17 +38,17 @@ class RDFIOSMWDataImporter {
 			
 			$newPropertiesAsWikiText = "\n";
 
-			foreach ( $subjectFacts as $subjectFact ) {
-				$predicateAsText = $subjectFact->getPredicate()->getAsWikiPageName();
-				$objectAsText = $subjectFact->getObject()->getAsText();
+			foreach ( $facts as $fact ) {
+				$pred = $fact['p'];
+				$obj = $fact['o'];
 
-				if ( array_key_exists( $predicateAsText, $womPropertyObjs ) ) {
-					$womPropertyObj = $womPropertyObjs[$predicateAsText];
-					$newTitle = Title::newFromText( $objectAsText );
-					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $newTitle );
+				if ( array_key_exists( $pred, $womPropertyObjs ) ) {
+					$womPropertyObj = $womPropertyObjs[$pred];
+					$objTitle = Title::newFromText( $obj );
+					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
 				} else {
-					$newWomPropertyObj = new WOMPropertyModel( $predicateAsText, $objectAsText, ' ' );
+					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' );
 
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";

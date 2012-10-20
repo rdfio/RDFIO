@@ -19,22 +19,23 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		
 		foreach ( $arc2Triples as $triple ) {
 			
-			$s_uri = $triple['s'];
-			$p_uri = $triple['p'];
-			$o_uri = $triple['o'];
-			
-			$wikiTitle = $this->getWikiTitleFromURI($s_uri);
+			$subjURI = $triple['s'];
+			$propURI = $triple['p'];
+			$objURI = $triple['o'];
+
+			# Convert URI:s to wiki titles
+			$wikiTitle = $this->getWikiTitleFromURI($subjURI);
 			$propTitle = $this->getPropertyWikiTitleFromURI($triple['p']);
 			$objTitle = $this->getWikiTitleFromURI($triple['o']);
 			
 			$fact = array( 'p' => $propTitle, 'o' => $objTitle );
 				
-			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $s_uri, $fact, $wikiPages );
-			$propPages = $this->mergeIntoPagesArray( $propTitle, $p_uri, null, $propPages );
+			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $subjURI, $fact, $wikiPages );
+			$propPages = $this->mergeIntoPagesArray( $propTitle, $propURI, null, $propPages );
 			# if o is an URI, also create object page
 			if ( $triple['o_type'] == "uri" ) {
 				// @TODO: Should the o_type also decide data type of the property (i.e. page, or value?)
-				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $o_uri, null, $wikiPages );
+				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $objURI, null, $wikiPages );
 			} 
 			
 		}
@@ -54,7 +55,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	// PRIVATE FUNCTIONS
 	
 	private function mergeIntoPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
-		if ( !array_key_exists($pageTitle, $pageTitle) ) {
+		if ( !array_key_exists($pageTitle, $pagesArray) ) {
 			$page = array();
 			$page['equivuris'] = array( $equivURI );
 			if ( $fact != null ) {
@@ -65,15 +66,17 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$pagesArray[$pageTitle] = $page;
 		} else {
 			# Just merge data into existing page
-			$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
+			$page = $pagesArray[$pageTitle];
+			$page['equivuris'][] = $equivURI;
 			if ( $fact != null ) {
-				$pagesArray[$pageTitle]['facts'][] = $fact;
+				$page['facts'][] = $fact;
 			}
 		}
 		return $pagesArray;
 	}
 	
 	private function getWikiTitleFromURI( $uri ) {
+		# @TODO: Create some "conversion index", from URI:s to wiki titles?
 		$wikiTitle = "";
 		$wikiTitle = preg_replace("/http.*\//", "", $uri); // @FIXME Dummy method for testing
 		return $wikiTitle;
