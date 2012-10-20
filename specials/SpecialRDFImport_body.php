@@ -45,7 +45,8 @@ class RDFImport extends SpecialPage {
 			
 			$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
 			
-			
+			$wikipages = $arc2tordfparser->getWikiPages();
+			$proppages = $arc2tordfparser->getPropertyPages();
 			
 			# 1. Build "conversion index", based on accepted "labelling URI:s"
 			
