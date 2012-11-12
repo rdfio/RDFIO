@@ -66,10 +66,10 @@ require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
 $rdfioDir = dirname( __FILE__ );
 
 include_once $rdfioDir . '/specials/SpecialRDFImport.php';
-// include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated yet ...
+include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated yet ...
 
-#$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
-#$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php'; // TODO: This has to be activated I think
+$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
+$wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php'; // TODO: This has to be activated I think
 #$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
 #$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';
 $wgAutoloadClasses['RDFIOSMWDataImporter'] = $rdfioDir . '/classes/RDFIO_SMWDataImporter.php';
