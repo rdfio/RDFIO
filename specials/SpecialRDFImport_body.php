@@ -147,42 +147,12 @@ class RDFImport extends SpecialPage {
 			<td>
 			<select id="dataformat" name="dataformat">
 			  <option value="rdfxml" selected="selected">RDF/XML</option>
-			  <option value="turtle" >Turtle</option>
+			  <!-- option value="turtle" >Turtle</option -->
 			</select>
 			</td>
 			<td style="text-align: right; font-size: 10px;">
 			[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
 			[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
-			</td>
-			</tr>
-			<tr>
-			<td colspan="3">
-			<table width="100%" class="wikitable">
-			<tr>
-			<th style="text-size: 11px">
-			Options for properties
-			</th>
-			<th style="text-size: 11px">
-			Options for non-properties
-			</th>
-			</tr>
-			<tr>
-			<td style="font-size: 11px">
-			<input type="checkbox" name="nspintitle_prop" id="abbrprop" value="1" ' . $checked_nspintitle_properties . ' /> Use namespace prefixes in wiki titles
-			</td>
-			<td style="font-size: 11px">
-			<input type="checkbox" name="nspintitle_ent" id="abbrent" value="1" ' . $checked_nspintitle_entities . ' /> Use namespace prefixes in wiki titles
-			</td>
-			</tr>
-			<tr>
-			<td style="font-size: 11px">
-			<input type="checkbox" name="abbrscr_prop" id="abbrscrprop" value="1" ' . $checked_abbrscr_properties . ' /> Show abbreviation screen
-			</td>
-			<td style="font-size: 11px">
-			<input type="checkbox" name="abbrscr_ent" id="abbrscrent" value="1" ' . $checked_abbrscr_entities . ' /> Show abbreviation screen
-			</td>
-			</tr>
-			</table>
 			</td>
 			</tr>
 			</tbody></table>
