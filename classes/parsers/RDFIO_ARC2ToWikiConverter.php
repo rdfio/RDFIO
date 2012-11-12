@@ -63,6 +63,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 	// PRIVATE FUNCTIONS
 	
+	private function removeInvalidChars( $title ) {
+		$title = str_replace('[', '', $title);
+		$title = str_replace(']', '', $title);
+		// TODO: Add more here later ...
+		return $title;
+	}
+	
 	private function mergeIntoPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
 		if ( !array_key_exists( $pageTitle, $pagesArray ) ) {
 			$page = array();
@@ -89,10 +96,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$propertyTitle = '';
 		$existingPropTitle = $this->mArc2Store->getWikiTitleByEquivalentURI($propURI, $is_property=true);
 		if ( $existingPropTitle != "" ) {
+			// If the URI had an existing title, use that
 			$propertyTitle = $existingPropTitle;
 		} else {
+			// As default, use the last part of the URI
 			$propertyTitle = preg_replace("/http.*\//", "", $propURI); 
 		}
+		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
 		return $propertyTitle;
 	}
 
@@ -102,6 +112,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		# @TODO: Create some "conversion index", from URI:s to wiki titles?
 		global $rdfiogPropertiesToUseAsWikiTitle;
 		
+		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
+		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
+		if ( $existingWikiTitle != "" ) {
+			return $existingWikiTitle;
+		} 
+
+		// 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
 		if ( !isset( $rdfiogPropertiesToUseAsWikiTitle ) ) {
 			// Some defaults
 			$rdfiogPropertiesToUseAsWikiTitle = array(
@@ -112,34 +129,27 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		        'http://xmlns.com/foaf/0.1/name'
             );
 		}
-		
-		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
-		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
-		if ( $existingWikiTitle != "" ) {
-			return $existingWikiTitle;
-		} 
-
-		// 2. [ ] Apply facts suitable for naming (such as dc:title, rdfs:label, skos:prefLabel etc...)
 		$index = $this->mARC2ResourceIndex;
-		foreach ( $index as $s => $ps ) {
-			if ( $s == $uri ) {
-				foreach ( $ps as $p => $o ) {
-					if ( in_array( $p, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-						$wikiTitle = $o[0];
+		foreach ( $index as $subject => $properties ) {
+			if ( $subject == $uri ) {
+				foreach ( $properties as $property => $object ) {
+					if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+						$wikiTitle = $object[0];
 					}
 				}
 			}
 		}
 		if ( $wikiTitle != "" ) {
+			$wikiTitle = $this->removeInvalidChars( $wikiTitle );
 			return $wikiTitle;
 		}
 		
 		// 3. [x] Shorten the Namespace (even for entities, optionally) into an NS Prefix
-		//        according to mappings from parser (Such as chenInf:Blabla ...)
+		//        according to mappings from parser (Such as chemInf:Blabla ...)
 		$nsPrefixes = $this->mArc2NSPrefixes;
 		// 4. [x] The same, but according to mappings from LocalSettings.php
 		global $rdfiogBaseURIs;
-		if ( is_array($rdfiogBaseURIs) ) {
+		if ( is_array( $rdfiogBaseURIs ) ) {
 			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
 		}
 		// 5. [ ] The same, but according to abbreviation screen
@@ -162,7 +172,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		
 		return $wikiTitle;
 	}
-
+	
 	//
 	// ---------- SOME JUNK THAT MIGHT BE USED OR NOT ----------------
 	//
