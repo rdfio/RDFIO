@@ -5,6 +5,10 @@ class SPARQLEndpoint extends SpecialPage {
     protected $m_sparqlendpoint;
     protected $m_sparqlparser;
     protected $m_store;
+
+    protected $m_user;
+
+    // TODO: Really keep the below ones as class variables?    
     protected $m_query;
     protected $m_query_parsed;
     protected $m_querytype;
@@ -13,132 +17,129 @@ class SPARQLEndpoint extends SpecialPage {
     protected $m_querybyequivuri;
     protected $m_outputoriguris;
     protected $m_outputequivuris;
-    protected $m_haswriteaccess; // User permission
-    protected $m_hasdeleteaccess; // User permission
 
     function __construct() {
-        global $wgUser, $rdfiogQueryByOrigURI;
+        global $rdfiogQueryByOrigURI;
 
+        # Set up some stuff
         parent::__construct( 'SPARQLEndpoint' );
         $this->m_sparqlendpointconfig = $this->getSPARQLEndpointConfig();
         $this->m_sparqlendpoint = ARC2::getStoreEndpoint( $this->m_sparqlendpointconfig );
         $this->m_sparqlparser = ARC2::getSPARQLPlusParser();
         $this->m_store = new RDFIOStore();
-
-        $userrights = $wgUser->getRights();
-        if ( in_array( 'edit', $userrights ) && in_array( 'createpage', $userrights ) ) {
-            $this->m_haswriteaccess = true;
-        } else {
-            $this->m_haswriteaccess = false;
-        }
-        if ( in_array( 'edit', $userrights ) && in_array( 'delete', $userrights ) ) {
-            $this->m_hasdeleteaccess = true;
-        } else {
-            $this->m_hasdeleteaccess = false;
-        }
+        $this->m_user = new RDFIOUser();
     }
 
     /**
      * The main function
      */
     function execute() {
-        global $wgRequest, $wgOut, $wgUser;
+        global $wgRequest, $wgOut;
 
         $this->setHeaders();
         $this->handleRequestData();
 
         $executesparql = true;
 
-        if ( $this->m_query == '' ) {
-            $this->printHTMLForm();
-        } else {
+        if ( $this->hasNonEmptySPARQLQuery() ) {
+
             $this->ensureSparqlEndpointInstalled();
             $this->convertURIsInQuery();
 
-            if ( $this->m_querytype == 'insert' ) { // TODO
-                if ( $this->checkAllowInsert() ) {
-                    $this->importTriplesInQuery();
-                }
-                $this->printHTMLForm();
-            } elseif ( $this->m_querytype == 'delete' ) {
-                if ( $this->checkAllowDelete() ) {
-                    $this->deleteTriplesInQuery();
-                }
-                // TODO Add a "successfully inserted/deleted" message here
-                $this->printHTMLForm();
-            } else { // We are querying/outputting data, not editing
 
-                if ( $this->m_outputtype == 'htmltab' ) {
+
+            switch ( $this->m_querytype ) {
+                case 'insert':
+                    if ( $this->checkAllowInsert() ) {
+                        $this->importTriplesInQuery();
+                    }
                     $this->printHTMLForm();
-                    if ( $wgRequest->getBool( 'showquery', false ) ) {
-                        $this->printQueryStructure();
-                        $executesparql = false;
+                case 'delete':
+                    if ( $this->checkAllowDelete() ) {
+                        $this->deleteTriplesInQuery();
                     }
-                } elseif ( $this->m_outputtype == 'rdfxml' && $this->m_querytype != 'construct' ) {
-                    $errormessage = "RDF/XML can only be used with CONSTRUCT, if constructing triples";
-                    $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", $errormessage ) );
+                    // TODO Add a "successfully inserted/deleted" message here
                     $this->printHTMLForm();
-                    $executesparql = false;
-                } else {
-                    $this->prepareCreatingDownloadableFile();
-                }
-
-                if ( $executesparql ) {
-                    $outputtype = $this->m_outputtype;
-                    if ( $outputtype == '' && $this->m_querytype == 'construct' ) {
-                        $outputtype = 'rdfxml';
-                    }
-                    if ( $outputtype == 'rdfxml' || $outputtype == 'xml' || $outputtype == '' ) {
-                        // Make sure that ARC outputs data in a format that we can
-                        // easily work with programmatically
-                        $this->setOutputTypeInPost( 'php_ser' );
-                    }
-
-                    // Pass on the request handling to ARC2:s SPARQL Endpoint
-                    $this->m_sparqlendpoint->handleRequest();
-                    $this->handleSPARQLErrors();
-                    $output = $this->m_sparqlendpoint->getResult();
-
-                    if ( $outputtype == 'htmltab' ) {
-                        if ( $this->m_outputoriguris ) {
-                            $output = $this->convertURIsToOrigURIsInText( $output );
-                        }
-                        $output = $this->extractPrepareARCHTMLOutput( $output );
-                        $wgOut->addHTML( $output );
-                    } elseif ( $outputtype == 'rdfxml' ) {
-                        $output_structure = unserialize( $output );
-                        $tripleindex = $output_structure['result'];
-                        $triples = ARC2::getTriplesFromIndex( $tripleindex );
-                        if ( $this->m_outputoriguris ) {
-                            $triples = $this->convertURIsToOrigURIsInTriples( $triples );
-                        }
-                        if ( $this->m_outputequivuris ) {
-                            # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
-                            if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) {
-                                $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                                $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
-                            } else {
-                                $triples = $this->complementTriplesWithEquivURIs( $triples );
+                default:
+                    switch ( $this->m_outputtype ) {
+                        case 'htmltab':
+                            $this->printHTMLForm();
+                            if ( $wgRequest->getBool( 'showquery', false ) ) {
+                                $this->printQueryStructure();
+                                $executesparql = false;
                             }
-                        }
-                        $output = $this->triplesToRDFXML( $triples );
-                        echo $output;
-                    } else {
-                        // TODO: Add some kind of check that the output is really an object
-                        $output_structure = unserialize( $output );
-                        if ( $this->m_outputoriguris ) {
-                            $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
-                        }
-                        if ( $this->m_outputequivuris ) {
-                            $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                            $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
-                        }
-                        $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
-                        echo $output;
+                        case 'rdfxml':
+                            if ( $this->m_querytype != 'construct' ) {
+                                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+                                $this->printHTMLForm();
+                                $executesparql = false;
+                            } else {
+                               $this->prepareCreatingDownloadableFile();
+                            }
                     }
-                }
+
+                    if ( $executesparql ) {
+                        $outputtype = $this->m_outputtype;
+                        if ( $outputtype == '' && $this->m_querytype == 'construct' ) {
+                            $outputtype = 'rdfxml';
+                        }
+                        if ( $outputtype == 'rdfxml' || $outputtype == 'xml' || $outputtype == '' ) {
+                            // Make sure that ARC outputs data in a format that we can
+                            // easily work with programmatically
+                            $this->setOutputTypeInPost( 'php_ser' );
+                        }
+
+                        // Pass on the request handling to ARC2:s SPARQL Endpoint
+                        $this->m_sparqlendpoint->handleRequest();
+                        $this->handleSPARQLErrors();
+                        $output = $this->m_sparqlendpoint->getResult();
+
+                        if ( $outputtype == 'htmltab' ) {
+                            if ( $this->m_outputoriguris ) {
+                                $output = $this->convertURIsToOrigURIsInText( $output );
+                            }
+                            $output = $this->extractPrepareARCHTMLOutput( $output );
+                            $wgOut->addHTML( $output );
+                        } elseif ( $outputtype == 'rdfxml' ) {
+                            $output_structure = unserialize( $output );
+                            $tripleindex = $output_structure['result'];
+                            $triples = ARC2::getTriplesFromIndex( $tripleindex );
+                            if ( $this->m_outputoriguris ) {
+                                $triples = $this->convertURIsToOrigURIsInTriples( $triples );
+                            }
+                            if ( $this->m_outputequivuris ) {
+                                # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
+                                if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) {
+                                    $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                                    $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
+                                } else {
+                                    $triples = $this->complementTriplesWithEquivURIs( $triples );
+                                }
+                            }
+                            $output = $this->triplesToRDFXML( $triples );
+                            echo $output;
+                        } else {
+                            // TODO: Add some kind of check that the output is really an object
+                            $output_structure = unserialize( $output );
+                            if ( $this->m_outputoriguris ) {
+                                $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
+                            }
+                            if ( $this->m_outputequivuris ) {
+                                $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                                $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+                            }
+                            $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
+                            echo $output;
+                        }
+                    }
             }
+        } else { // SPARQL query is empty
+            $this->printHTMLForm();
         }
+    }
+
+    function hasNonEmptySPARQLQuery() {
+        return ( $this->m_query != '' );
     }
 
     /**
@@ -298,26 +299,32 @@ class SPARQLEndpoint extends SpecialPage {
      * of exceptions to that, by showing error messages etc
      */
     function checkAllowInsert() {
-        global $wgRequest, $wgUser, $wgOut, $rdfiogAllowRemoteEdit;
-        if ( $rdfiogAllowRemoteEdit == '' ) {
-            $rdfiogAllowRemoteEdit = false;
-        }
-        if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) &&
-             !$rdfiogAllowRemoteEdit ) {
-            $errortitle = "Error";
-            $errormessage = "Cross-site request forgery detected!";
-            $wgOut->addHTML( RDFIOUtils::formatErrorHTML( $errortitle, $errormessage ) );
+        global $wgOut;
+
+        if ( $this->wrongEditTokenDetected() ) {
+            $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
             return false;
         } else {
-            if ( $this->m_haswriteaccess ) {
+            if ( $this->m_user->hasWriteAccess() ) {
                 return true;
             } else {
-                $errortitle = "Permission error";
-                $errormessage = "The current user lacks access either to edit or create pages (or both) in this wiki.";
-                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( $errortitle, $errormessage ) );
+                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
                 return false;
             }
         }
+    }
+
+    /**
+     * Detect whether the edit token is not correct, even though remote editing is not permitted 
+     * (in which case this check will not be done).
+     */
+    function wrongEditTokenDetected() {
+        global $rdfiogAllowRemoteEdit, $wgRequest;
+        if ( $rdfiogAllowRemoteEdit == '' ) {
+            $rdfiogAllowRemoteEdit = false;
+        }
+        return ( ! $rdfiogAllowRemoteEdit && 
+                 ! $this->user->editTokenIsCorrect( $wgRequest->getText( 'token' ) ) );
     }
 
     /**
@@ -330,7 +337,7 @@ class SPARQLEndpoint extends SpecialPage {
              !$rdfiogAllowRemoteEdit ) {
             die( 'Cross-site request forgery detected!' );
         } else {
-            if ( $this->m_hasdeleteaccess || $rdfiogAllowRemoteEdit ) {
+            if ( $this->m_user->hasDeleteAccess() || $rdfiogAllowRemoteEdit ) {
                 return true;
             } else {
                 $errortitle = "Permission error";
@@ -964,4 +971,6 @@ class SPARQLEndpoint extends SpecialPage {
     function setOutputTypeInPost( $type ) {
         $_POST['output'] = $type;
     }
+
 }
+

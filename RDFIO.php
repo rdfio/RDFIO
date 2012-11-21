@@ -70,6 +70,7 @@ include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated y
 
 $wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
 $wgAutoloadClasses['RDFIOStore'] = $rdfioDir . '/classes/RDFStore.php'; // TODO: This has to be activated I think
+$wgAutoloadClasses['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
 #$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
 #$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';
 $wgAutoloadClasses['RDFIOSMWDataImporter'] = $rdfioDir . '/classes/RDFIO_SMWDataImporter.php';
