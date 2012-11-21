@@ -26,7 +26,7 @@ class SPARQLEndpoint extends SpecialPage {
      * The main function
      */
     function execute() {
-        global $wgRequest, $wgOut;
+        global $wgOut;
 
         $this->setHeaders();
         $this->handleRequestData();
@@ -55,22 +55,24 @@ class SPARQLEndpoint extends SpecialPage {
                     switch ( $this->m_outputtype ) {
                         case 'htmltab':
                             $this->printHTMLForm();
-                            if ( $wgRequest->getBool( 'showquery', false ) ) {
+                            if ( $this->shouldShowQuery() ) {
                                 $this->printQueryStructure();
                             } else {
-                                $this->executeSPARQL();
+                                $this->executeNonEditSparqlQuery();
                             }
                             break;
                         case 'rdfxml':
                             if ( $this->m_querytype != 'construct' ) {
                                 $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
                                 $this->printHTMLForm();
-                                $executesparql = false;
                             } else {
                                $this->prepareCreatingDownloadableFile();
-                               $this->executeSPARQL();
+                               $this->executeNonEditSparqlQuery();
                             }
                             break;
+                        CASE 'xml':
+                           $this->prepareCreatingDownloadableFile();
+                           $this->executeNonEditSparqlQuery();
                     }
             }
         } else { // SPARQL query is empty
@@ -78,74 +80,79 @@ class SPARQLEndpoint extends SpecialPage {
         }
     }
 
-    function executeSPARQL() {
+    /**
+     * Execute method for SPARQL queries that only queries and returns results, but
+     * does not modify, add or delete triples.
+     */ 
+    function executeNonEditSparqlQuery() {
         global $wgOut; 
 
+        $output = $this->passSparqlToARC2AndGetAsPhpSerialization();
         $outputtype = $this->determineOutputType();
-        if ( $this->outputTypeRequiresModifications( $outputtype ) ) {
-            # Get a PHP serialization so we can easily work with the
-            # results programmatically
-            $this->setOutputTypeInPostToPHPSerialization();
-        }
 
-        $output = $this->passOnSPARQLRequestToARC2AndGetOutput();
-
-        switch( $outputtype ) {
-            case 'htmltab':
-                if ( $this->m_outputoriguris ) {
-                    $output = $this->convertURIsToOrigURIsInText( $output );
-                }
-
-                $output = $this->enhanceArcsHtmlOutput( $output );
-
-                $wgOut->addHTML( $output );
-                break;
-            case 'rdfxml':
-                $output_structure = unserialize( $output );
-                $tripleindex = $output_structure['result'];
-                $triples = ARC2::getTriplesFromIndex( $tripleindex );
-                if ( $this->m_outputoriguris ) {
-                    $triples = $this->convertURIsToOrigURIsInTriples( $triples );
-                }
-                if ( $this->m_outputequivuris ) {
-                    # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
-                    if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) {
-                        $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                        $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
-                    } else {
-                        $triples = $this->complementTriplesWithEquivURIs( $triples );
-                    }
-                }
-                $output = $this->triplesToRDFXML( $triples );
-                echo $output;
-                break;
-            default:
-                // TODO: Add some kind of check that the output is really an object
-                $output_structure = unserialize( $output );
-                if ( $this->m_outputoriguris ) {
-                    $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
-                }
-                if ( $this->m_outputequivuris ) {
+        if ( $outputtype == 'rdfxml' ) {
+            # Here the results should be RDF/XML triples, 
+            # not just plain XML SPARQL result set
+            $output_structure = unserialize( $output );
+            $tripleindex = $output_structure['result'];
+            $triples = ARC2::getTriplesFromIndex( $tripleindex );
+            
+            // TODO: Merge functionality from "Orig URI:s" to "Equiv URI:s"
+            if ( $this->m_outputoriguris ) {
+                $triples = $this->convertURIsToOrigURIsInTriples( $triples );
+            }
+            if ( $this->m_outputequivuris ) {
+                // FIXME: Why is this uncommented???
+                # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
+                if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) { 
                     $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                    $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+                    $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
+                } else {
+                    $triples = $this->complementTriplesWithEquivURIs( $triples );
                 }
+            }
+            $output = $this->triplesToRDFXML( $triples );
+            # Using echo instead of $wgOut->addHTML() here, since output format is not HTML                
+            echo $output;
+        } else {
+            // TODO: Add some kind of check that the output is really an object
+            $output_structure = unserialize( $output );
+
+            if ( $this->m_outputoriguris ) {
+                $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
+            }
+
+            if ( $this->m_outputequivuris ) {
+                $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+            }
+
+            if ( $outputtype == 'htmltab' ) {
+                $output = $this->sparqlResultToHTML( $output_structure );
+                $wgOut->addHTML( $output );
+            } else {
+                # Using echo instead of $wgOut->addHTML() here, since output format is not HTML                
                 $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
                 echo $output;
+            }
         }
     }
 
-    function passOnSPARQLRequestToARC2AndGetOutput() {
+    function shouldShowQuery() {
+        global $wgRequest;
+        return $wgRequest->getBool( 'showquery', false );
+    }
+
+
+    function passSparqlToARC2AndGetAsPhpSerialization() {
+        # Make sure ARC2 returns a PHP serialization, so that we 
+        # can do stuff with it programmatically
+        $this->setOutputTypeInPost( 'php_ser' );
         $this->m_sparqlendpoint->handleRequest();
         $this->handleSPARQLErrors();
         $output = $this->m_sparqlendpoint->getResult();
         return $output;
     }
-
-    function outputTypeRequiresModifications( $outputtype ) {
-        $outputtypesNeedingMods = array( 'rdfxml', 'xml', '' );
-        return ( in_array( $outputtype, $outputtypesNeedingMods ) );
-    }
-
 
     /**
      * Determine the output type of the SPARQL query
@@ -253,8 +260,8 @@ class SPARQLEndpoint extends SpecialPage {
             }
             // restore the first triple into its original location
             $query_structure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
-            require_once( __DIR__ . "/bundle/ARC2_SPARQLSerializerPlugin.php" );
-            $sparqlserializer = new ARC2_SPARQLSerializerPlugin();
+            require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
+            $sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
             $query = $sparqlserializer->toString( $query_structure );
 
             $this->setQueryInPost( $query );
@@ -406,10 +413,30 @@ class SPARQLEndpoint extends SpecialPage {
      * @param string $output
      * @return string $html
      */
-    function enhanceArcsHtmlOutput( $output ) {
-        $html = RDFIOUtils::extractHTMLBodyContent( $output );
-        $html = RDFIOUtils::wikifyTables( $html );
+    function sparqlResultToHTML( $result_structure ) {
+        $html = "";
         $html = "<h3>Result:</h3><div style='font-size: 11px;'>" . $html . "</div>";
+        $html .= "<table class=\"wikitable sortable\">";
+        $result = $result_structure['result'];
+        $variables = $result['variables'];
+
+        $html .= "<tr>";
+        foreach ( $variables as $variable ) {
+            $html .= "<th width='34%''>$variable</th>";    
+        }
+        $html .= "</tr>";
+
+        $rows = $result['rows'];
+        foreach ( $rows as $row ) {
+            $html .= "<tr>";
+            foreach ( $variables as $variable ) {
+                $value = $row[$variable];
+                $valueType = $row[$variable . ' type'];
+                $html .= "<td style=\"font-size:9px!important;white-space:nowrap!important;\">" . $value . "</td>";
+            }
+            $html .= "</tr>";
+        }
+        $html .= "</table>";
         return $html;
     }
 
@@ -985,10 +1012,6 @@ class SPARQLEndpoint extends SpecialPage {
         $_POST['query'] = $query;
     }
 
-    function setOutputTypeInPostToPHPSerialization() {
-        $this->setOutputTypeInPost( 'php_ser' );
-    }
-
     /**
      * Update the output (type) variable in the $_POST object.
      * Useful for passing on parsing to ARC, since $_POST is what ARC reads
@@ -996,6 +1019,10 @@ class SPARQLEndpoint extends SpecialPage {
      */
     function setOutputTypeInPost( $type ) {
         $_POST['output'] = $type;
+    }
+
+    function stringContains( $needle, $haystack ) {
+        return strpos( $needle, $haystack ) != false;
     }
 
 }

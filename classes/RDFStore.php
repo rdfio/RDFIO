@@ -53,10 +53,12 @@ class RDFIOStore {
         $rs = $store->query($q);
         if (!$store->getErrors()) {
             $rows = $rs['result']['rows'];
-            $row = $rows[0];
-            $origuri = $row['origuri'];
+            if ( count($rows) > 0 ) {
+                $row = $rows[0];
+                $origuri = $row['origuri'];
+            }
         } else {
-            die( "Error in ARC Store: " . print_r( $store->getErrors(), true ) );
+            die( "Error in ARC Store: " . print_r($store->getErrors()) );
         }
         return $origuri;
     }
@@ -139,7 +141,6 @@ class RDFIOStore {
     function getURIResolverURI() {
         $resolver = SpecialPage::getTitleFor( 'URIResolver' );
         $uriresolveruri = $resolver->getFullURL() . '/';
-        echo $uriresolveruri;
         return $uriresolveruri;
     }
    
