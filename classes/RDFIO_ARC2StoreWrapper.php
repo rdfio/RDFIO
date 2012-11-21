@@ -168,4 +168,5 @@ class RDFIOARC2StoreWrapper {
 		$uri = str_replace( '%2D', '-', $uri );
 		return $uri;
 	}    
+
 }

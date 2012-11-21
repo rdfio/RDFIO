@@ -11,7 +11,6 @@ class SPARQLEndpoint extends SpecialPage {
     // TODO: Really keep the below ones as class variables?    
 
     function __construct() {
-        global $rdfiogQueryByOrigURI;
 
         # Set up some stuff
         parent::__construct( 'SPARQLEndpoint' );
@@ -99,9 +98,6 @@ class SPARQLEndpoint extends SpecialPage {
             $triples = ARC2::getTriplesFromIndex( $tripleindex );
             
             // TODO: Merge functionality from "Orig URI:s" to "Equiv URI:s"
-            if ( $this->m_outputoriguris ) {
-                $triples = $this->convertURIsToOrigURIsInTriples( $triples );
-            }
             if ( $this->m_outputequivuris ) {
                 // FIXME: Why is this uncommented???
                 # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
@@ -117,25 +113,27 @@ class SPARQLEndpoint extends SpecialPage {
             echo $output;
         } else {
             // TODO: Add some kind of check that the output is really an object
-            $output_structure = unserialize( $output );
+            if ( count($output) > 0 ) {
+                $output_structure = unserialize( $output );
+                    if ( $this->m_outputequivuris ) {
+                    $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                    $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+                }
 
-            if ( $this->m_outputoriguris ) {
-                $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
-            }
+                if ( $outputtype == 'htmltab' ) {
+                    $output = $this->sparqlResultToHTML( $output_structure );
+                    $wgOut->addHTML( $output );
+                } else {
+                    # Using echo instead of $wgOut->addHTML() here, since output format is not HTML                
+                    $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
+                    echo $output;
+                }
 
-            if ( $this->m_outputequivuris ) {
-                $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
-            }
-
-            if ( $outputtype == 'htmltab' ) {
-                $output = $this->sparqlResultToHTML( $output_structure );
-                $wgOut->addHTML( $output );
             } else {
-                # Using echo instead of $wgOut->addHTML() here, since output format is not HTML                
-                $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
-                echo $output;
+                $wgOut->setHTML("ERROR: No results from SPARQL query!");
             }
+
+
         }
     }
 
@@ -227,12 +225,10 @@ class SPARQLEndpoint extends SpecialPage {
 
     /**
      * If option is so chosen, convert URIs in the query to
-     * their corresponding "Original URIs" or "Equivalent URIs"
+     * their corresponding "Equivalent URIs"
      */
     function convertURIsInQuery() {
-        if ( $this->m_querybyoriguri ) {
-            $this->convertOrigURIsToInternalURIsInQuery();
-        } elseif ( $this->m_querybyequivuri ) {
+        if ( $this->m_querybyequivuri ) {
             $query_structure = $this->m_query_parsed;
             $triple = $query_structure['query']['pattern']['patterns'][0]['patterns'][0];
             $s = $triple['s'];
@@ -481,27 +477,6 @@ class SPARQLEndpoint extends SpecialPage {
     }
 
     /**
-     * For each URI in the (unparsed) query that is set by an "Original URI" property in
-     * the wiki, replace it with the page's corresponding URI Resolver URI
-     */
-    function convertOrigURIsToInternalURIsInQuery() {
-        $query = $this->m_query;
-        $origuris = RDFIOUtils::extractURIs( $this->m_query ); // TODO: Use parsed query instead
-        $count = count( $origuris );
-        if ( $count > 1 || ( $count > 0 && !RDFIOUtils::contains( "URIResolver", $origuris[0] ) ) ) { // The first URI is the URI Resolver one, which always is there
-            foreach ( $origuris as $origuri ) {
-                $uri = $this->m_store->getURIForOrigURI( $origuri );
-                if ( $uri != '' ) {
-                    // Replace original uri:s into SMW:s internal URIs
-                    // (The "http://.../Special:URIResolver/..." ones)
-                    $query = str_replace( $origuri, $uri, $this->m_query );
-                }
-            }
-            $this->setQueryInPost( $query );
-        }
-    }
-
-    /**
      * For each URI in the (unparsed) query that is set by an "Equivalent URI" property in
      * the wiki, replace it with the page's corresponding URI Resolver URI
      */
@@ -513,7 +488,7 @@ class SPARQLEndpoint extends SpecialPage {
             foreach ( $equivuris as $equivuri ) {
                 $uri = $this->m_store->getURIForEquivURI( $equivuri );
                 if ( $uri != '' ) {
-                    // Replace original uri:s into SMW:s internal URIs
+                    // Replace Eqivalent uri:s into SMW:s internal URIs
                     // (The "http://.../Special:URIResolver/..." ones)
                     $query = str_replace( $equivuri, $uri, $this->m_query );
                 }
@@ -522,55 +497,6 @@ class SPARQLEndpoint extends SpecialPage {
         }
     }
 
-    /**
-     * Convert all URI Resolver URIs which have a corresponding Original URI,
-     * to that Original URI.
-     * @param array $triples
-     * @return array $triples
-     */
-    function convertURIsToOrigURIsInTriples( $triples ) {
-        $variables = array( 's', 'p', 'o' );
-        foreach ( $triples as $tripleid => $triple ) {
-            foreach ( $variables as $variableid => $variable ) {
-                $tripletypestr = $variable . "_type";
-                $type = $triple[$tripletypestr];
-                if ( $type === "uri" ) {
-                    $uri = $triple[$variable];
-                    $origuri = $this->m_store->getOrigURIForURI( $uri );
-                    if ( $origuri != '' ) {
-                        $triples[$tripleid][$variable] = $origuri;
-                    }
-                }
-            }
-        }
-        return $triples;
-    }
-
-    /**
-     * Convert all URI Resolver URIs which have a corresponding Original URI,
-     * to that Original URI.
-     * @param array $triples
-     * @return array $triples
-     */
-    function convertURIsToOrigURIsInSPARQLResultSet( $output_structure ) {
-        $variables = $output_structure['result']['variables'];
-        $rows = $output_structure['result']['rows'];
-        # $predvarname = $this->getPredicateVariableName();
-        foreach ( $rows as $rowid => $row ) {
-            foreach ( $variables as $variable ) {
-                $typekey = "$variable type";
-                $type = $row[$typekey];
-                if ( $type === 'uri' ) {
-                    $uri = $row[$variable];
-                    $origuri = $this->m_store->getOrigURIForURI( $uri );
-                    if ( $origuri != '' ) {
-                        $output_structure['result']['rows'][$rowid][$variable] = $origuri;
-                    }
-                }
-            }
-        }
-        return $output_structure;
-    }
 
     /**
      * For all property URIs, add triples using equivalent uris for the,
@@ -889,10 +815,6 @@ class SPARQLEndpoint extends SpecialPage {
             <td style="vertical-align: top; border-right: 1px solid #ccc;">
 
             <table border="0" style="background: transparent; font-size: 11px;">
-            <tr><td width="160" style="text-align: right">Query by original URIs:</td>
-            <td>
-			<input type="checkbox" name="origuri_q" value="1" ' . $checked_origuri_q . '/>
-            </td></tr>
             <tr><td style="text-align: right">Query by Equivalent URIs:</td>
             <td>
 			<input type="checkbox" name="equivuri_q" value="1" ' . $checked_equivuri_q . '/>
@@ -903,10 +825,6 @@ class SPARQLEndpoint extends SpecialPage {
             <td width="170" style="vertical-align: top; border-right: 1px solid #ccc;">
 
             <table border="0" style="font-size: 11px; background: transparent;">
-            <tr><td style="text-align: right">Output original URIs:</td>
-            <td>
-			<input type="checkbox" name="origuri_o" value="1" ' . $checked_origuri_o . '/>
-            </td></tr>
             <tr><td style="text-align: right">Output Equivalent URIs:</td>
             <td>
 			<input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checked_equivuri_o . ' onChange="toggleDisplay(\'byontology\');" />
