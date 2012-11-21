@@ -5,87 +5,94 @@ class RDFImport extends SpecialPage {
 		parent::__construct( 'RDFImport' );
 	}
 
+	/**
+	 * The main code goes here
+	 */
 	function execute( $par ) {
 		global $wgOut, $wgUser, $wgRequest;
 
+		# Set HTML headers sent to the browser
 		$this->setHeaders();
 
+		# The main code
 		$requestData = $this->getRequestData();
-
 		if ( ! $requestData->mHasWriteAccess ) {
-			
 			$wgOut->addHTML("<b>User does not have write access!</b>");
-
 		} else if ( $requestData->mAction == 'import' ) {
-			
-			# Parse RDF/XML to triples
-			$arc2rdfxmlparser = ARC2::getRDFXMLParser();
-			$arc2rdfxmlparser->parseData( $requestData->mImportData );
-
-			# Receive the data
-			$triples = $arc2rdfxmlparser->triples;
-			$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
-			$namespaces = $arc2rdfxmlparser->nsp;
-			
-			# Parse data from ARC2 triples to custom data structure holding wiki pages
-			$arc2tordfparser = new RDFIOARC2ToWikiConverter();
-			$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
-			
-			# Get data from parser
-			$wikipages = $arc2tordfparser->getWikiPages();
-			$proppages = $arc2tordfparser->getPropertyPages();
-			
-			# Import pages into wiki
-			$smwDataImporter = new RDFIOSMWDataImporter();
-			$smwDataImporter->import( $wikipages );
-			$smwDataImporter->import( $proppages );
-			
-			$wgOut->addHTML('Tried to import the stuff ...');
-
+			$this->importData( $requestData );
 		} else {
-
-			$this->outputHTMLForm();
-			
+			$this->outputHTMLForm( $requestData );
 		}
 	}
+
+	/**
+	 * Import data into wiki pages
+	 */
+	function importData( $requestData ) {
+		global $wgOut;
+
+		# Parse RDF/XML to triples
+		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
+		$arc2rdfxmlparser->parseData( $requestData->mImportData );
+
+		# Receive the data
+		$triples = $arc2rdfxmlparser->triples;
+		$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
+		$namespaces = $arc2rdfxmlparser->nsp;
+		
+		# Parse data from ARC2 triples to custom data structure holding wiki pages
+		$arc2tordfparser = new RDFIOARC2ToWikiConverter();
+		$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
+		
+		# Get data from parser
+		$wikipages = $arc2tordfparser->getWikiPages();
+		$proppages = $arc2tordfparser->getPropertyPages();
+		
+		# Import pages into wiki
+		$smwDataImporter = new RDFIOSMWDataImporter();
+		$smwDataImporter->import( $wikipages );
+		$smwDataImporter->import( $proppages );
+		
+		$wgOut->addHTML('Tried to import the stuff ...');
+	}
+
 
 	/**
 	 * Get data from the request object and store it in class variables
 	 */
 	function getRequestData() {
-		global $wgRequest;
+		global $wgRequest, $wgArticlePath;
 
 		$requestData = new RDFIORequestData();
-
 		$requestData->mAction = $wgRequest->getText( 'action' );
 		$requestData->mEditToken = $wgRequest->getText( 'token' );
-		$requestData->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false );
-		$requestData->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false );
-		$requestData->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false );
-		$requestData->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false );
-
+		$requestData->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
+		$requestData->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false ); // TODO: Remove?
+		$requestData->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
+		$requestData->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false ); // TODO: Remove?
 		$requestData->mImportData = $wgRequest->getText( 'importdata' );
 		$requestData->mDataFormat = $wgRequest->getText( 'dataformat' );
-
 		$requestData->mHasWriteAccess = $this->userHasWriteAccess();
-
+		$requestData->mArticlePath = $wgArticlePath;
 		return $requestData;
 	}
 
+	/**
+	 * Check whether the current user has rights to edit or create pages
+	 */
 	protected function userHasWriteAccess() {
 		global $wgUser;
 		$userRights = $wgUser->getRights();
 		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
 	}
 
-
 	/**
 	 * Output the HTML for the form, to the user
 	 */
-	function outputHTMLForm() {
+	function outputHTMLForm( $requestData ) {
 		global $wgOut;
 		$wgOut->addScript( $this->getExampleDataJs() );
-		$wgOut->addHTML( $this->getHTMLFormContent() );
+		$wgOut->addHTML( $this->getHTMLFormContent( $requestData ) );
 	}
 
 	/**
@@ -120,29 +127,28 @@ class RDFImport extends SpecialPage {
 	/**
 	 * Generate the main HTML form, if the variable $extraFormContent is set, the
 	 * content of it will be prepended before the form
+	 * @param RDFIORequestData $requestData
 	 * @param string $extraFormContent
 	 * @return string $htmlFormContent
 	 */
-	public function getHTMLFormContent( $extraFormContent = '' ) {
-		global $wgRequest, $wgUser, $wgArticlePath;
+	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
 
-		// Abbreviation (and screen) options for properties
-		$checked_nspintitle_properties = $wgRequest->getBool( 'nspintitle_prop', false ) == 1 ? ' checked="true" ' : '';
-		$checked_abbrscr_properties = $wgRequest->getBool( 'abbrscr_prop', false ) == 1 ? ' checked="true" ' : '';
+		// NOT IMPLEMENTED AT THE MOMENT // TODO: Remove all together?
+		// # Abbreviation (and screen) options for properties
+		// $checked_nspintitle_properties = $requestData->mNSPrefixInWikiTitlesProperties == 1 ? ' checked="true" ' : '';
+		// $checked_abbrscr_properties = $requestData->mShowAbbrScreenProperties == 1 ? ' checked="true" ' : '';
+        // 
+		// # Abbreviation (and screen) options for entities
+		// $checked_nspintitle_entities = $requestData->mNSPrefixInWikiTitlesEntities == 1 ? ' checked="true" ' : '';
+		// $checked_abbrscr_entities = $requestData->mShowAbbrScreenEntities == 1 ? ' checked="true" ' : '';
 
-		// Abbreviation (and screen) options for entities
-		$checked_nspintitle_entities = $wgRequest->getBool( 'nspintitle_ent', false ) == 1 ? ' checked="true" ' : '';
-		$checked_abbrscr_entities = $wgRequest->getBool( 'abbrscr_ent', false ) == 1 ? ' checked="true" ' : '';
-
-		$this->m_importdata = $wgRequest->getText( 'importdata', '' );
-
-		// Create the HTML form for RDF/XML Import
-		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:RDFImport"
+		# Create the HTML form for RDF/XML Import
+		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $requestData->mArticlePath ) . '/Special:RDFImport"
 			name="createEditQuery"><input type="hidden" name="action" value="import">
 			' . $extraFormContent . '
 			<table border="0"><tbody>
 			<tr><td colspan="3">RDF/XML data to import:</td><tr>
-			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $this->m_importdata . '</textarea>
+			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->mImportData . '</textarea>
 			</td></tr>
 			<tr><td width="100">Data format:</td>
 			<td>
@@ -157,8 +163,9 @@ class RDFImport extends SpecialPage {
 			</td>
 			</tr>
 			</tbody></table>
-			<input type="submit" value="Submit">' . Html::Hidden( 'token', $wgUser->editToken() ) . '
+			<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->mEditToken ) . '
 			</form>';
+
 		return $htmlFormContent;
 	}
 
