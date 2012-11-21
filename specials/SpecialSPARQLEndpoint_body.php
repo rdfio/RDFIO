@@ -18,7 +18,7 @@ class SPARQLEndpoint extends SpecialPage {
         $this->m_sparqlendpointconfig = $this->getSPARQLEndpointConfig();
         $this->m_sparqlendpoint = ARC2::getStoreEndpoint( $this->m_sparqlendpointconfig );
         $this->m_sparqlparser = ARC2::getSPARQLPlusParser();
-        $this->m_store = new RDFIOStore();
+        $this->m_store = new RDFIOARC2StoreWrapper();
         $this->m_user = new RDFIOUser();
     }
 
@@ -31,7 +31,7 @@ class SPARQLEndpoint extends SpecialPage {
         $this->setHeaders();
         $this->handleRequestData();
 
-        if ( $this->hasNonEmptySPARQLQuery() ) {
+        if ( $this->hasSparqlQuery() ) {
 
             $this->ensureSparqlEndpointInstalled();
             $this->convertURIsInQuery();
@@ -70,9 +70,10 @@ class SPARQLEndpoint extends SpecialPage {
                                $this->executeNonEditSparqlQuery();
                             }
                             break;
-                        CASE 'xml':
+                        case 'xml':
                            $this->prepareCreatingDownloadableFile();
                            $this->executeNonEditSparqlQuery();
+                           break;
                     }
             }
         } else { // SPARQL query is empty
@@ -165,7 +166,7 @@ class SPARQLEndpoint extends SpecialPage {
         return $outputtype;
     }
 
-    function hasNonEmptySPARQLQuery() {
+    function hasSparqlQuery() {
         return ( $this->m_query != '' );
     }
 
@@ -1028,5 +1029,5 @@ class SPARQLEndpoint extends SpecialPage {
 }
 
 class RDFIOSPARQLRequestData {
-
+    // TODO: Implement
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RDFIOStore contains utility functionality that requires connecting to the
+ * RDFIOARC2StoreWrapper contains utility functionality that requires connecting to the
  * ARC based RDF store
  * @author samuel.lampa@gmail.com
  * @package RDFIO
