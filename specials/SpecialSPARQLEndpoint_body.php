@@ -9,14 +9,6 @@ class SPARQLEndpoint extends SpecialPage {
     protected $m_user;
 
     // TODO: Really keep the below ones as class variables?    
-    protected $m_query;
-    protected $m_query_parsed;
-    protected $m_querytype;
-    protected $m_outputtype;
-    protected $m_querybyoriguri;
-    protected $m_querybyequivuri;
-    protected $m_outputoriguris;
-    protected $m_outputequivuris;
 
     function __construct() {
         global $rdfiogQueryByOrigURI;
@@ -39,35 +31,36 @@ class SPARQLEndpoint extends SpecialPage {
         $this->setHeaders();
         $this->handleRequestData();
 
-        $executesparql = true;
-
         if ( $this->hasNonEmptySPARQLQuery() ) {
 
             $this->ensureSparqlEndpointInstalled();
             $this->convertURIsInQuery();
 
-
+            # 1. Determine what to do (Import/Delete/Return SPARQL resultset/Construct RDF/Nothing)
+            # 2. Check prerequisites
 
             switch ( $this->m_querytype ) {
                 case 'insert':
-                    if ( $this->checkAllowInsert() ) {
-                        $this->importTriplesInQuery();
-                    }
+                    $this->importTriplesInQuery();
                     $this->printHTMLForm();
+                    break;
                 case 'delete':
                     if ( $this->checkAllowDelete() ) {
                         $this->deleteTriplesInQuery();
                     }
                     // TODO Add a "successfully inserted/deleted" message here
                     $this->printHTMLForm();
+                    break;
                 default:
                     switch ( $this->m_outputtype ) {
                         case 'htmltab':
                             $this->printHTMLForm();
                             if ( $wgRequest->getBool( 'showquery', false ) ) {
                                 $this->printQueryStructure();
-                                $executesparql = false;
+                            } else {
+                                $this->executeSPARQL();
                             }
+                            break;
                         case 'rdfxml':
                             if ( $this->m_querytype != 'construct' ) {
                                 $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
@@ -75,67 +68,94 @@ class SPARQLEndpoint extends SpecialPage {
                                 $executesparql = false;
                             } else {
                                $this->prepareCreatingDownloadableFile();
+                               $this->executeSPARQL();
                             }
-                    }
-
-                    if ( $executesparql ) {
-                        $outputtype = $this->m_outputtype;
-                        if ( $outputtype == '' && $this->m_querytype == 'construct' ) {
-                            $outputtype = 'rdfxml';
-                        }
-                        if ( $outputtype == 'rdfxml' || $outputtype == 'xml' || $outputtype == '' ) {
-                            // Make sure that ARC outputs data in a format that we can
-                            // easily work with programmatically
-                            $this->setOutputTypeInPost( 'php_ser' );
-                        }
-
-                        // Pass on the request handling to ARC2:s SPARQL Endpoint
-                        $this->m_sparqlendpoint->handleRequest();
-                        $this->handleSPARQLErrors();
-                        $output = $this->m_sparqlendpoint->getResult();
-
-                        if ( $outputtype == 'htmltab' ) {
-                            if ( $this->m_outputoriguris ) {
-                                $output = $this->convertURIsToOrigURIsInText( $output );
-                            }
-                            $output = $this->extractPrepareARCHTMLOutput( $output );
-                            $wgOut->addHTML( $output );
-                        } elseif ( $outputtype == 'rdfxml' ) {
-                            $output_structure = unserialize( $output );
-                            $tripleindex = $output_structure['result'];
-                            $triples = ARC2::getTriplesFromIndex( $tripleindex );
-                            if ( $this->m_outputoriguris ) {
-                                $triples = $this->convertURIsToOrigURIsInTriples( $triples );
-                            }
-                            if ( $this->m_outputequivuris ) {
-                                # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
-                                if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) {
-                                    $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                                    $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
-                                } else {
-                                    $triples = $this->complementTriplesWithEquivURIs( $triples );
-                                }
-                            }
-                            $output = $this->triplesToRDFXML( $triples );
-                            echo $output;
-                        } else {
-                            // TODO: Add some kind of check that the output is really an object
-                            $output_structure = unserialize( $output );
-                            if ( $this->m_outputoriguris ) {
-                                $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
-                            }
-                            if ( $this->m_outputequivuris ) {
-                                $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                                $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
-                            }
-                            $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
-                            echo $output;
-                        }
+                            break;
                     }
             }
         } else { // SPARQL query is empty
             $this->printHTMLForm();
         }
+    }
+
+    function executeSPARQL() {
+        global $wgOut; 
+
+        $outputtype = $this->determineOutputType();
+        if ( $this->outputTypeRequiresModifications( $outputtype ) ) {
+            # Get a PHP serialization so we can easily work with the
+            # results programmatically
+            $this->setOutputTypeInPostToPHPSerialization();
+        }
+
+        $output = $this->passOnSPARQLRequestToARC2AndGetOutput();
+
+        switch( $outputtype ) {
+            case 'htmltab':
+                if ( $this->m_outputoriguris ) {
+                    $output = $this->convertURIsToOrigURIsInText( $output );
+                }
+
+                $output = $this->enhanceArcsHtmlOutput( $output );
+
+                $wgOut->addHTML( $output );
+                break;
+            case 'rdfxml':
+                $output_structure = unserialize( $output );
+                $tripleindex = $output_structure['result'];
+                $triples = ARC2::getTriplesFromIndex( $tripleindex );
+                if ( $this->m_outputoriguris ) {
+                    $triples = $this->convertURIsToOrigURIsInTriples( $triples );
+                }
+                if ( $this->m_outputequivuris ) {
+                    # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
+                    if ( $this->m_filtervocab && ( $this->m_filtervocaburl != '' ) ) {
+                        $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                        $triples = $this->complementTriplesWithEquivURIs( $triples, $vocab_p_uri_filter );
+                    } else {
+                        $triples = $this->complementTriplesWithEquivURIs( $triples );
+                    }
+                }
+                $output = $this->triplesToRDFXML( $triples );
+                echo $output;
+                break;
+            default:
+                // TODO: Add some kind of check that the output is really an object
+                $output_structure = unserialize( $output );
+                if ( $this->m_outputoriguris ) {
+                    $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );
+                }
+                if ( $this->m_outputequivuris ) {
+                    $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
+                    $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+                }
+                $output = $this->m_sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
+                echo $output;
+        }
+    }
+
+    function passOnSPARQLRequestToARC2AndGetOutput() {
+        $this->m_sparqlendpoint->handleRequest();
+        $this->handleSPARQLErrors();
+        $output = $this->m_sparqlendpoint->getResult();
+        return $output;
+    }
+
+    function outputTypeRequiresModifications( $outputtype ) {
+        $outputtypesNeedingMods = array( 'rdfxml', 'xml', '' );
+        return ( in_array( $outputtype, $outputtypesNeedingMods ) );
+    }
+
+
+    /**
+     * Determine the output type of the SPARQL query
+     */
+    function determineOutputType() {
+        $outputtype = $this->m_outputtype;
+        if ( $outputtype == '' && $this->m_querytype == 'construct' ) {
+            $outputtype = 'rdfxml';
+        }
+        return $outputtype;
     }
 
     function hasNonEmptySPARQLQuery() {
@@ -381,12 +401,12 @@ class SPARQLEndpoint extends SpecialPage {
     }
 
     /**
-     * Extract the main content form ARC:s SPARQL result HTML
-     * and do some processing (wikify tables)
+     * Extract the main content from ARC:s SPARQL result HTML
+     * and do some enhancing (wikify tables)
      * @param string $output
      * @return string $html
      */
-    function extractPrepareARCHTMLOutput( $output ) {
+    function enhanceArcsHtmlOutput( $output ) {
         $html = RDFIOUtils::extractHTMLBodyContent( $output );
         $html = RDFIOUtils::wikifyTables( $html );
         $html = "<h3>Result:</h3><div style='font-size: 11px;'>" . $html . "</div>";
@@ -397,9 +417,11 @@ class SPARQLEndpoint extends SpecialPage {
      * After a query is parsed, import the parsed data to the wiki
      */
     function importTriplesInQuery() {
-        $triples = $this->m_query_parsed['query']['construct_triples'];
-        $rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
-        $rdfImporter->execute();
+        if ( $this->checkAllowInsert() ) {
+            $triples = $this->m_query_parsed['query']['construct_triples'];
+            $rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
+            $rdfImporter->execute();
+        }
     }
 
     /**
@@ -963,6 +985,10 @@ class SPARQLEndpoint extends SpecialPage {
         $_POST['query'] = $query;
     }
 
+    function setOutputTypeInPostToPHPSerialization() {
+        $this->setOutputTypeInPost( 'php_ser' );
+    }
+
     /**
      * Update the output (type) variable in the $_POST object.
      * Useful for passing on parsing to ARC, since $_POST is what ARC reads
@@ -974,3 +1000,6 @@ class SPARQLEndpoint extends SpecialPage {
 
 }
 
+class RDFIOSPARQLRequestData {
+
+}
