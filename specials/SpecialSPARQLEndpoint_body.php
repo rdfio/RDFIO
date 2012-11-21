@@ -124,6 +124,7 @@ class SPARQLEndpoint extends SpecialPage {
                         $output = $this->triplesToRDFXML( $triples );
                         echo $output;
                     } else {
+                        // TODO: Add some kind of check that the output is really an object
                         $output_structure = unserialize( $output );
                         if ( $this->m_outputoriguris ) {
                             $output_structure = $this->convertURIsToOrigURIsInSPARQLResultSet( $output_structure );

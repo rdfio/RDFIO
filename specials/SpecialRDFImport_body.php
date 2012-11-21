@@ -1,25 +1,7 @@
 <?php
 class RDFImport extends SpecialPage {
 
-	protected $mAction;
-	protected $mEditToken;
-	protected $mHasWriteAccess;
-	protected $mNSPrefixInWikiTitlesProperties;
-	protected $mNSPrefixInWikiTitlesEntities;
-	protected $mShowAbbrScreenProperties;
-	protected $mShowAbbrScreenEntities;
-
-	protected $mDataAggregate = null;
-
 	function __construct() {
-		global $wgUser;
-
-		$userRights = $wgUser->getRights();
-		if ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) ) {
-			$this->mHasWriteAccess = true;
-		} else {
-			$this->mHasWriteAccess = false;
-		}
 		parent::__construct( 'RDFImport' );
 	}
 
@@ -27,16 +9,18 @@ class RDFImport extends SpecialPage {
 		global $wgOut, $wgUser, $wgRequest;
 
 		$this->setHeaders();
-		$this->handleRequestData();
 
-		if ( $this->mAction == 'import' ) {
+		$requestData = $this->getRequestData();
+
+		if ( ! $requestData->mHasWriteAccess ) {
 			
-			$data = $wgRequest->getText( 'importdata' );
-			$dataFormat = $wgRequest->getText( 'dataformat' );
+			$wgOut->addHTML("<b>User does not have write access!</b>");
+
+		} else if ( $requestData->mAction == 'import' ) {
 			
 			# Parse RDF/XML to triples
 			$arc2rdfxmlparser = ARC2::getRDFXMLParser();
-			$arc2rdfxmlparser->parseData( $data );
+			$arc2rdfxmlparser->parseData( $requestData->mImportData );
 
 			# Receive the data
 			$triples = $arc2rdfxmlparser->triples;
@@ -68,15 +52,32 @@ class RDFImport extends SpecialPage {
 	/**
 	 * Get data from the request object and store it in class variables
 	 */
-	function handleRequestData() {
+	function getRequestData() {
 		global $wgRequest;
-		$this->mAction = $wgRequest->getText( 'action' );
-		$this->mEditToken = $wgRequest->getText( 'token' );
-		$this->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false );
-		$this->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false );
-		$this->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false );
-		$this->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false );
+
+		$requestData = new RDFIORequestData();
+
+		$requestData->mAction = $wgRequest->getText( 'action' );
+		$requestData->mEditToken = $wgRequest->getText( 'token' );
+		$requestData->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false );
+		$requestData->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false );
+		$requestData->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false );
+		$requestData->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false );
+
+		$requestData->mImportData = $wgRequest->getText( 'importdata' );
+		$requestData->mDataFormat = $wgRequest->getText( 'dataformat' );
+
+		$requestData->mHasWriteAccess = $this->userHasWriteAccess();
+
+		return $requestData;
 	}
+
+	protected function userHasWriteAccess() {
+		global $wgUser;
+		$userRights = $wgUser->getRights();
+		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
+	}
+
 
 	/**
 	 * Output the HTML for the form, to the user
@@ -179,15 +180,17 @@ class RDFImport extends SpecialPage {
 		return $exampleDataJs;
 	}
 
-
-	# Setters and getters
-
-	public function setRawData( &$dataAggregate ) {
-		$this->mDataAggregate = $dataAggregate;
-	}
-	public function getRawData() {
-		return $this->mDataAggregate;
-	}
-
 }
 
+class RDFIORequestData {
+	public $mAction = "";
+	public $mEditToken = "";
+	public $mNSPrefixInWikiTitlesProperties = "";
+	public $mShowAbbrScreenProperties = "";
+	public $mNSPrefixInWikiTitlesEntities = "";
+	public $mShowAbbrScreenEntities = "";
+
+	public function __construct() {
+	   // Nothing here so far ...	
+	}
+}
