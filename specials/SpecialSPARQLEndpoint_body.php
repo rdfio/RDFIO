@@ -248,7 +248,6 @@ class SPARQLEndpoint extends SpecialPage {
             $query = $sparqlserializer->toString( $query_structure );
 
             $this->setQueryInPost( $query );
-            # $this->convertEquivURIsToInternalURIsInQuery(); // TODO DEPRECATED
         }
     }
 
@@ -459,27 +458,6 @@ class SPARQLEndpoint extends SpecialPage {
                 $errormessage = "<p>$sparqlEndpointErrors</p>";
             }
             RDFIOUtils::showErrorMessage( "SPARQL Error", $errormessage );
-        }
-    }
-
-    /**
-     * For each URI in the (unparsed) query that is set by an "Equivalent URI" property in
-     * the wiki, replace it with the page's corresponding URI Resolver URI
-     */
-    function convertEquivURIsToInternalURIsInQuery() {
-        $equivuris = RDFIOUtils::extractURIs( $this->m_query ); // TODO: Use parsed query instead
-        $count = count( $equivuris );
-        if ( count( $equivuris ) > 1 ) { // The first URI is the URI Resolver one, which always is there
-                                        // TODO: Create a more robust check
-            foreach ( $equivuris as $equivuri ) {
-                $uri = $this->m_store->getURIForEquivURI( $equivuri );
-                if ( $uri != '' ) {
-                    // Replace Eqivalent uri:s into SMW:s internal URIs
-                    // (The "http://.../Special:URIResolver/..." ones)
-                    $query = str_replace( $equivuri, $uri, $this->m_query );
-                }
-            }
-            $this->setQueryInPost( $query );
         }
     }
 
@@ -732,7 +710,7 @@ class SPARQLEndpoint extends SpecialPage {
 
         $uriResolverURI = $this->m_store->getURIResolverURI();
 
-        $defaultQuery = "@PREFIX w : <$uriResolverURI> .\n\nSELECT ?s ?p ?o\nWHERE { ?s ?p ?o }\nLIMIT 25";
+        $defaultQuery = "@PREFIX w : <$uriResolverURI> .\n\nSELECT *\nWHERE { ?s ?p ?o }\nLIMIT 25";
 
         if ( $query == '' ) {
             $query = $defaultQuery;
