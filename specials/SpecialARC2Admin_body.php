@@ -6,16 +6,16 @@
  */
 class ARC2Admin extends SpecialPage {
 
-	protected $m_issysop;
+	protected $issysop;
 
 	function __construct() {
 		global $wgUser;
 
 		$usergroups = $wgUser->getGroups();
 		if ( in_array( 'sysop', $usergroups ) ) {
-			$this->m_issysop = true;
+			$this->issysop = true;
 		} else {
-			$this->m_issysop = false;
+			$this->issysop = false;
 		}
 
 		parent::__construct( 'SpecialARC2Admin' );
@@ -42,7 +42,7 @@ class ARC2Admin extends SpecialPage {
 				if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) ) {
 					die( 'Cross-site request forgery detected!' );
 				} else {
-					if ( $this->m_issysop ) {
+					if ( $this->issysop ) {
 						$output .= "* Setting up now ...\n";
 						$store->setUp();
 						$output .= "* Done!\n";

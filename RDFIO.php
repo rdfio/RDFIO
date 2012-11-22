@@ -9,7 +9,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'Not an entry point.' );
 }
 
-define( 'RDFIO_VERSION', '0.9.0 alpha' );
+define( 'RDFIO_VERSION', '1.9.0 alpha' );
 
 global $wgExtensionCredits;
 
