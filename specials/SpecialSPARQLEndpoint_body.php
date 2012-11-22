@@ -33,10 +33,10 @@ class SPARQLEndpoint extends SpecialPage {
         if ( $this->hasSparqlQuery() ) {
 
             $this->ensureSparqlEndpointInstalled();
-            $this->convertURIsInQuery();
 
-            # 1. Determine what to do (Import/Delete/Return SPARQL resultset/Construct RDF/Nothing)
-            # 2. Check prerequisites
+            if ( $this->m_querybyequivuri ) {
+                $this->urisToEquivURIsInQuery();
+            }
 
             switch ( $this->m_querytype ) {
                 case 'insert':
@@ -213,42 +213,40 @@ class SPARQLEndpoint extends SpecialPage {
      * If option is so chosen, convert URIs in the query to
      * their corresponding "Equivalent URIs"
      */
-    function convertURIsInQuery() {
-        if ( $this->m_querybyequivuri ) {
-            $query_structure = $this->m_query_parsed;
-            $triple = $query_structure['query']['pattern']['patterns'][0]['patterns'][0];
-            $s = $triple['s'];
-            $p = $triple['p'];
-            $o = $triple['o'];
-            $s_type = $triple['s_type'];
-            $p_type = $triple['p_type'];
-            $o_type = $triple['o_type'];
-            if ( $s_type === 'uri' ) {
-                $triple['s'] = 's';
-                $triple['s_type'] = 'var';
-                $newtriple = $this->createEquivURITriple( $s, 's' );
-                $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
-            }
-            if ( $p_type === 'uri' ) {
-                $triple['p'] = 'p';
-                $triple['p_type'] = 'var';
-                $newtriple = $this->createEquivURITriple( $p, 'p', true );
-                $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
-            }
-            if ( $o_type === 'uri' ) {
-                $triple['o'] = 'o';
-                $triple['o_type'] = 'var';
-                $newtriple = $this->createEquivURITriple( $o, 'o' );
-                $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
-            }
-            // restore the first triple into its original location
-            $query_structure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
-            require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
-            $sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
-            $query = $sparqlserializer->toString( $query_structure );
-
-            $this->setQueryInPost( $query );
+    function urisToEquivURIsInQuery() {
+        $query_structure = $this->m_query_parsed;
+        $triple = $query_structure['query']['pattern']['patterns'][0]['patterns'][0];
+        $s = $triple['s'];
+        $p = $triple['p'];
+        $o = $triple['o'];
+        $s_type = $triple['s_type'];
+        $p_type = $triple['p_type'];
+        $o_type = $triple['o_type'];
+        if ( $s_type === 'uri' ) {
+            $triple['s'] = 's';
+            $triple['s_type'] = 'var';
+            $newtriple = $this->createEquivURITriple( $s, 's' );
+            $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
         }
+        if ( $p_type === 'uri' ) {
+            $triple['p'] = 'p';
+            $triple['p_type'] = 'var';
+            $newtriple = $this->createEquivURITriple( $p, 'p', true );
+            $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+        }
+        if ( $o_type === 'uri' ) {
+            $triple['o'] = 'o';
+            $triple['o_type'] = 'var';
+            $newtriple = $this->createEquivURITriple( $o, 'o' );
+            $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+        }
+        // restore the first triple into its original location
+        $query_structure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
+        require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
+        $sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
+        $query = $sparqlserializer->toString( $query_structure );
+
+        $this->setQueryInPost( $query );
     }
 
     /**
