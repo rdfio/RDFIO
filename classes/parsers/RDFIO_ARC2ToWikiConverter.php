@@ -130,11 +130,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
             );
 		}
 		$index = $this->mARC2ResourceIndex;
-		foreach ( $index as $subject => $properties ) {
-			if ( $subject == $uri ) {
-				foreach ( $properties as $property => $object ) {
-					if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-						$wikiTitle = $object[0];
+		if ( is_array($index) ) {
+			foreach ( $index as $subject => $properties ) {
+				if ( $subject == $uri ) {
+					foreach ( $properties as $property => $object ) {
+						if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+							$wikiTitle = $object[0];
+						}
 					}
 				}
 			}
@@ -155,9 +157,11 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		// 5. [ ] The same, but according to abbreviation screen
 		
 		// Collect all the inputs for abbreviation, and apply:
-		$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri, $nsPrefixes );
-		if ( $abbreviatedUri != "" ) {
-			return $abbreviatedUri;
+		if ( is_array( $nsPrefixes ) ) {
+			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri, $nsPrefixes );
+			if ( $abbreviatedUri != "" ) {
+				return $abbreviatedUri;
+			}
 		}
 		
 		 // 6. [x] As a default, just try to get the local part of the URL

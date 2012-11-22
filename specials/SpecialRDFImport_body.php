@@ -41,12 +41,12 @@ class RDFImport extends SpecialPage {
 		$namespaces = $arc2rdfxmlparser->nsp;
 		
 		# Parse data from ARC2 triples to custom data structure holding wiki pages
-		$arc2tordfparser = new RDFIOARC2ToWikiConverter();
-		$arc2tordfparser->parseData( $triples, $tripleindex, $namespaces );
+		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
+		$arc2towikiconverter->parseData( $triples, $tripleindex, $namespaces );
 		
 		# Get data from parser
-		$wikipages = $arc2tordfparser->getWikiPages();
-		$proppages = $arc2tordfparser->getPropertyPages();
+		$wikipages = $arc2towikiconverter->getWikiPages();
+		$proppages = $arc2towikiconverter->getPropertyPages();
 		
 		# Import pages into wiki
 		$smwDataImporter = new RDFIOSMWDataImporter();

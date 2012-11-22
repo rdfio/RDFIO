@@ -323,7 +323,7 @@ class SPARQLEndpoint extends SpecialPage {
             $rdfiogAllowRemoteEdit = false;
         }
         return ( ! $rdfiogAllowRemoteEdit && 
-                 ! $this->user->editTokenIsCorrect( $wgRequest->getText( 'token' ) ) );
+                 ! $this->m_user->editTokenIsCorrect( $wgRequest->getText( 'token' ) ) );
     }
 
     /**
@@ -418,8 +418,19 @@ class SPARQLEndpoint extends SpecialPage {
     function importTriplesInQuery() {
         if ( $this->checkAllowInsert() ) {
             $triples = $this->m_requestdata->m_query_parsed['query']['construct_triples'];
-            $rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
-            $rdfImporter->execute();
+            
+            # Parse data from ARC2 triples to custom data structure holding wiki pages
+            $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
+            $arc2towikiconverter->parseData( $triples, $tripleindex="", $namespaces="" );
+            
+            # Get data from parser
+            $wikipages = $arc2towikiconverter->getWikiPages();
+            $proppages = $arc2towikiconverter->getPropertyPages();
+            
+            # Import pages into wiki
+            $smwDataImporter = new RDFIOSMWDataImporter();
+            $smwDataImporter->import( $wikipages );
+            $smwDataImporter->import( $proppages );
         }
     }
 
