@@ -174,29 +174,15 @@ class SPARQLEndpoint extends SpecialPage {
      */
     function handleRequestData() {
         global $wgRequest,
-               $rdfiogQueryByOrigURI,
                $rdfiogQueryByEquivURI,
-               $rdfiogOutputOrigURIs,
                $rdfiogOutputEquivURIs;
 
         $this->m_query = $wgRequest->getText( 'query' );
-
-        if ( $rdfiogQueryByOrigURI == '' ) {
-          $this->m_querybyoriguri = $wgRequest->getBool( 'origuri_q' ); // No default value, as to not overwrite configurable setting in LocalSettings.php
-        } else {
-          $this->m_querybyoriguri = $rdfiogQueryByOrigURI;
-        }
 
         if ( $rdfiogQueryByEquivURI == '' ) {
           $this->m_querybyequivuri = $wgRequest->getBool( 'equivuri_q' );
         } else {
           $this->m_querybyequivuri = $rdfiogQueryByEquivURI;
-        }
-
-        if ( $rdfiogOutputOrigURIs == '' ) {
-            $this->m_outputoriguris = $wgRequest->getBool( 'origuri_o' );
-        } else {
-            $this->m_outputoriguris = $rdfiogOutputOrigURIs;
         }
 
         if ( $rdfiogOutputEquivURIs == '' ) {
@@ -669,25 +655,6 @@ class SPARQLEndpoint extends SpecialPage {
         return $rdfxml;
     }
 
-    /**
-     * Convert all URI Resolver URIs which have a corresponding Original URI,
-     * to that Original URI.
-     * @param string $text
-     * @return string $text
-     */
-    function convertURIsToOrigURIsInText( $text ) {
-        $uris = RDFIOUtils::extractURIs( $text );
-        if ( $uris != '' ) {
-            foreach ( $uris as $uri ) {
-                $origuri = $this->m_store->getOrigURIForURI( $uri );
-                if ( $origuri != '' ) {
-                    $text = str_replace( $uri, $origuri, $text );
-                }
-            }
-        }
-        return $text;
-    }
-
     function getPredicateVariableName() {
         $predvarname = $this->m_query_parsed['vars'][1];
         return $predvarname;
@@ -788,8 +755,6 @@ class SPARQLEndpoint extends SpecialPage {
             $query = $defaultQuery;
         }
 
-        $checked_origuri_q = $wgRequest->getBool( 'origuri_q', false ) == 1 ? ' checked="true" ' : '';
-        $checked_origuri_o = $wgRequest->getBool( 'origuri_o', false ) == 1 ? ' checked="true" ' : '';
         $checked_equivuri_q = $wgRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
         $checked_equivuri_o = $wgRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
         $checked_filtervocab = $wgRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
