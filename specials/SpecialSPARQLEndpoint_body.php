@@ -117,7 +117,7 @@ class SPARQLEndpoint extends SpecialPage {
                 $output_structure = unserialize( $output );
                     if ( $this->m_outputequivuris ) {
                     $vocab_p_uri_filter = $this->getVocabPropertyUriFilter();
-                    $output_structure = $this->complementSPARQLResultRowsWithEquivURIs( $output_structure, $vocab_p_uri_filter );
+                    $output_structure = $this->urisToEquivURIsInSparqlResults( $output_structure, $vocab_p_uri_filter );
                 }
 
                 if ( $outputtype == 'htmltab' ) {
@@ -573,52 +573,35 @@ class SPARQLEndpoint extends SpecialPage {
         return $newtriples;
     }
 
-    function complementSPARQLResultRowsWithEquivURIs( $output_structure, $p_uris_filter = '' ) {
-        $predvarname = $this->getPredicateVariableName();
-        $variables = $output_structure['result']['variables'];
-        $rows = $output_structure['result']['rows'];
-
-        $predvarname = 'p'; // TODO DO a real check up
-        $newrows_total = array();
+    /**
+     * Replace URI:s with an accompanying "Equivalent URI" with that one. If 
+     * there are móre than one Equivalent URI for a given URI, the others than 
+     * the first one will be ignored.
+     * @param array $sparql_resultstructure
+     * @param string $p_uris_filter
+     * @return array $sparql_resultstructure
+     */
+    function urisToEquivURIsInSparqlResults( $sparql_resultstructure, $p_uris_filter = '' ) {
+        $rows = $sparql_resultstructure['result']['rows'];
+        $sparql_varnames = $sparql_resultstructure['result']['variables'];
         foreach ( $rows as $rowid => $row ) {
-            $newrows = array();
-            foreach ( $variables as $variable ) {
-                $typekey = "$variable type";
+            foreach ( $sparql_varnames as $sparql_varname ) {
+                $typekey = "$sparql_varname type";
                 $type = $row[$typekey];
-                $uri = $row[$variable];
-                $equivuris = array();
+                $uri = $row[$sparql_varname];
                 if ( $type === 'uri' ) {
                     $equivuris = $this->m_store->getEquivURIsForURI( $uri );
-                    if ( $variable == $predvarname ) {
-                        $equivuris = array_intersect( $equivuris, $p_uris_filter );
-                    }
-                }
-                if ( count( $newrows ) < 1 ) {
-                    if ( count( $equivuris ) > 0 ) {
-                        foreach ( $equivuris as $equivuri ) {
-                            $newrows[] = array( $variable => $equivuri, $typekey => 'uri' );
-                        }
-                    } else {
-                        $newrows[] = array( $variable => $uri, $typekey => 'uri' );
-                    }
-                } else {
-                    foreach ( $newrows as $newrowid => $newrow ) {
-                        if ( count( $equivuris ) > 0 ) {
-                            foreach ( $equivuris as $equivuri ) {
-                                $newrowcontent = array( $variable => $equivuri, $typekey => 'uri' );
-                                $newrows[$newrowid] = array_merge( $newrow, $newrowcontent );
-                            }
-                        } else {
-                            $newrowcontent = array( $variable => $uri, $typekey => 'uri' );
-                            $newrows[$newrowid] = array_merge( $newrow, $newrowcontent );
-                        }
+                    if ( !$this->arrayEmpty( $equivuris ) ) {
+                        $equivuri = $equivuris[0];
+                        # Replace the URI with the Equivalent URI
+                        $rows[$rowid][$sparql_varname] = $equivuri;
                     }
                 }
             }
-            $newrows_total = array_merge( $newrows_total, $newrows );
         }
-        $output_structure['result']['rows'] = $newrows_total;
-        return $output_structure;
+        # Put back the modified rows into the results structure
+        $sparql_resultstructure['result']['rows'] = $rows;
+        return $sparql_resultstructure;
     }
 
     /**
@@ -656,8 +639,8 @@ class SPARQLEndpoint extends SpecialPage {
     }
 
     function getPredicateVariableName() {
-        $predvarname = $this->m_query_parsed['vars'][1];
-        return $predvarname;
+        $pred_varname = $this->m_query_parsed['vars'][1];
+        return $pred_varname;
     }
 
     /**
@@ -907,6 +890,10 @@ class SPARQLEndpoint extends SpecialPage {
 
     function stringContains( $needle, $haystack ) {
         return strpos( $needle, $haystack ) != false;
+    }
+
+    function arrayEmpty( $array ) {
+        return ( count( $array ) < 1 );
     }
 
 }
