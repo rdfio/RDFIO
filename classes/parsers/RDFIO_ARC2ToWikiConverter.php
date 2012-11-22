@@ -107,13 +107,14 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	}
 
 	
-	private function convertURIToWikiTitle( $uri ) {
+	private function convertURIToWikiTitle( $uri_to_convert ) {
+		global $rdfiogPropertiesToUseAsWikiTitle;
+
 		$wikiTitle = "";
 		# @TODO: Create some "conversion index", from URI:s to wiki titles?
-		global $rdfiogPropertiesToUseAsWikiTitle;
 		
 		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
-		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri );
+		$existingWikiTitle = $this->mArc2Store->getWikiTitleByEquivalentURI( $uri_to_convert );
 		if ( $existingWikiTitle != "" ) {
 			return $existingWikiTitle;
 		} 
@@ -132,7 +133,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$index = $this->mARC2ResourceIndex;
 		if ( is_array($index) ) {
 			foreach ( $index as $subject => $properties ) {
-				if ( $subject == $uri ) {
+				if ( $subject == $uri_to_convert ) {
 					foreach ( $properties as $property => $object ) {
 						if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
 							$wikiTitle = $object[0];
@@ -158,7 +159,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		
 		// Collect all the inputs for abbreviation, and apply:
 		if ( is_array( $nsPrefixes ) ) {
-			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri, $nsPrefixes );
+			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri_to_convert, $nsPrefixes );
 			if ( $abbreviatedUri != "" ) {
 				return $abbreviatedUri;
 			}
@@ -166,7 +167,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		
 		 // 6. [x] As a default, just try to get the local part of the URL
 		if ( $wikiTitle == "" ) {
-			$parts = $this->splitURI( $uri );
+			$parts = $this->splitURI( $uri_to_convert );
 			if ( $parts[1] != "" ) {
 				return $parts[1];
 			}
