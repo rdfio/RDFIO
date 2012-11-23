@@ -14,37 +14,51 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	
 	public function parseData( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		
+		# Store paramters as class variables
 		$this->mARC2ResourceIndex = $arc2ResourceIndex;
 		$this->mArc2NSPrefixes = $arc2NSPrefixes;
 		
+		# Initialize variables that hold pages (normal and properties)
 		$wikiPages = array();
 		$propPages = array();
 		
+		# Loop over the triples in the ARC2 triple array structure
 		foreach ( $arc2Triples as $triple ) {
 			
-			$subjURI = $triple['s'];
-			$propURI = $triple['p'];
-			$objURI = $triple['o'];
+			# Store triple array members as better named variables
+			$subjectURI = $triple['s'];
+			$propertyURI = $triple['p'];
+			$objectUriOrValue = $triple['o'];
+			$objectType = $triple['o_type'];
 
-			// Convert URI:s to wiki titles
-			$wikiTitle = $this->convertURIToWikiTitle( $subjURI );
-			$propTitle = $this->convertURIToPropertyTitle( $propURI );
-			$propTitleWithNS = 'Property:' . $propTitle; 
-			$objTitle = "";
-			if ( $triple['o_type'] == "uri" ) {
-				// @TODO: Should the o_type also decide data type of the property like these: 
-				//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
-				//        ?
-				$objTitle = $this->convertURIToWikiTitle( $objURI );
-				$wikiPages = $this->mergeIntoPagesArray( $objTitle, $objURI, null, $wikiPages );
-			} else {
-				$objTitle = $objURI;
+			# Convert URI:s to wiki titles
+			$wikiPageTitle = $this->convertURIToWikiTitle( $subjectURI );
+			# Separate handling for properties
+			$propertyTitle = $this->convertURIToPropertyTitle( $propertyURI );
+
+
+			$propertyTitleWithNamespace = 'Property:' . $propertyTitle; 
+
+			$objectTitle = '';
+			switch ( $objectType ) {
+				case 'uri':
+					// @TODO: $objectType also decide data type of the property like these: 
+					//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
+					//        ?
+					$objectTitle = $this->convertURIToWikiTitle( $objectUriOrValue );
+					$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
+					break;
+				case 'literal':
+					$objectTitle = $objectUriOrValue;
+					break;
+				default:
+					die("Unknown type of object in triple! (not 'uri' nor 'literal')!");
 			}
 			
-			$fact = array( 'p' => $propTitle, 'o' => $objTitle );
+			$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
 				
-			$wikiPages = $this->mergeIntoPagesArray( $wikiTitle, $subjURI, $fact, $wikiPages );
-			$propPages = $this->mergeIntoPagesArray( $propTitleWithNS, $propURI, null, $propPages );
+			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
+			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
 			// if o is an URI, also create object page
 		}
 		
@@ -70,37 +84,75 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		return $title;
 	}
 	
-	private function mergeIntoPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
-		if ( !array_key_exists( $pageTitle, $pagesArray ) ) {
-			$page = array();
-			$page['equivuris'] = array( $equivURI );
-			if ( $fact != null ) {
-				$page['facts'] = array( $fact );
-			} else {
-				$page['facts'] = array();
+	private function addPagesAndFactsToPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
+
+		# HELPER FUNCTIONS #################################################
+
+		# Avoid redeclaring helper functions
+		if ( !is_callable('helperFunctionsDefined') ) {
+			# Use as a check whether the helper functions are 
+			# defined or not, to avoid redeclarations
+			function helperFunctionsDefined() { }
+
+			function pagesArrayHasPageWithTitle( $pageTitle, $pagesArray ) {
+				return array_key_exists( $pageTitle, $pagesArray );
 			}
-			$pagesArray[$pageTitle] = $page;
-		} else {
-			# Just merge data into existing page
-			if ( !in_array($equivURI, $pagesArray[$pageTitle]['equivuris']) ) {
-				$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
+			function pageWithTitleInPagesArrayHasEquivURI( $equivURI, $pageTitle, $pagesArray ) {
+				return in_array($equivURI, $pagesArray[$pageTitle]['equivuris']);
 			}
-			if ( $fact != null ) {
+			function addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray ) {
 				$pagesArray[$pageTitle]['facts'][] = $fact;
+				return $pagesArray;
+			}
+			function addEquivURIToPageWithTitleInPagesArray( $equivURI, $pageTitle, $pagesArray ){
+				$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
+				return $pagesArray;
+			}
+			function createNewPageEntryWithFactAndEquivURI( $equivURI, $fact, $pageTitle ){
+				$page = array();
+				$page['equivuris'] = array( $equivURI );
+				if ( !is_null( $fact ) ) {
+					$page['facts'] = array( $fact );
+				} else {
+					$page['facts'] = array();
+				}
+				return $page;
+			}
+			function addPageToPagesArray( $page, $pageTitle, $pagesArray ) {
+				$pagesArray[$pageTitle] = $page;
+				return $pagesArray;
 			}
 		}
+
+		# MAIN CODE START #################################################
+
+		if ( pagesArrayHasPageWithTitle( $pageTitle, $pagesArray ) ) {
+			if ( !pageWithTitleInPagesArrayHasEquivURI( $equivURI, $pageTitle, $pagesArray ) ) {
+				addEquivURIToPageWithTitleInPagesArray(  );
+			}
+			if ( !is_null( $fact ) ) {
+				addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray );
+			}
+		} else {
+			# Create new entry for the page in the array
+			$page = createNewPageEntryWithFactAndEquivURI( $equivURI, $fact, $pageTitle );
+			$pagesArray = addPageToPagesArray( $page, $pageTitle, $pagesArray );
+		}
+
+		# MAIN CODE END ###################################################
+
 		return $pagesArray;
 	}
 	
-	private function convertURIToPropertyTitle( $propURI ) {
+	private function convertURIToPropertyTitle( $propertyURI ) {
 		$propertyTitle = '';
-		$existingPropTitle = $this->mArc2Store->getWikiTitleByEquivalentURI($propURI, $is_property=true);
+		$existingPropTitle = $this->mArc2Store->getWikiTitleByEquivalentURI($propertyURI, $is_property=true);
 		if ( $existingPropTitle != "" ) {
 			// If the URI had an existing title, use that
 			$propertyTitle = $existingPropTitle;
 		} else {
 			// As default, use the last part of the URI
-			$propertyTitle = preg_replace("/http.*\//", "", $propURI); 
+			$propertyTitle = preg_replace("/http.*\//", "", $propertyURI); 
 		}
 		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
 		return $propertyTitle;
@@ -110,7 +162,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	private function convertURIToWikiTitle( $uri_to_convert ) {
 		global $rdfiogPropertiesToUseAsWikiTitle;
 
-		$wikiTitle = "";
+		$wikiPageTitle = "";
 		# @TODO: Create some "conversion index", from URI:s to wiki titles?
 		
 		 // 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
@@ -133,18 +185,18 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$index = $this->mARC2ResourceIndex;
 		if ( is_array($index) ) {
 			foreach ( $index as $subject => $properties ) {
-				if ( $subject == $uri_to_convert ) {
+				if ( $subject === $uri_to_convert ) {
 					foreach ( $properties as $property => $object ) {
 						if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-							$wikiTitle = $object[0];
+							$wikiPageTitle = $object[0];
 						}
 					}
 				}
 			}
 		}
-		if ( $wikiTitle != "" ) {
-			$wikiTitle = $this->removeInvalidChars( $wikiTitle );
-			return $wikiTitle;
+		if ( $wikiPageTitle != "" ) {
+			$wikiPageTitle = $this->removeInvalidChars( $wikiPageTitle );
+			return $wikiPageTitle;
 		}
 		
 		// 3. [x] Shorten the Namespace (even for entities, optionally) into an NS Prefix
@@ -166,7 +218,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		}
 		
 		 // 6. [x] As a default, just try to get the local part of the URL
-		if ( $wikiTitle == "" ) {
+		if ( $wikiPageTitle === '' ) {
 			$parts = $this->splitURI( $uri_to_convert );
 			if ( $parts[1] != "" ) {
 				return $parts[1];
@@ -175,7 +227,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		 //
 		 //    (In all the above, keep properties and normal entities separately)
 		
-		return $wikiTitle;
+		return $wikiPageTitle;
 	}
 	
 	//
@@ -198,13 +250,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		// Take care of some special cases:
 		// ----------------------------------------------------
 		
-		if ( $basepart == '' &&  $localpart == '' ) {
+		if ( $basepart === '' &&  $localpart === '' ) {
 			$uriParts = $this->splitURI( $uri );
 			$basepart = $uriParts[0];
 			$localpart = $uriParts[1];
 		}
 
-		if ( $localpart == '' ) {
+		if ( $localpart === '' ) {
 			$abbreviatedUri = $basepart;
 		} elseif ( $this->startsWithUnderscore( $basepart ) ) {
 			// FIXME: Shouldn't the above check the local part instead??

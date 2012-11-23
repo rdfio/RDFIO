@@ -16,10 +16,10 @@ class RDFImport extends SpecialPage {
 
 		# The main code
 		$requestData = $this->getRequestData();
-		if ( ! $requestData->mHasWriteAccess ) {
-			$wgOut->addHTML("<b>User does not have write access!</b>");
-		} else if ( $requestData->mAction == 'import' ) {
+		if ( $requestData->mHasWriteAccess && $requestData->mAction == 'import' ) {
 			$this->importData( $requestData );
+		} else if ( !$requestData->mHasWriteAccess ) {
+			$wgOut->addHTML("<b>User does not have write access!</b>");
 		} else {
 			$this->outputHTMLForm( $requestData );
 		}
