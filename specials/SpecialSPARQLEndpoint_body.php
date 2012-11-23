@@ -398,7 +398,7 @@ class SPARQLEndpoint extends SpecialPage {
             
             # Parse data from ARC2 triples to custom data structure holding wiki pages
             $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
-            $arc2towikiconverter->parseData( $triples, $tripleindex="", $namespaces="" );
+            $arc2towikiconverter->convert( $triples, $tripleindex="", $namespaces="" );
             
             # Get data from parser
             $wikipages = $arc2towikiconverter->getWikiPages();
