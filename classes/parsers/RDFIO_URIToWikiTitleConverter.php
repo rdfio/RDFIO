@@ -2,20 +2,20 @@
 
 class WikiTitleNotFoundException extends Exception { }
 
-class RDFIOURIToWikiTitleConverter {
+class RDFIOURIToTitleConverter { 
 
-	protected $mARC2Triples = null;
-	protected $mARC2ResourceIndex = null;
-	protected $mArc2NSPrefixes = null;
+	protected $arc2Triples = null;
+	protected $arc2ResourceIndex = null;
+	protected $arc2NSPrefixes = null;
 	protected $arc2Store = null;
 
 	function __construct( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		$this->arc2Store = new RDFIOARC2StoreWrapper();
 
 		# Store paramters as class variables
-		$this->mARC2Triples = $arc2Triples;
-		$this->mARC2ResourceIndex = $arc2ResourceIndex;
-		$this->mArc2NSPrefixes = $arc2NSPrefixes;
+		$this->arc2Triples = $arc2Triples;
+		$this->arc2ResourceIndex = $arc2ResourceIndex;
+		$this->arc2NSPrefixes = $arc2NSPrefixes;
 	}
 
 	/**
@@ -55,33 +55,12 @@ class RDFIOURIToWikiTitleConverter {
 		}
 	}
 
-	/**
-	 * The main method, but for properties, which need some special handling.
-	 * @param string $propertyURI
-	 * @return string $propertyTitle
-	 */
-	function convertProperty( $propertyURI ) {
-		$propertyTitle = '';
-		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $is_property=true);
-		if ( $existingPropTitle != "" ) {
-			// If the URI had an existing title, use that
-			$propertyTitle = $existingPropTitle;
-		} else {
-			// As default, use the last part of the URI
-			$propertyTitle = preg_replace("/http.*\//", "", $propertyURI); 
-		}
-		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
-		return $propertyTitle;
-	}
-
-
-
 	# CONVERSION STRATEGIES ######################################################################################
 
 	/**
 	 * URI to WikiTitle Strategy 1
 	 */
-	private function getExistingTitleForURI( $uri ) {
+	function getExistingTitleForURI( $uri ) {
 		# 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
 		$wikiTitle = $this->arc2Store->getWikiTitleByEquivalentURI( $uri );
 		if ( $wikiTitle != '' ) {
@@ -102,7 +81,7 @@ class RDFIOURIToWikiTitleConverter {
 			$this->setglobalSettingForPropertiesToUseAsWikiTitleToDefult();
 		}
 
-		$index = $this->mARC2ResourceIndex;
+		$index = $this->arc2ResourceIndex;
 		if ( is_array($index) ) {
 			foreach ( $index as $subject => $properties ) {
 				if ( $subject === $uri ) {
@@ -132,7 +111,7 @@ class RDFIOURIToWikiTitleConverter {
 
 		// 3. [x] Shorten the Namespace (even for entities, optionally) into an NS Prefix
 		// according to mappings from parser (Such as chemInf:Blabla ...)
-		$nsPrefixes = $this->mArc2NSPrefixes;
+		$nsPrefixes = $this->arc2NSPrefixes;
 		$wikiPageTitle = '';
 
 		// 4. [x] The same, but according to mappings from LocalSettings.php
@@ -171,8 +150,6 @@ class RDFIOURIToWikiTitleConverter {
 			throw new WikiTitleNotFoundException("WikiTitle not found by extractLocalPartFromURI()");
 		}	
 	}
-
-
 
 	# HELPER METHODS #############################################################################################
 
@@ -295,14 +272,52 @@ class RDFIOURIToWikiTitleConverter {
 	}
 
 	function startsWithUnderscore( $str ) {
-		return substr( $str, 0, 1 ) == '_';
+		return substr( $str, 0, 1 ) === '_';
 	}
 
 	function startsWithHttpOrHttps( $str ) {
-		return ( substr( $str, 0, 7 ) == 'http://' || substr( $str, 0, 8 ) == 'https://' );
+		return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
+	}
+
+	function endsWithColon( $str ) {
+		return ( substr( $str, -1 ) === ':' );
 	}
 
 }
 
+#######################################################################################
+# Class: RDFIOURIToWikiTitleConverter #################################################
+#######################################################################################
+
+class RDFIOURIToWikiTitleConverter extends RDFIOURIToTitleConverter {
+
+}
+
+#######################################################################################
+# Class: RDFIOURIToWikiTitleConverter #################################################
+#######################################################################################
+
+class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
+
+	/**
+	 * The main method, which need some special handling.
+	 * @param string $propertyURI
+	 * @return string $propertyTitle
+	 */
+	function convert( $propertyURI ) {
+		$propertyTitle = '';
+		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $is_property=true);
+		if ( $existingPropTitle != "" ) {
+			// If the URI had an existing title, use that
+			$propertyTitle = $existingPropTitle;
+		} else {
+			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
+			$propertyTitle = $uriToWikiTitleConverter->convert( $propertyURI );
+		}
+		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
+		return $propertyTitle;
+	}
+
+}	
 
 ?>

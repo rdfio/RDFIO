@@ -25,11 +25,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$objectType = $triple['o_type'];
 
 			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+			$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+
 
 			# Convert URI:s to wiki titles
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
 			# Separate handling for properties
-			$propertyTitle = $uriToWikiTitleConverter->convertProperty( $propertyURI );
+			$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
 
 
 			$propertyTitleWithNamespace = 'Property:' . $propertyTitle; 
