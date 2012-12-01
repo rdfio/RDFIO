@@ -43,7 +43,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 					//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
 					//        ?
 					$objectTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
-					$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
 					break;
 				case 'literal':
 					$objectTitle = $objectUriOrValue;
@@ -56,6 +55,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				
 			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
 			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
+			$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
 			// if o is an URI, also create object page
 		}
 		
@@ -120,10 +120,10 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 		if ( pagesArrayHasPageWithTitle( $pageTitle, $pagesArray ) ) {
 			if ( !pageWithTitleInPagesArrayHasEquivURI( $equivURI, $pageTitle, $pagesArray ) ) {
-				addEquivURIToPageWithTitleInPagesArray(  );
+				$pagesArray = addEquivURIToPageWithTitleInPagesArray( $equivURI, $pageTitle, $pagesArray );
 			}
 			if ( !is_null( $fact ) ) {
-				addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray );
+				$pagesArray = addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray );
 			}
 		} else {
 			# Create new entry for the page in the array
