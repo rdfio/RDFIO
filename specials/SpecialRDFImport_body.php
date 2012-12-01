@@ -101,27 +101,27 @@ class RDFImport extends SpecialPage {
 	 */
 	public function getExampleRDFXMLData() {
 		return '<rdf:RDF\\n\
-		        xmlns:rdfs=\\"http://www.w3.org/2000/01/rdf-schema#\\"\\n\
-		        xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
-		        xmlns:n0pred=\\"http://bio2rdf.org/go_resource:\\"\\n\
-		        xmlns:ns0pred=\\"http://www.w3.org/2002/07/owl#\\">\\n\
-		        \\n\
-		        <rdf:Description rdf:about=\\"http://bio2rdf.org/go:0032283\\">\\n\
-		            <n0pred:accession>GO:0032283</n0pred:accession>\\n\
-		            <rdfs:label>plastid acetate CoA-transferase complex [go:0032283]</rdfs:label>\\n\
-		            <n0pred:definition>An acetate CoA-transferase complex located in the stroma of a plastid.</n0pred:definition>\\n\
-		            <rdf:type rdf:resource=\\"http://bio2rdf.org/go_resource:term\\"/>\\n\
-		            <n0pred:name>plastid acetate CoA-transferase complex</n0pred:name>\\n\
-		            <n0pred:is_a rdf:resource=\\"http://bio2rdf.org/go:0009329\\"/>\\n\
-		            <rdf:type rdf:resource=\\"http://bio2rdf.org/go_resource:Term\\"/>\\n\
-		            <urlImage xmlns=\\"http://bio2rdf.org/bio2rdf_resource:\\">http://bio2rdf.org/image/go:0032283</urlImage>\\n\
-		            <xmlUrl xmlns=\\"http://bio2rdf.org/bio2rdf_resource:\\">http://bio2rdf.org/xml/go:0032283</xmlUrl>\\n\
-		            <rights xmlns=\\"http://purl.org/dc/terms/\\" rdf:resource=\\"http://www.geneontology.org/GO.cite.shtml\\"/>\\n\
-		            <ns0pred:sameAs rdf:resource=\\"http://purl.org/obo/owl/GO#GO_0032283\\"/>\\n\
-		            <url xmlns=\\"http://bio2rdf.org/bio2rdf_resource:\\">http://bio2rdf.org/html/go:0032283</url>\\n\
-		        </rdf:Description>\\n\
-		        \\n\
-		        </rdf:RDF>';
+xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
+xmlns:cd=\\"http://www.recshop.fake/cd#\\">\\n\
+\\n\
+<rdf:Description\\n\
+rdf:about=\\"http://www.recshop.fake/cd/Empire Burlesque\\">\\n\
+  <cd:artist>Bob Dylan</cd:artist>\\n\
+  <cd:country>USA</cd:country>\\n\
+  <cd:company>Columbia</cd:company>\\n\
+  <cd:price>10.90</cd:price>\\n\
+  <cd:year>1985</cd:year>\\n\
+</rdf:Description>\\n\
+\\n\
+<rdf:Description\\n\
+rdf:about=\\"http://www.recshop.fake/cd/Hide your heart\\">\\n\
+  <cd:artist>Bonnie Tyler</cd:artist>\\n\
+  <cd:country>UK</cd:country>\\n\
+  <cd:company>CBS Records</cd:company>\\n\
+  <cd:price>9.90</cd:price>\\n\
+  <cd:year>1988</cd:year>\\n\
+</rdf:Description>\\n\
+</rdf:RDF>';
 	}
 
 	/**
