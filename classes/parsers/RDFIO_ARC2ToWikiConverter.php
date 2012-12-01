@@ -43,6 +43,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 					//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
 					//        ?
 					$objectTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
+					$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
 					break;
 				case 'literal':
 					$objectTitle = $objectUriOrValue;
@@ -55,7 +56,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				
 			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
 			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
-			$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
 			// if o is an URI, also create object page
 		}
 		
