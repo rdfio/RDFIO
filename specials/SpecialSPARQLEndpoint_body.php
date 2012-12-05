@@ -62,7 +62,7 @@ class SPARQLEndpoint extends SpecialPage {
                             break;
                         case 'rdfxml':
                             if ( $this->requestdata->querytype != 'construct' ) {
-                                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+                                $wgOut->addHTML( $this->formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
                                 $this->printHTMLForm();
                             } else {
                                $this->prepareCreatingDownloadableFile();
@@ -277,13 +277,13 @@ class SPARQLEndpoint extends SpecialPage {
         global $wgOut;
 
         if ( $this->wrongEditTokenDetected() ) {
-            $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
+            $wgOut->addHTML( $this->formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
             return false;
         } else {
             if ( $this->user->hasWriteAccess() ) {
                 return true;
             } else {
-                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
+                $wgOut->addHTML( $this->formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
                 return false;
             }
         }
@@ -317,7 +317,7 @@ class SPARQLEndpoint extends SpecialPage {
             } else {
                 $errortitle = "Permission error";
                 $errormessage = "The current user lacks access either to edit or delete pages (or both) in this wiki.";
-                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( $errortitle, $errormessage ) );
+                $wgOut->addHTML( $this->formatErrorHTML( $errortitle, $errormessage ) );
                 return false;
             }
         }
@@ -435,7 +435,7 @@ class SPARQLEndpoint extends SpecialPage {
             } else {
                 $errormessage = "<p>$sparqlEndpointErrors</p>";
             }
-            RDFIOUtils::showErrorMessage( "SPARQL Error", $errormessage );
+            $this->showErrorMessage( "SPARQL Error", $errormessage );
         }
     }
 

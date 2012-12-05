@@ -68,7 +68,7 @@ $rdfioDir = dirname( __FILE__ );
 include_once $rdfioDir . '/specials/SpecialRDFImport.php';
 include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated yet ...
 
-$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
+#$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
 $wgAutoloadClasses['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
 #$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
 #$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';

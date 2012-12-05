@@ -15,6 +15,9 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$wikiPages = array();
 		$propPages = array();
 		
+		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+		$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+
 		# Loop over the triples in the ARC2 triple array structure
 		foreach ( $arc2Triples as $triple ) {
 			
@@ -24,15 +27,10 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$objectUriOrValue = $triple['o'];
 			$objectType = $triple['o_type'];
 
-			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
-			$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
-
-
 			# Convert URI:s to wiki titles
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
 			# Separate handling for properties
 			$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
-
 
 			$propertyTitleWithNamespace = 'Property:' . $propertyTitle; 
 
@@ -63,7 +61,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$this->mWikiPages = $wikiPages;
 		$this->mPropPages = $propPages;
 	}
-
 
 	public function getWikiPages() {
 		return $this->mWikiPages;
@@ -135,20 +132,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 		return $pagesArray;
 	}
-	
-	//
-	// ---------- SOME JUNK THAT MIGHT BE USED OR NOT ----------------
-	//
-	
-	// function endsWithColon( $str ) {
-	// 	return substr( $str, -1 ) == ':';
-	// }
-
-	// # Convenience methods
-
-	// public function isURIResolverURI( $uri ) {
-	// 	return ( preg_match( '/Special:URIResolver/', $uri ) > 0 );
-	// }
 	
 }
 

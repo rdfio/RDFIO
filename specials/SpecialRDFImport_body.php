@@ -194,6 +194,26 @@ class RDFImport extends SpecialPage {
 			';
 		return $exampleDataJs;
 	}
+	
+	static function showErrorMessage( $title, $message ) {
+		global $wgOut;
+		$errorhtml = $this->formatErrorHTML( $title, $message );
+		$wgOut->addHTML( $errorhtml );
+	}
+	
+	/**
+	 * Format an error message with HTML, based on a message title and the message
+	 * @param string $title
+	 * @param string $message
+	 * @return string $errorhtml
+	 */
+	static function formatErrorHTML( $title, $message ) {
+		$errorhtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #D8000C; background-color: #FFBABA;">
+                	 <h3>' . $title . '</h3>
+                	 <p>' . $message . '</p>
+                	 </div>';
+		return $errorhtml;
+	}
 
 }
 
