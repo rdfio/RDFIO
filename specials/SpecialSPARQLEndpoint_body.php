@@ -40,7 +40,7 @@ class SPARQLEndpoint extends SpecialPage {
 
 
             if ( $this->requestdata->querytype == '' ) {
-                $wgOut->addHTML("ERROR: Could not determine query type!");
+                $wgOut->addHTML("<b>ERROR: Could not determine query type!</b> (If you are trying to do an import, please remember that the insert syntax is: \"INSERT INTO &lt;&gt; { &lt;triples&gt; }\")");
             } else {
                 switch ( $this->requestdata->querytype ) {
                 case 'insert':
