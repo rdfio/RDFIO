@@ -9,8 +9,6 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		global $wgOut, $wgUser, $wgRequest;
-
 		# Set HTML headers sent to the browser
 		$this->setHeaders();
 
@@ -19,6 +17,7 @@ class RDFImport extends SpecialPage {
 		if ( $requestData->mHasWriteAccess && $requestData->mAction == 'import' ) {
 			$this->importData( $requestData );
 		} else if ( !$requestData->mHasWriteAccess ) {
+			global $wgOut;
 			$wgOut->addHTML("<b>User does not have write access!</b>");
 		} else {
 			$this->outputHTMLForm( $requestData );
@@ -29,33 +28,12 @@ class RDFImport extends SpecialPage {
 	 * Import data into wiki pages
 	 */
 	function importData( $requestData ) {
+		$rdfImporter = new RDFIORDFImporter();
+		$rdfImporter->importRdfXml( $requestData->mImportData );
+
 		global $wgOut;
-
-		# Parse RDF/XML to triples
-		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
-		$arc2rdfxmlparser->parseData( $requestData->mImportData );
-
-		# Receive the data
-		$triples = $arc2rdfxmlparser->triples;
-		$tripleindex = $arc2rdfxmlparser->getSimpleIndex();
-		$namespaces = $arc2rdfxmlparser->nsp;
-		
-		# Parse data from ARC2 triples to custom data structure holding wiki pages
-		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
-		$arc2towikiconverter->convert( $triples, $tripleindex, $namespaces );
-		
-		# Get data from parser
-		$wikipages = $arc2towikiconverter->getWikiPages();
-		$proppages = $arc2towikiconverter->getPropertyPages();
-		
-		# Import pages into wiki
-		$smwDataImporter = new RDFIOSMWDataImporter();
-		$smwDataImporter->import( $wikipages );
-		$smwDataImporter->import( $proppages );
-		
-		$wgOut->addHTML('Tried to import the stuff ...');
+		$wgOut->addHTML('Tried to import the data ...');
 	}
-
 
 	/**
 	 * Get data from the request object and store it in class variables
@@ -74,6 +52,7 @@ class RDFImport extends SpecialPage {
 		$requestData->mDataFormat = $wgRequest->getText( 'dataformat' );
 		$requestData->mHasWriteAccess = $this->userHasWriteAccess();
 		$requestData->mArticlePath = $wgArticlePath;
+		
 		return $requestData;
 	}
 

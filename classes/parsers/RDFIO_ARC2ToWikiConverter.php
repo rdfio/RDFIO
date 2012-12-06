@@ -15,6 +15,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$wikiPages = array();
 		$propPages = array();
 		
+		# Instatiate wiki title converrters (converting from URI and related RDF data to Wiki Title)
 		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 		$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 

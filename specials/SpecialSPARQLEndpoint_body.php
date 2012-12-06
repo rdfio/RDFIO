@@ -38,7 +38,11 @@ class SPARQLEndpoint extends SpecialPage {
                 $this->urisToEquivURIsInQuery();
             }
 
-            switch ( $this->requestdata->querytype ) {
+
+            if ( $this->requestdata->querytype == '' ) {
+                $wgOut->addHTML("ERROR: Could not determine query type!");
+            } else {
+                switch ( $this->requestdata->querytype ) {
                 case 'insert':
                     $this->importTriplesInQuery();
                     $this->printHTMLForm();
@@ -74,7 +78,9 @@ class SPARQLEndpoint extends SpecialPage {
                            $this->executeNonEditSparqlQuery();
                            break;
                     }
+                }
             }
+
         } else { // SPARQL query is empty
             $this->printHTMLForm();
         }
@@ -97,7 +103,6 @@ class SPARQLEndpoint extends SpecialPage {
             $tripleindex = $output_structure['result'];
             $triples = ARC2::getTriplesFromIndex( $tripleindex );
             
-            // TODO: Merge functionality from "Orig URI:s" to "Equiv URI:s"
             if ( $this->requestdata->outputequivuris ) {
                 // FIXME: Why is this uncommented???
                 # $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
@@ -396,18 +401,8 @@ class SPARQLEndpoint extends SpecialPage {
         if ( $this->checkAllowInsert() ) {
             $triples = $this->requestdata->query_parsed['query']['construct_triples'];
             
-            # Parse data from ARC2 triples to custom data structure holding wiki pages
-            $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
-            $arc2towikiconverter->convert( $triples, $tripleindex="", $namespaces="" );
-            
-            # Get data from parser
-            $wikipages = $arc2towikiconverter->getWikiPages();
-            $proppages = $arc2towikiconverter->getPropertyPages();
-            
-            # Import pages into wiki
-            $smwDataImporter = new RDFIOSMWDataImporter();
-            $smwDataImporter->import( $wikipages );
-            $smwDataImporter->import( $proppages );
+            $rdfImporter = new RDFIORDFImporter();
+            $rdfImporter->importTriples( $triples );
         }
     }
 
@@ -435,7 +430,7 @@ class SPARQLEndpoint extends SpecialPage {
             } else {
                 $errormessage = "<p>$sparqlEndpointErrors</p>";
             }
-            $this->showErrorMessage( "SPARQL Error", $errormessage );
+            $wgOut->addHTML( "SPARQL Error: " . $errormessage );
         }
     }
 
@@ -831,6 +826,7 @@ Output Equivalent
 class RDFIOSPARQLRequestData {
     function __construct() {
         $this->query = '';
+        $this->querytype = '';
         $this->querybyequivuri = false;
         $this->outputequivuris = false;
         $this->outputtype = '';
