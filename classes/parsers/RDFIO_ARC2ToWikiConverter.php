@@ -15,7 +15,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$wikiPages = array();
 		$propPages = array();
 		
-		# Instatiate wiki title converrters (converting from URI and related RDF data to Wiki Title)
+		# Instatiate wiki title converters (converting from URI and related RDF data to Wiki Title)
 		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 		$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 
@@ -49,6 +49,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 					break;
 				default:
 					die("Unknown type of object in triple! (not 'uri' nor 'literal')!");
+					// TODO: Handle error more gracefully!
 			}
 			
 			$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );

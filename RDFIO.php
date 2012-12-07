@@ -87,3 +87,5 @@ $wgAutoloadClasses['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/parsers/RD
 $wgAutoloadClasses['RDFIORDFImporter'] = $rdfioDir . '/classes/RDFIO_RDFImporter.php';
 $wgAutoloadClasses['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToWikiConverter.php';
 $wgAutoloadClasses['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
+$wgAutoloadClasses['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
+$wgAutoloadClasses['RDFIOPropertyPage'] = $rdfioDir . '/classes/RDFIO_PropertyPage.php';
