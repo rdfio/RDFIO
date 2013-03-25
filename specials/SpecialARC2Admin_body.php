@@ -18,7 +18,7 @@ class ARC2Admin extends SpecialPage {
 			$this->issysop = false;
 		}
 
-		parent::__construct( 'SpecialARC2Admin' );
+		parent::__construct( 'ARC2Admin' );
     }
 
     function execute( $par ) {

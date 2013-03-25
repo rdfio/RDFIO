@@ -6,7 +6,9 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 global $IP;
 
-require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/SMW_SQLStore2.php" );
+#require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/SMW_SQLStore2.php" );
+require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/compatSQLStore/SMW_SQLStore2.php" );
+# SMW_SQLStore3.php SemanticMediaWiki/includes/storage/SQLStore/SMW_SQLStore3.php
 
 /**
  * SMWARC2Store extends SMWSQLStore2 and forwards all update/delete to ARC2 via SPARQL+
