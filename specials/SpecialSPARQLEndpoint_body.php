@@ -222,6 +222,7 @@ class SPARQLEndpoint extends SpecialPage {
             $triple['s'] = 's';
             $triple['s_type'] = 'var';
             $newtriple = $this->createEquivURITriple( $s, 's' );
+            // TODO: Shouldn't the new triple replace the old one, not just be added?
             $query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
         }
         if ( $p_type === 'uri' ) {

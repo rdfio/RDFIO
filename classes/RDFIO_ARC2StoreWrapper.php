@@ -46,7 +46,7 @@ class RDFIOARC2StoreWrapper {
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
             $rows = $rs['result']['rows'];
-            // @todo FIXME: Handle this case more nicely
+            // FIXME: Handle this case more nicely
             if (empty($rows)) {
 	            echo( "<pre>No rows returned in getEquivURIForUri() for $uri</pre>" );
             } else {

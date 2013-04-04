@@ -76,7 +76,7 @@ class SMWARC2Store extends SMWSQLStore2 {
             $pre_str = "";
 
             if ( $object instanceof SMWExpLiteral ) {
-            	// @todo FIXME: Add escaping for results of getLexicalForm()?
+            	// FIXME: Add escaping for results of getLexicalForm()?
                 $obj_str = "\"" . $object->getLexicalForm() . "\"" . ( ( $object->getDatatype() == "" ) ? "" : "^^<" . $object->getDatatype() . ">" );
             } elseif ( $object instanceof SMWExpResource ) {
                 $obj_str = "<" . SMWExporter::expandURI( $object->getUri() ) . ">";
