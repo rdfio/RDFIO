@@ -58,8 +58,8 @@ class SPARQLEndpoint extends SpecialPage {
                     switch ( $this->requestdata->outputtype ) {
                         case 'htmltab':
                             $this->printHTMLForm();
-                            if ( $this->shouldShowQuery() ) {
-                                $this->printQueryStructure();
+                            if ( $this->shouldShowQuery() ) { // TODO: Remove?
+                                $this->printQueryStructure(); 
                             } else {
                                 $this->executeNonEditSparqlQuery();
                             }
@@ -190,7 +190,10 @@ class SPARQLEndpoint extends SpecialPage {
 
         $requestData->outputtype = $wgRequest->getText( 'output' );
         if ( $requestData->query !== '' ) {
-            $this->sparqlparser->parse( $requestData->query, '' );
+        	// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
+        	$requestDataAsSparqlPlus = str_replace("INSERT DATA", "INSERT INTO <>", $requestData->query);
+        	// Parse the SPARQL query string into array structure
+            $this->sparqlparser->parse( $requestDataAsSparqlPlus, '' );
             $requestData->query_parsed = $this->sparqlparser->getQueryInfos();
             if ( array_key_exists( 'query', $requestData->query_parsed ) ) {
                 $requestData->querytype = $requestData->query_parsed['query']['type'];
