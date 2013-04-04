@@ -51,14 +51,18 @@ class RDFIOSMWPageWriter {
 			foreach ( $facts as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
-
-				if ( !array_key_exists( $pred, $womPropertyObjs ) ) {
+				
+				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
+				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
+				if ( $hasLocalUrl && $isEquivURI ) {
+					// Don't update Equivalent URI if the URL is a local URL (thus containing
+					// "Special:URIResolver").
+				} else if ( !array_key_exists( $pred, $womPropertyObjs ) ) { // If property already exists ...
 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
-					
-					$wikiContent .= $newPropertiesAsWikiText; // FIXME: Should not overwrite $wikiContent, only add to.
-				} else { // FIXME: Skip, if $obj contains "Special:URIResolver"
+					$wikiContent .= $newPropertiesAsWikiText; 
+				} else { 
 					$womPropertyObj = $womPropertyObjs[$pred];
 					
 					// Store the old wiki text for the fact, in order to replace later
