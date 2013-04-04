@@ -47,17 +47,18 @@ class RDFIOSMWPageWriter {
 			
 			$newPropertiesAsWikiText = "\n";
 
+			$wikiContent = $womWikiPage->getWikiText();
 			foreach ( $facts as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
 
 				if ( !array_key_exists( $pred, $womPropertyObjs ) ) {
-					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' );
+					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 					
-					$wikiContent = $womWikiPage->getWikiText() . $newPropertiesAsWikiText;
-				} else {
+					$wikiContent .= $newPropertiesAsWikiText; // FIXME: Should not overwrite $wikiContent, only add to.
+				} else { // FIXME: Skip, if $obj contains "Special:URIResolver"
 					$womPropertyObj = $womPropertyObjs[$pred];
 					
 					// Store the old wiki text for the fact, in order to replace later
@@ -70,7 +71,6 @@ class RDFIOSMWPageWriter {
 					$newPropertyText = $womPropertyObj->getWikiText();
 						
 					// Replace the existing property with new value
-					$wikiContent = $womWikiPage->getWikiText();
 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
 				}
 			}			
