@@ -28,7 +28,12 @@ class SPARQLEndpoint extends SpecialPage {
         global $wgOut;
 
         $this->setHeaders();
-        $this->requestdata = $this->handleRequestData();
+        try {
+        	$this->requestdata = $this->handleRequestData();
+            #$wgOut->addWikiText("Successfully parsed SPARQL query!");
+		} catch (Exception $e) {
+       		$this->failMsg($e->getMessage());
+       	}
 
         if ( $this->hasSparqlQuery() ) {
 
@@ -40,11 +45,19 @@ class SPARQLEndpoint extends SpecialPage {
 
 
             if ( $this->requestdata->querytype == '' ) {
-                $wgOut->addHTML("<b>ERROR: Could not determine query type!</b> (If you are trying to do an import, please remember that the insert syntax is: \"INSERT INTO &lt;&gt; { &lt;triples&gt; }\")");
+                $wgOut->addHTML("<b>ERROR: Could not determine query type!</b><br>It seems you have a problem with your query!");
             } else {
                 switch ( $this->requestdata->querytype ) {
                 case 'insert':
-                    $this->importTriplesInQuery();
+                	try {
+                		$this->importTriplesInQuery();
+	                	$this->successMsg("Successfully imported the triples!");
+					} catch (MWException $e) {
+                		$this->failMsg("ERROR: Could not perform import!");
+                		$this->failMsg("Error message:");
+                		$this->failMsg($e->getMessage());
+                	}
+                	 
                     $this->printHTMLForm();
                     break;
                 case 'delete':
@@ -168,7 +181,8 @@ class SPARQLEndpoint extends SpecialPage {
      * in class variables
      */
     function handleRequestData() {
-        global $wgRequest,
+        global $wgOut,
+               $wgRequest,
                $rdfiogQueryByEquivURI,
                $rdfiogOutputEquivURIs;
 
@@ -194,6 +208,14 @@ class SPARQLEndpoint extends SpecialPage {
         	$requestDataAsSparqlPlus = str_replace("INSERT DATA", "INSERT INTO <>", $requestData->query);
         	// Parse the SPARQL query string into array structure
             $this->sparqlparser->parse( $requestDataAsSparqlPlus, '' );
+
+            // Handle errors
+            $errors = $this->sparqlparser->getErrors();
+            if ( count($errors) > 0 ) { 
+            	$errorsString = implode( "<br>", $errors );
+            	throw new Exception("Error parsing SPARQL query:<br>" . $errorsString);
+            }
+            
             $requestData->query_parsed = $this->sparqlparser->getQueryInfos();
             if ( array_key_exists( 'query', $requestData->query_parsed ) ) {
                 $requestData->querytype = $requestData->query_parsed['query']['type'];
@@ -824,7 +846,16 @@ Output Equivalent
     function arrayEmpty( $array ) {
         return ( count( $array ) < 1 );
     }
-
+    
+    function successMsg( $message ) {
+    	global $wgOut;
+    	$wgOut->addHTML('<span style="color: green;">' . $message . '</span><br>');
+    }
+    function failMsg( $message ) {
+    	global $wgOut;
+    	$wgOut->addHTML('<span style="color: red;">' . $message . '</span><br>');
+    }
+    
 }
 
 class RDFIOSPARQLRequestData {

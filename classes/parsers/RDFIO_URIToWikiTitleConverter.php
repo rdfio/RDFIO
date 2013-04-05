@@ -25,6 +25,7 @@ class RDFIOURIToTitleConverter {
 	 * @return string $wikiTitle
 	 */
 	public function convert( $uriToConvert ) {
+		global $wgOut;
 
 		# Define the conversion functions to try, in 
 		# specified order (the first one first).
@@ -42,7 +43,8 @@ class RDFIOURIToTitleConverter {
 			try {
 				$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
 				// DEBUG
-				echo( "Succeeded to find title for <b>$uriToConvert</b> using " . $currentStrategy . "()<br>");
+				$wgOut->addWikiText("Succeeded to find title ($wikiPageTitle) for $uriToConvert using " . $currentStrategy . "()");
+				
 				return $wikiPageTitle;
 			} catch ( WikiTitleNotFoundException $e ) {
 				// echo( "Failed to find title for uri <b>$uriToConvert</b>: " . $e->getMessage() . "<br>" );

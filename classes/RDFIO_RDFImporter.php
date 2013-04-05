@@ -26,6 +26,8 @@ class RDFIORDFImporter {
 	// TODO: Add other formats here later ...
 
 	private function importFromArc2Data( $triples, $tripleIndex="", $namespaces="" ) {
+		global $wgOut;
+		
         # Parse data from ARC2 triples to custom data structure holding wiki pages
         $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
         $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
