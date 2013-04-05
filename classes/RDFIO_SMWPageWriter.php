@@ -52,18 +52,21 @@ class RDFIOSMWPageWriter {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
 				
+				$predTitle = Title::newFromText( $pred );
+				$predTitleWikified = $predTitle->getText();
+				
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
 				if ( $hasLocalUrl && $isEquivURI ) {
 					// Don't update Equivalent URI if the URL is a local URL (thus containing
 					// "Special:URIResolver").
-				} else if ( !array_key_exists( $pred, $womPropertyObjs ) ) { // If property already exists ...
+				} else if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 					$wikiContent .= $newPropertiesAsWikiText; 
 				} else { 
-					$womPropertyObj = $womPropertyObjs[$pred];
+					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
 					
 					// Store the old wiki text for the fact, in order to replace later
 					$oldPropertyText = $womPropertyObj->getWikiText();
