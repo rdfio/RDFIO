@@ -64,7 +64,6 @@ class RDFIOSMWPageWriter {
 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
-					$wikiContent .= $newPropertiesAsWikiText; 
 				} else { 
 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
 					
@@ -81,6 +80,7 @@ class RDFIOSMWPageWriter {
 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
 				}
 			}			
+			$wikiContent .= $newPropertiesAsWikiText;
 			// Write changes (or additions) to article
 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 		}
