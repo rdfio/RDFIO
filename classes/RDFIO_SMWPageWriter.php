@@ -29,6 +29,7 @@ class RDFIOSMWPageWriter {
 			 * Get property objects from WOM
 			 */
 			$womPropertyObjs = array();
+			$womCategoryObjs = array();
 			$wikiContent = "";
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
@@ -38,7 +39,11 @@ class RDFIOSMWPageWriter {
 			 */
 			if ( $mwTitleObj->exists() ) {
 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
-
+				
+				# Get wiki text
+				$wikiContent = $womWikiPage->getWikiText();
+				
+				# Get properties
 				try{
 					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
 					// use page object functions
@@ -49,10 +54,20 @@ class RDFIOSMWPageWriter {
 					}
 				} catch( Exception $e ) {
 					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
-					throw $e; // TODO: Really?
 				}
 				
-				$wikiContent = $womWikiPage->getWikiText();
+				# Get categories
+				try {
+					$categoryObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//category' );
+					foreach ( $categoryObjIds as $categoryObjId ) {
+						$womCategoryObj = $womWikiPage->getObject( $categoryObjId );
+						$womCategoryName = $womCategoryObj->getName();
+						$womCategoryObjs[$womCategoryName] = $womCategoryObj; 
+					}
+				} catch( Exception $e ) {
+					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+				}
+				
 			}
 			
 
@@ -99,32 +114,23 @@ class RDFIOSMWPageWriter {
 			 * Add categories to the wiki text
 			 */
 			
-// 			foreach( $categories as $category ) {
+			$newCategoriesAsWikiText = "\n";
+			foreach( $categories as $category ) {
 
-// 				$categoryTitle = Title::newFromText( $category );
-// 				$categoryTitleWikified = $categoryTitle->getText();
+				$categoryTitle = Title::newFromText( $category );
+				$categoryTitleWikified = $categoryTitle->getText();
 				
-// 				if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
-// 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
-// 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
-// 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
-// 				} else {
-// 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
-						
-// 					// Store the old wiki text for the fact, in order to replace later
-// 					$oldPropertyText = $womPropertyObj->getWikiText();
-						
-// 					// Create an updated property
-// 					$objTitle = Title::newFromText( $obj );
-// 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
-// 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
-// 					$newPropertyText = $womPropertyObj->getWikiText();
+				if ( !array_key_exists( $categoryTitleWikified, $womCategoryObjs ) ) { // If property already exists ...
+					$newWomCategoryObj = new WOMCategoryModel( $categoryTitleWikified );
+					$newCategoryAsWikiText = $newWomCategoryObj->getWikiText();
+					$newCategoriesAsWikiText .= $newCategoryAsWikiText . "\n";
+				} 
+			}
+			$wikiContent .= $newCategoriesAsWikiText;
 				
-// 					// Replace the existing property with new value
-// 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
-// 				}
-// 			}
-			
+			/*
+			 * Write to wiki
+			 */
 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 		}
 	}

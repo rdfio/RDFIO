@@ -39,13 +39,16 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			# Convert URI:s to wiki titles
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
 
-			if ( $propertyURI === 'rdf:type' ) {
+			if ( $propertyURI === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' ) {
 
 				# Add categorization of page
-				$categoryPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
+				$categoryPageTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
 				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
+				# Add data for the subject page
 				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $categoryPageTitleWithNamespace ); // TODO: Use i18n:ed NS
-
+				# Add data for the category page
+				$this->addDataToPage( $categoryPageTitleWithNamespace, $objectUriOrValue ); // TODO: Use i18n:ed NS
+				
 			} else {
 				# Separate handling for properties
 				$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
