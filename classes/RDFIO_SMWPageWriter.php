@@ -32,6 +32,7 @@ class RDFIOSMWPageWriter {
 			$wikiContent = "";
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
+			
 			/*
 			 * If page exists, get it's data from WOM
 			 */
@@ -54,13 +55,12 @@ class RDFIOSMWPageWriter {
 				$wikiContent = $womWikiPage->getWikiText();
 			}
 			
-			
-			$newPropertiesAsWikiText = "\n";
 
 			/*
 			 * Add facts (properties) to the wiki text
 			 */			
 
+			$newPropertiesAsWikiText = "\n";
 			foreach ( $facts as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
@@ -94,7 +94,6 @@ class RDFIOSMWPageWriter {
 				}
 			}			
 			$wikiContent .= $newPropertiesAsWikiText;
-			// Write changes (or additions) to article
 			
 			/*
 			 * Add categories to the wiki text
