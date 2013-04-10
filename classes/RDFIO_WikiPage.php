@@ -43,6 +43,10 @@ class RDFIOWikiPage {
 	public function getFacts() {
 		return $this->facts;	
 	}
+
+	public function getCategories() {
+		return $this->categories;
+	}
 	
 	/*
 	 * Private ----------------------------------------------------------------

@@ -43,13 +43,14 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 				# Add categorization of page
 				$categoryPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
-				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $categoryPageTitle );
+				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
+				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $categoryPageTitleWithNamespace ); // TODO: Use i18n:ed NS
 
 			} else {
 				# Separate handling for properties
 				$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
 				# Add the property namespace to property title
-				$propertyTitleWithNamespace = 'Property:' . $propertyTitle;
+				$propertyTitleWithNamespace = 'Property:' . $propertyTitle; // TODO: Use i18n:ed NS
 					
 				/*
 				 * Decide whether to create a page for the linked "object" or not,

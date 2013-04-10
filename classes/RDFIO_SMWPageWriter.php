@@ -7,47 +7,60 @@ class RDFIOSMWPageWriter {
 	}
 
 	public function import( $wikiPages ) {
+		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			
-			// Sanitize the title a bit
+			# Sanitize the title a bit
 			$wikiTitle = str_replace('[','',$wikiTitle);
 			$wikiTitle = str_replace(']','',$wikiTitle);
 			
+			# Get data from Wiki Page object
 			$facts = $wikiPage->getFacts();
 			$equivuris = $wikiPage->getEquivalentUris();
-			
+			$categories = $wikiPage->getCategories();
+				
 			# Populate the facts array also with the equivalent URI "facts"
 			foreach ( $equivuris as $equivuri ) {
 				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivuri );
 			}
 			
+			/*
+			 * Get property objects from WOM
+			 */
+			$womPropertyObjs = array();
+			$wikiContent = "";
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
-			if ( !$mwTitleObj->exists() ) {
-				// Create stub article 
-				$this->writeToArticle( $wikiTitle, '', 'Article Created by RDFIO' );
-			} 
-			
-			$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
-			$womPropertyObjs = array();
+			/*
+			 * If page exists, get it's data from WOM
+			 */
+			if ( $mwTitleObj->exists() ) {
+				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
 
-			try{
-				$objIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
-				// use page object functions
-				foreach ( $objIds as $objId ) {
-					$womPropertyObj = $womWikiPage->getObject( $objId );
-					$womPropertyName = $womPropertyObj->getPropertyName();
-					$womPropertyObjs[$womPropertyName] = $womPropertyObj;
+				try{
+					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
+					// use page object functions
+					foreach ( $propertyObjIds as $propertyObjId ) {
+						$womPropertyObj = $womWikiPage->getObject( $propertyObjId );
+						$womPropertyName = $womPropertyObj->getPropertyName();
+						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
+					}
+				} catch( Exception $e ) {
+					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+					throw $e; // TODO: Really?
 				}
-			} catch( Exception $e ) {
-				// @TODO Take better care of this?
-				// echo( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' ); 
+				
+				$wikiContent = $womWikiPage->getWikiText();
 			}
+			
 			
 			$newPropertiesAsWikiText = "\n";
 
-			$wikiContent = $womWikiPage->getWikiText();
+			/*
+			 * Add facts (properties) to the wiki text
+			 */			
+
 			foreach ( $facts as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
@@ -82,6 +95,37 @@ class RDFIOSMWPageWriter {
 			}			
 			$wikiContent .= $newPropertiesAsWikiText;
 			// Write changes (or additions) to article
+			
+			/*
+			 * Add categories to the wiki text
+			 */
+			
+// 			foreach( $categories as $category ) {
+
+// 				$categoryTitle = Title::newFromText( $category );
+// 				$categoryTitleWikified = $categoryTitle->getText();
+				
+// 				if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
+// 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
+// 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
+// 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
+// 				} else {
+// 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
+						
+// 					// Store the old wiki text for the fact, in order to replace later
+// 					$oldPropertyText = $womPropertyObj->getWikiText();
+						
+// 					// Create an updated property
+// 					$objTitle = Title::newFromText( $obj );
+// 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
+// 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
+// 					$newPropertyText = $womPropertyObj->getWikiText();
+				
+// 					// Replace the existing property with new value
+// 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
+// 				}
+// 			}
+			
 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 		}
 	}
