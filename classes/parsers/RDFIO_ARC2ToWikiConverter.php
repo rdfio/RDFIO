@@ -49,6 +49,19 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				# Add data for the category page
 				$this->addDataToPage( $categoryPageTitleWithNamespace, $objectUriOrValue ); // TODO: Use i18n:ed NS
 				
+			} else if ( $propertyURI === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
+
+				# Add categorization of page
+				$categoryPageTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
+				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
+				$wikiPageTitleWithNamespace = 'Category:' . $wikiPageTitle;
+
+				# Add data for the subject page
+				$this->addDataToPage( $wikiPageTitleWithNamespace, $subjectURI, $fact = null, $categoryPageTitleWithNamespace ); 
+				
+				# Add data for the category page
+				$this->addDataToPage( $categoryPageTitleWithNamespace, $objectUriOrValue ); 
+			
 			} else {
 				# Separate handling for properties
 				$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );

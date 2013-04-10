@@ -108,6 +108,10 @@ class RDFImport extends SpecialPage {
        rdf:about=\\"http://www.countries.org/onto/USA\\">\\n\
             <rdfs:label>USA</rdfs:label>\\n\
     </rdf:Description>\\n\
+\\n\
+    <rdf:Description rdf:about=\\"http://www.countries.org/onto/Albums\\">\\n\
+         <rdfs:subClassOf rdf:resource=\\"http://www.countries.org/onto/MediaCollections\\"/>\\n\
+    </rdf:Description>\\n\
 </rdf:RDF>';
 	}
 
