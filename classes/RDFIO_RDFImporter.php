@@ -30,16 +30,11 @@ class RDFIORDFImporter {
 		
         # Parse data from ARC2 triples to custom data structure holding wiki pages
         $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
-        $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
-        
-        # Get data from parser
-        $wikipages = $arc2towikiconverter->getWikiPages();
-        $proppages = $arc2towikiconverter->getPropertyPages();
+        $wikipages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
         
         # Import pages into wiki
         $smwPageWriter = new RDFIOSMWPageWriter();
         $smwPageWriter->import( $wikipages );
-        $smwPageWriter->import( $proppages );
 	}
 
 }

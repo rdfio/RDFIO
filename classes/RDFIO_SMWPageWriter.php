@@ -14,8 +14,8 @@ class RDFIOSMWPageWriter {
 			$wikiTitle = str_replace('[','',$wikiTitle);
 			$wikiTitle = str_replace(']','',$wikiTitle);
 			
-			$facts = $wikiPage['facts'];
-			$equivuris = $wikiPage['equivuris'];
+			$facts = $wikiPage->getFacts();
+			$equivuris = $wikiPage->getEquivalentUris();
 			
 			# Populate the facts array also with the equivalent URI "facts"
 			foreach ( $equivuris as $equivuri ) {
