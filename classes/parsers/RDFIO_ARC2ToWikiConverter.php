@@ -19,7 +19,12 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 		$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 
+		# ========================================================
+		# THE MAIN LOOP
+		# ========================================================
 		# Loop over the triples in the ARC2 triple array structure
+		# and perform the actual conversion.
+		# ========================================================
 		foreach ( $arc2Triples as $triple ) {
 			
 			# Store triple array members as better named variables
@@ -59,7 +64,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			# Create a fact array
 			$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
 				
-			# Add to array
 			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
 			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
 		}
@@ -78,9 +82,36 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	}
 
 	/* 
-	 * PRIVATE FUNCTIONS
+	 * ----------------- PRIVATE FUNCTIONS -------------------
 	 */ 
-	
+
+	/**
+	 * Collect into custom array structure, representing the wiki pages.
+     * The array structure looks like this:
+     *
+     * Array
+     * (
+     *    [A wiki page title] => Array
+     *        (
+     *            [equivuris] => Array
+     *                (
+     *                    [0] => http://www.recshop.fake/cd/Empire Burlesque
+     *                )
+     *
+     *            [facts] => Array
+     *                (
+     *                    [0] => Array
+     *                        (
+     *                            [p] => <predicate name>
+     *                            [o] => <object name>
+     *                        )
+	 * 
+	 * @param string $pageTitle
+	 * @param string $equivURI
+	 * @param string $fact
+	 * @param array $pagesArray
+	 * @return array
+	 */
 	private function addPagesAndFactsToPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
 
 		# HELPER FUNCTIONS #################################################
