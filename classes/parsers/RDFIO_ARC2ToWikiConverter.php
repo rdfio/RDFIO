@@ -32,9 +32,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
 			# Separate handling for properties
 			$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
-
+			# Add the property namespace to property title 
 			$propertyTitleWithNamespace = 'Property:' . $propertyTitle; 
-
+			
+			/*
+			 * Decide whether to create a page for the linked "object" or not,
+			 * depending on object datatype (uri or literal) 
+			 */
 			$objectTitle = '';
 			switch ( $objectType ) {
 				case 'uri':
@@ -52,14 +56,15 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 					// TODO: Handle error more gracefully!
 			}
 			
+			# Create a fact array
 			$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
 				
+			# Add to array
 			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
 			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
-			// if o is an URI, also create object page
 		}
 		
-		// Store in class variable
+		# Store in class variable
 		$this->mWikiPages = $wikiPages;
 		$this->mPropPages = $propPages;
 	}
@@ -72,8 +77,9 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		return $this->mPropPages;
 	}
 
-	// PRIVATE FUNCTIONS
-	
+	/* 
+	 * PRIVATE FUNCTIONS
+	 */ 
 	
 	private function addPagesAndFactsToPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
 
