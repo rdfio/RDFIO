@@ -33,39 +33,56 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$objectUriOrValue = $triple['o'];
 			$objectType = $triple['o_type'];
 
+			/*
+			 * TODO: Add detection of category properties here!
+			 * 
+			 *  These properties should be handled in a special way:
+			 *  - rdf:type
+			 *  - rdfs:subClassOf
+			 *  
+			 */
+			
 			# Convert URI:s to wiki titles
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
-			# Separate handling for properties
-			$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
-			# Add the property namespace to property title 
-			$propertyTitleWithNamespace = 'Property:' . $propertyTitle; 
-			
-			/*
-			 * Decide whether to create a page for the linked "object" or not,
-			 * depending on object datatype (uri or literal) 
-			 */
-			$objectTitle = '';
-			switch ( $objectType ) {
-				case 'uri':
-					// @TODO: $objectType also decide data type of the property like these: 
-					//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes 
-					//        ?
-					$objectTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
-					$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
-					break;
-				case 'literal':
-					$objectTitle = $objectUriOrValue;
-					break;
-				default:
-					die("Unknown type of object in triple! (not 'uri' nor 'literal')!");
-					// TODO: Handle error more gracefully!
-			}
-			
-			# Create a fact array
-			$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
+
+			if ( $propertyURI === 'rdf:type' ) {
+				$categoryPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
+				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
+				$wikiPages = $this->addCategoryPagesToPagesArray( $wikiPageTitle, $subjectURI, $categoryPageTitle, $wikiPages );
+			} else {
+				# Separate handling for properties
+				$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
+				# Add the property namespace to property title
+				$propertyTitleWithNamespace = 'Property:' . $propertyTitle;
+					
+				/*
+				 * Decide whether to create a page for the linked "object" or not,
+				* depending on object datatype (uri or literal)
+				*/
+				$objectTitle = '';
+				switch ( $objectType ) {
+					case 'uri':
+						// @TODO: $objectType also decide data type of the property like these:
+						//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes
+						//        ?
+						$objectTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
+						$wikiPages = $this->addPagesAndFactsToPagesArray( $objectTitle, $objectUriOrValue, null, $wikiPages );
+						break;
+					case 'literal':
+						$objectTitle = $objectUriOrValue;
+						break;
+					default:
+						die("Unknown type of object in triple! (not 'uri' nor 'literal')!");
+						// TODO: Handle error more gracefully!
+				}
+					
+				# Create a fact array
+				$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
 				
-			$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
-			$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
+				$wikiPages = $this->addPagesAndFactsToPagesArray( $wikiPageTitle, $subjectURI, $fact, $wikiPages );
+				// TODO: Why is $propertyTitleWithNamespace used here, and not $propertyTitle ?
+				$propPages = $this->addPagesAndFactsToPagesArray( $propertyTitleWithNamespace, $propertyURI, null, $propPages );
+			}
 		}
 		
 		# Store in class variable
@@ -93,9 +110,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
      * (
      *    [A wiki page title] => Array
      *        (
+     *            [categories] => Array
+     *                (
+     *                    [0] => <category name>
+     *                )
      *            [equivuris] => Array
      *                (
-     *                    [0] => http://www.recshop.fake/cd/Empire Burlesque
+     *                    [0] => http://www.some-equiv-uri.org
      *                )
      *
      *            [facts] => Array
@@ -113,64 +134,58 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	 * @return array
 	 */
 	private function addPagesAndFactsToPagesArray( $pageTitle, $equivURI, $fact = null, $pagesArray ) {
-
-		# HELPER FUNCTIONS #################################################
-
-		# Avoid redeclaring helper functions
-		if ( !is_callable('helperFunctionsDefined') ) {
-			# Use as a check whether the helper functions are 
-			# defined or not, to avoid redeclarations
-			function helperFunctionsDefined() { }
-
-			function pagesArrayHasPageWithTitle( $pageTitle, $pagesArray ) {
-				return array_key_exists( $pageTitle, $pagesArray );
-			}
-			function pageWithTitleInPagesArrayHasEquivURI( $equivURI, $pageTitle, $pagesArray ) {
-				return in_array($equivURI, $pagesArray[$pageTitle]['equivuris']);
-			}
-			function addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray ) {
-				$pagesArray[$pageTitle]['facts'][] = $fact;
-				return $pagesArray;
-			}
-			function addEquivURIToPageWithTitleInPagesArray( $equivURI, $pageTitle, $pagesArray ){
-				$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
-				return $pagesArray;
-			}
-			function createNewPageEntryWithFactAndEquivURI( $equivURI, $fact, $pageTitle ){
-				$page = array();
-				$page['equivuris'] = array( $equivURI );
-				if ( !is_null( $fact ) ) {
-					$page['facts'] = array( $fact );
-				} else {
-					$page['facts'] = array();
-				}
-				return $page;
-			}
-			function addPageToPagesArray( $page, $pageTitle, $pagesArray ) {
-				$pagesArray[$pageTitle] = $page;
-				return $pagesArray;
-			}
-		}
-
-		# MAIN CODE START #################################################
-
-		if ( pagesArrayHasPageWithTitle( $pageTitle, $pagesArray ) ) {
-			if ( !pageWithTitleInPagesArrayHasEquivURI( $equivURI, $pageTitle, $pagesArray ) ) {
-				$pagesArray = addEquivURIToPageWithTitleInPagesArray( $equivURI, $pageTitle, $pagesArray );
-			}
-			if ( !is_null( $fact ) ) {
-				$pagesArray = addFactToPageWithTitleInArray( $fact, $pageTitle, $pagesArray );
-			}
-		} else {
-			# Create new entry for the page in the array
-			$page = createNewPageEntryWithFactAndEquivURI( $equivURI, $fact, $pageTitle );
-			$pagesArray = addPageToPagesArray( $page, $pageTitle, $pagesArray );
-		}
-
-		# MAIN CODE END ###################################################
-
+		$pagesArray = $this->ensurePageExistsInPagesArray( $pageTitle, $pagesArray );
+		$pagesArray = $this->addEquivalentURIToPageInPagesArray( $equivURI, $pageTitle, $pagesArray );
+		$pagesArray = $this->addFactToPageInPagesArray( $fact, $pageTitle, $pagesArray );
 		return $pagesArray;
 	}
 	
+	private function addCategoryPagesToPagesArray( $wikiPageTitle, $subjectURI, $categoryPageTitle, $wikiPages ) {
+		// TODO: Implement
+		if ( array_key_exists( $pageTitle, $pagesArray ) ) {
+			// Nothing
+		} else {
+			// Nothing
+		}
+	}
+	
+	/*
+	 * Helper functions
+	 */
+	
+	private function ensurePageExistsInPagesArray( $pageTitle, $pagesArray ) {
+		# Create page array if not exists
+		if ( !array_key_exists( $pageTitle, $pagesArray ) ) {
+			$page = $this->createNewPageArray();
+			$pagesArray[$pageTitle] = $page;
+		}
+		return $pagesArray;
+	}
+	
+	private function addEquivalentURIToPageInPagesArray( $equivURI, $pageTitle, $pagesArray ) {
+		# Add Equivalent URI, if not exists
+		if ( !in_array($equivURI, $pagesArray[$pageTitle]['equivuris']) ) {
+			$pagesArray[$pageTitle]['equivuris'][] = $equivURI;
+		}
+		return $pagesArray;
+	}
+	
+	private function addFactToPageInPagesArray( $fact, $pageTitle, $pagesArray ) {
+		# Add fact (property and object)
+		if ( !is_null( $fact ) ) {
+			// TODO: Detect duplicates?
+			$pagesArray[$pageTitle]['facts'][] = $fact;
+		}
+		return $pagesArray;
+	}
+	
+	private function createNewPageArray() {
+		$page = array();
+		$page['equivuris'] = array();
+		$page['facts'] = array();
+		$page['categories'] = array();
+		return $page;
+	}
+		
 }
 
