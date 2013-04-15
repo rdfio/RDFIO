@@ -28,7 +28,7 @@ class RDFIOARC2StoreWrapper {
      * for property pages
      * @return string
      */
-    function getEquivURIURIForProperty() {
+    function getEquivPropertyURIURI() {
         return 'http://www.w3.org/2002/07/owl#equivalentProperty';
     }
 
@@ -72,7 +72,7 @@ class RDFIOARC2StoreWrapper {
         $equivuris = array();
         $store = $this->m_arcstore;
         if ( $is_property ) {
-            $equivuriuri = $this->getEquivURIURIForProperty();
+            $equivuriuri = $this->getEquivPropertyURIURI();
         } else {
             $equivuriuri = $this->getEquivURIURI();
         }
@@ -100,7 +100,7 @@ class RDFIOARC2StoreWrapper {
         $uri = '';
         $store = $this->m_arcstore;
         if ( $is_property ) {
-        	$equivuriuri = $this->getEquivURIURIForProperty();
+        	$equivuriuri = $this->getEquivPropertyURIURI();
         } else {
         	$equivuriuri = $this->getEquivURIURI();
         }
