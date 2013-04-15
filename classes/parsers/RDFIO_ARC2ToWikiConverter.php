@@ -26,15 +26,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$propertyURI = $triple['p'];
 			$objectUriOrValue = $triple['o'];
 			$objectType = $triple['o_type'];
-
-			/*
-			 * TODO: Add detection of category properties here!
-			 * 
-			 *  These properties should be handled in a special way:
-			 *  - rdf:type
-			 *  - rdfs:subClassOf
-			 *  
-			 */
 			
 			# Convert URI:s to wiki titles
 			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
