@@ -13,7 +13,7 @@ require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/compatSQLStore/
 /**
  * SMWARC2Store extends SMWSQLStore2 and forwards all update/delete to ARC2 via SPARQL+
  * queries. The class was based on JosekiStore in the SparqlExtension, which in turn is
- * losely based on/insipred by RAPStore.
+ * loosely based on/insipred by RAPStore.
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
