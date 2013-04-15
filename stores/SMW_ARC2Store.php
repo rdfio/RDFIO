@@ -17,7 +17,7 @@ require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/compatSQLStore/
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
-class SMWARC2Store extends SMWSQLStore2 {
+class SMWARC2Store extends SMWSQLStore3 {
     protected $arc2store;
 
     public function __construct() {
