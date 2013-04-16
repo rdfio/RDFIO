@@ -282,7 +282,7 @@ class SPARQLEndpoint extends SpecialPage {
      */
     function createEquivURITriple( $uri, $varname, $isproperty = false ) {
         if ( $isproperty ) {
-            $equivuriuri = $this->store->getEquivURIURIForProperty();
+            $equivuriuri = $this->store->getEquivPropertyURIURI();
         } else {
             $equivuriuri = $this->store->getEquivURIURI();
         }
