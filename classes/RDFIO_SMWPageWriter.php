@@ -2,48 +2,40 @@
 
 class RDFIOSMWPageWriter {
 
-	public function __construct() {
-		// ...
-	}
+	public function __construct() {}
 
 	public function import( $wikiPages ) {
 		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-			
-			# Sanitize the title a bit
+			// Sanitize the title a bit
 			$wikiTitle = str_replace('[','',$wikiTitle);
 			$wikiTitle = str_replace(']','',$wikiTitle);
 			
-			# Get data from Wiki Page object
+			// Get data from Wiki Page object
 			$facts = $wikiPage->getFacts();
 			$equivuris = $wikiPage->getEquivalentUris();
 			$categories = $wikiPage->getCategories();
 				
-			# Populate the facts array also with the equivalent URI "facts"
+			// Populate the facts array also with the equivalent URI "facts"
 			foreach ( $equivuris as $equivuri ) {
 				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivuri );
 			}
 			
-			/*
-			 * Get property objects from WOM
-			 */
+			// Get property objects from WOM
 			$womPropertyObjs = array();
 			$womCategoryObjs = array();
 			$wikiContent = "";
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
-			
-			/*
-			 * If page exists, get it's data from WOM
-			 */
+			// If page exists, get it's data from WOM
 			if ( $mwTitleObj->exists() ) {
 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
 				
-				# Get wiki text
+				// Get wiki text
 				$wikiContent = $womWikiPage->getWikiText();
 				
-				# Get properties
+				// Get properties
 				try{
 					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
 					// use page object functions
@@ -53,10 +45,10 @@ class RDFIOSMWPageWriter {
 						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
 					}
 				} catch( Exception $e ) {
-					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
+					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
 				}
 				
-				# Get categories
+				// Get categories
 				try {
 					$categoryObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//category' );
 					foreach ( $categoryObjIds as $categoryObjId ) {
@@ -65,16 +57,12 @@ class RDFIOSMWPageWriter {
 						$womCategoryObjs[$womCategoryName] = $womCategoryObj; 
 					}
 				} catch( Exception $e ) {
-					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 				}
 				
 			}
-			
 
-			/*
-			 * Add facts (properties) to the wiki text
-			 */			
-
+			// Add facts (properties) to the wiki text
 			$newPropertiesAsWikiText = "\n";
 			foreach ( $facts as $fact ) {
 				$pred = $fact['p'];
@@ -110,10 +98,7 @@ class RDFIOSMWPageWriter {
 			}			
 			$wikiContent .= $newPropertiesAsWikiText;
 			
-			/*
-			 * Add categories to the wiki text
-			 */
-			
+			// Add categories to the wiki text
 			$newCategoriesAsWikiText = "\n";
 			foreach( $categories as $category ) {
 
@@ -128,9 +113,7 @@ class RDFIOSMWPageWriter {
 			}
 			$wikiContent .= $newCategoriesAsWikiText;
 				
-			/*
-			 * Write to wiki
-			 */
+			// Write to wiki
 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 		}
 	}
@@ -140,6 +123,5 @@ class RDFIOSMWPageWriter {
 		$mwArticleObj = new Article( $mwTitleObj );
 		$mwArticleObj->doEdit( $content, $summary );
 	}
-
 
 }
