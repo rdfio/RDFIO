@@ -2,20 +2,20 @@
 /**
  * SpecialARC2Admin is a Special page for setting up the database tables for an ARC2 RDF Store
  * @author samuel.lampa@gmail.com
- * @package SMWRDFConnector
+ * @package RDFIO
  */
 class ARC2Admin extends SpecialPage {
 
-	protected $issysop;
+	protected $isSysop;
 
 	function __construct() {
 		global $wgUser;
 
-		$usergroups = $wgUser->getGroups();
-		if ( in_array( 'sysop', $usergroups ) ) {
-			$this->issysop = true;
+		$userGroups = $wgUser->getGroups();
+		if ( in_array( 'sysop', $userGroups ) ) {
+			$this->isSysop = true;
 		} else {
-			$this->issysop = false;
+			$this->isSysop = false;
 		}
 
 		parent::__construct( 'ARC2Admin' );
@@ -29,7 +29,7 @@ class ARC2Admin extends SpecialPage {
 		$output = "";
 
 		# Get request data from, e.g.
-		$rdfio_action = $wgRequest->getText( 'rdfio_action' );
+		$rdfioAction = $wgRequest->getText( 'rdfio_action' );
 
 		# instantiation
 		$store = ARC2::getStore( $smwgARC2StoreConfig );
@@ -38,17 +38,17 @@ class ARC2Admin extends SpecialPage {
 
 		if ( !$store->isSetUp() ) {
 			$output .= "* Store is '''not''' set up\n";
-			if ( $rdfio_action == "setup" ) {
+			if ( $rdfioAction == "setup" ) {
 				if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) ) {
 					die( 'Cross-site request forgery detected!' );
 				} else {
-					if ( $this->issysop ) {
+					if ( $this->isSysop ) {
 						$output .= "* Setting up now ...\n";
 						$store->setUp();
 						$output .= "* Done!\n";
 					} else {
-						$errormessage = "Only sysops can perform this operation!";
-						$wgOut->addHTML( "<pre>Permission Error: " . $errormessage . "</pre>" );
+						$errorMessage = "Only sysops can perform this operation!";
+						$wgOut->addHTML( "<pre>Permission Error: " . $errorMessage . "</pre>" );
 					}
 				}
 			}
