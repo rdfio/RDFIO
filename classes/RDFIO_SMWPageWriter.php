@@ -14,12 +14,12 @@ class RDFIOSMWPageWriter {
 			
 			// Get data from Wiki Page object
 			$facts = $wikiPage->getFacts();
-			$equivuris = $wikiPage->getEquivalentUris();
+			$equivUris = $wikiPage->getEquivalentUris();
 			$categories = $wikiPage->getCategories();
 				
 			// Populate the facts array also with the equivalent URI "facts"
-			foreach ( $equivuris as $equivuri ) {
-				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivuri );
+			foreach ( $equivUris as $equivUri ) {
+				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivUri );
 			}
 			
 			// Get property objects from WOM
