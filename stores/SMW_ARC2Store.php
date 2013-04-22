@@ -132,10 +132,10 @@ class SMWARC2Store extends SMWSQLStore3 {
         $rs = $this->arc2store->query( $q );
         $result = $rs;
 
-        // echo( "<pre>" . $this->unhtmlify( $requestString ) . "</pre>" );
-        // echo( "<pre>ERRORS:<br>");
-        // print_r($this->arc2store->getErrors());
-        // echo("</pre>");
+        $errors = $this->arc2store->getErrors();
+        foreach ( $errors as $error ) {
+        	throw new RDFIOARC2StoreException( $error );
+        }
 
         return $result;
     }
@@ -182,3 +182,4 @@ class SMWARC2Store extends SMWSQLStore3 {
     }
 }
 
+class RDFIOARC2StoreException extends MWException {}

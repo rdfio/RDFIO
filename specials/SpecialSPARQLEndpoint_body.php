@@ -211,9 +211,8 @@ class SPARQLEndpoint extends SpecialPage {
 
             // Handle errors
             $errors = $this->sparqlparser->getErrors();
-            if ( count($errors) > 0 ) { 
-            	$errorsString = implode( "<br>", $errors );
-            	throw new Exception("Error parsing SPARQL query:<br>" . $errorsString);
+            foreach( $errors as $error ) {
+            	throw new MWException("Error parsing SPARQL query: " . $error);
             }
             
             $requestData->query_parsed = $this->sparqlparser->getQueryInfos();
@@ -566,8 +565,9 @@ class SPARQLEndpoint extends SpecialPage {
         // all URIs in un-abbreviated form, so that they
         // can easily be replaced by search-and-replace
         $rdfxml = $ser->getSerializedIndex( $tripleindex );
-        if ( $ser->getErrors() ) {
-            die( "ARC Serializer Error: " . $ser->getErrors() );
+        $errors = $ser->getErrors();
+        foreach( $errors as $error ) {
+        	throw new MWException( "ARC Serializer Error: " . $error );
         }
         return $rdfxml;
     }

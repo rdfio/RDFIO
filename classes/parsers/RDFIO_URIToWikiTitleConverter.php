@@ -1,6 +1,6 @@
 <?php
 
-class WikiTitleNotFoundException extends Exception { }
+class WikiTitleNotFoundException extends MWException { }
 
 class RDFIOURIToTitleConverter { 
 
@@ -47,13 +47,12 @@ class RDFIOURIToTitleConverter {
 				
 				return $wikiPageTitle;
 			} catch ( WikiTitleNotFoundException $e ) {
-				// echo( "Failed to find title for uri <b>$uriToConvert</b>: " . $e->getMessage() . "<br>" );
 				// Continue ...
 			}
 		}
 
 		if ( $wikiPageTitle == '' ) {
-			throw new Exception("Failed to convert to Wiki Title: $uriToConvert");
+			throw new MWException("Failed to convert to Wiki Title: $uriToConvert");
 		}
 	}
 

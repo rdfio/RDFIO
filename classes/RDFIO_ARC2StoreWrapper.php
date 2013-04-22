@@ -39,7 +39,7 @@ class RDFIOARC2StoreWrapper {
             }
         } else {
             foreach ( $store->getErrors() as $error ) {
-                echo( "<pre>Error in getEquivURIsForURI: " . $error . "</pre>" );
+                throw new RDFIOARC2StoreWrapperException( $error );
             }
         }
         return $equivUris;
@@ -68,7 +68,7 @@ class RDFIOARC2StoreWrapper {
             }
         } else {
             foreach ( $store->getErrors() as $error ) {
-                echo( "<pre>Error in getURIForEquivURI: " . $error . "</pre>" );
+                throw new RDFIOARC2StoreWrapperException( $error );
             }
         }
         return $uri;
@@ -125,3 +125,6 @@ class RDFIOARC2StoreWrapper {
     }
     
 }
+
+
+class RDFIOARC2StoreWrapperException extends MWException { }
