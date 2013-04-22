@@ -7,58 +7,11 @@
  * @package RDFIO
  */
 class RDFIOARC2StoreWrapper {
-    protected $m_store;
+    protected $arcStore;
 
     function __construct() {
         global $smwgARC2StoreConfig;
-        $this->m_arcstore = ARC2::getStore( $smwgARC2StoreConfig );
-    }
-
-    /**
-     * Get SMWs internal URI for corresponding to the "Equivalent URI" property
-     * @return string
-     */
-    function getEquivURIURI() {
-    	// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
-        return 'http://www.w3.org/2002/07/owl#sameAs';
-    }
-
-    /**
-     * Get SMWs internal URI for corresponding to the "Equivalent URI" property,
-     * for property pages
-     * @return string
-     */
-    function getEquivPropertyURIURI() {
-        return 'http://www.w3.org/2002/07/owl#equivalentProperty';
-    }
-
-    /**
-     * For a given RDF URI, return it's original URI, as defined in wiki articles
-     * by the "Original URI" property
-     * @param string $uri
-     * @return string $equivuri
-     */
-    function getEquivURIForUri( $uri ) {
-        $equivuri = '';
-        $store = $this->m_arcstore;
-        $equivuriuri = $this->getEquivURIURI();
-        $q = "SELECT ?origuri WHERE { <$uri> <$equivuriuri> ?origuri }";
-        $rs = $store->query( $q );
-        if ( !$store->getErrors() ) {
-            $rows = $rs['result']['rows'];
-            // FIXME: Handle this case more nicely
-            if (empty($rows)) {
-	            echo( "<pre>No rows returned in getEquivURIForUri() for $uri</pre>" );
-            } else {
-	            $row = $rows[0];
-	            $equivuri = $row['origuri'];
-            }
-        } else {
-        	foreach ( $store->getErrors() as $error ) {
-        		echo( "<pre>Error in getEquivURIForUri: " . $error . "</pre>" );
-        	}
-        }
-        return $equivuri;
+        $this->arcStore = ARC2::getStore( $smwgARC2StoreConfig );
     }
 
     /**
@@ -68,9 +21,9 @@ class RDFIOARC2StoreWrapper {
      * @param boolean $is_property
      * @return array $equivuris
      */
-    function getEquivURIsForURI( $uri, $is_property = false ) {
+    public function getEquivURIsForURI( $uri, $is_property = false ) {
         $equivuris = array();
-        $store = $this->m_arcstore;
+        $store = $this->arcStore;
         if ( $is_property ) {
             $equivuriuri = $this->getEquivPropertyURIURI();
         } else {
@@ -96,9 +49,9 @@ class RDFIOARC2StoreWrapper {
      * @param string $equivuri
      * @return string $uri
      */
-    function getURIForEquivURI( $equivuri, $is_property ) {
+    public function getURIForEquivURI( $equivuri, $is_property ) {
         $uri = '';
-        $store = $this->m_arcstore;
+        $store = $this->arcStore;
         if ( $is_property ) {
         	$equivuriuri = $this->getEquivPropertyURIURI();
         } else {
@@ -121,22 +74,12 @@ class RDFIOARC2StoreWrapper {
     }
 
     /**
-     * Get the base URI used by SMW to identify wiki articles
-     * @return string $uriresolveruri
-     */
-    static function getURIResolverURI() {
-        $resolver = SpecialPage::getTitleFor( 'URIResolver' );
-        $uriresolveruri = $resolver->getFullURL() . '/';
-        return $uriresolveruri;
-    }
-
-    /**
      * For a URI that is defined using the "Original URI" property, return the wiki
      * article corresponding to that entity
      * @param string $uri
      * @return string $wikititle;
      */
-    function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
+    public function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
    		$wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
         $resolveruri = $this->getURIResolverURI();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
@@ -144,29 +87,47 @@ class RDFIOARC2StoreWrapper {
         return $wikititle;
     }
     
-	/**
-	 * This function escapes symbols that might be problematic in XML in a uniform
-	 * and injective way. It is used to encode URIs. 
-	 */
-	static public function encodeURI( $uri ) {
-		$uri = str_replace( '-', '-2D', $uri );
-		// $uri = str_replace( '_', '-5F', $uri); //not necessary
-		$uri = str_replace( array( ':', '"', '#', '&', "'", '+', '!', '%' ),
-		                    array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
-		                    $uri );
-		return $uri;
-	}
-
-	/**
-	 * This function unescapes URIs generated with SMWExporter::encodeURI. This
-	 * allows services that receive a URI to extract e.g. the according wiki page.
-	 */
-	static public function decodeURI( $uri ) {
-		$uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
-		                    array( ':', '"', '#', '&', "'", '+', '!', '%' ),
-		                   $uri );
-		$uri = str_replace( '%2D', '-', $uri );
-		return $uri;
-	}    
-
+    /////// Utility methods ///////
+    
+    // TODO: Should these methods be static?
+    
+    /**
+     * This function unescapes URIs generated with SMWExporter::encodeURI. This
+     * allows services that receive a URI to extract e.g. the according wiki page.
+     */
+    static public function decodeURI( $uri ) {
+    	$uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+    		array( ':', '"', '#', '&', "'", '+', '!', '%' ), $uri );
+   		$uri = str_replace( '%2D', '-', $uri );
+	   	return $uri;
+    }    
+    
+    /**
+     * Get the base URI used by SMW to identify wiki articles
+     * @return string $uriresolveruri
+     */
+    function getURIResolverURI() {
+    	$resolver = SpecialPage::getTitleFor( 'URIResolver' );
+    	$uriresolveruri = $resolver->getFullURL() . '/';
+    	return $uriresolveruri;
+    }
+    
+    /**
+     * Get SMWs internal URI for corresponding to the "Equivalent URI" property
+     * @return string
+     */
+    function getEquivURIURI() {
+    	// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
+    	return 'http://www.w3.org/2002/07/owl#sameAs';
+    }
+    
+    /**
+     * Get SMWs internal URI for corresponding to the "Equivalent URI" property,
+     * for property pages
+     * @return string
+     */
+    function getEquivPropertyURIURI() {
+    	return 'http://www.w3.org/2002/07/owl#equivalentProperty';
+    }
+    
 }
