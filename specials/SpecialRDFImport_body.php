@@ -14,9 +14,9 @@ class RDFImport extends SpecialPage {
 
 		# The main code
 		$requestData = $this->getRequestData();
-		if ( $requestData->mHasWriteAccess && $requestData->mAction == 'import' ) {
+		if ( $requestData->hasWriteAccess && $requestData->action == 'import' ) {
 			$this->importData( $requestData );
-		} else if ( !$requestData->mHasWriteAccess ) {
+		} else if ( !$requestData->hasWriteAccess ) {
 			global $wgOut;
 			$wgOut->addHTML("<b>User does not have write access!</b>");
 		} else {
@@ -29,7 +29,7 @@ class RDFImport extends SpecialPage {
 	 */
 	function importData( $requestData ) {
 		$rdfImporter = new RDFIORDFImporter();
-		$rdfImporter->importRdfXml( $requestData->mImportData );
+		$rdfImporter->importRdfXml( $requestData->importData );
 
 		global $wgOut;
 		$wgOut->addHTML('Tried to import the data ...');
@@ -42,16 +42,14 @@ class RDFImport extends SpecialPage {
 		global $wgRequest, $wgArticlePath;
 
 		$requestData = new RDFIORequestData();
-		$requestData->mAction = $wgRequest->getText( 'action' );
-		$requestData->mEditToken = $wgRequest->getText( 'token' );
-		$requestData->mNSPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
-		$requestData->mShowAbbrScreenProperties = $wgRequest->getBool( 'abbrscr_prop', false ); // TODO: Remove?
-		$requestData->mNSPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
-		$requestData->mShowAbbrScreenEntities = $wgRequest->getBool( 'abbrscr_ent', false ); // TODO: Remove?
-		$requestData->mImportData = $wgRequest->getText( 'importdata' );
-		$requestData->mDataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->mHasWriteAccess = $this->userHasWriteAccess();
-		$requestData->mArticlePath = $wgArticlePath;
+		$requestData->action = $wgRequest->getText( 'action' );
+		$requestData->editToken = $wgRequest->getText( 'token' );
+		$requestData->nsPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
+		$requestData->nsPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
+		$requestData->importData = $wgRequest->getText( 'importdata' );
+		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
+		$requestData->hasWriteAccess = $this->userHasWriteAccess();
+		$requestData->articlePath = $wgArticlePath;
 		
 		return $requestData;
 	}
@@ -124,22 +122,13 @@ class RDFImport extends SpecialPage {
 	 */
 	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
 
-		// NOT IMPLEMENTED AT THE MOMENT // TODO: Remove all together?
-		// # Abbreviation (and screen) options for properties
-		// $checked_nspintitle_properties = $requestData->mNSPrefixInWikiTitlesProperties == 1 ? ' checked="true" ' : '';
-		// $checked_abbrscr_properties = $requestData->mShowAbbrScreenProperties == 1 ? ' checked="true" ' : '';
-        // 
-		// # Abbreviation (and screen) options for entities
-		// $checked_nspintitle_entities = $requestData->mNSPrefixInWikiTitlesEntities == 1 ? ' checked="true" ' : '';
-		// $checked_abbrscr_entities = $requestData->mShowAbbrScreenEntities == 1 ? ' checked="true" ' : '';
-
-		# Create the HTML form for RDF/XML Import
-		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $requestData->mArticlePath ) . '/Special:RDFImport"
+		// Create the HTML form for RDF/XML Import
+		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
 			name="createEditQuery"><input type="hidden" name="action" value="import">
 			' . $extraFormContent . '
 			<table border="0"><tbody>
 			<tr><td colspan="3">RDF/XML data to import:</td><tr>
-			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->mImportData . '</textarea>
+			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea>
 			</td></tr>
 			<tr><td width="100">Data format:</td>
 			<td>
@@ -154,7 +143,7 @@ class RDFImport extends SpecialPage {
 			</td>
 			</tr>
 			</tbody></table>
-			<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->mEditToken ) . '
+			<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
 			</form>';
 
 		return $htmlFormContent;
@@ -180,8 +169,8 @@ class RDFImport extends SpecialPage {
 	
 	static function showErrorMessage( $title, $message ) {
 		global $wgOut;
-		$errorhtml = $this->formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorhtml );
+		$errorHtml = $this->formatErrorHTML( $title, $message );
+		$wgOut->addHTML( $errorHtml );
 	}
 	
 	/**
@@ -191,24 +180,24 @@ class RDFImport extends SpecialPage {
 	 * @return string $errorhtml
 	 */
 	static function formatErrorHTML( $title, $message ) {
-		$errorhtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #D8000C; background-color: #FFBABA;">
+		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #D8000C; background-color: #FFBABA;">
                 	 <h3>' . $title . '</h3>
                 	 <p>' . $message . '</p>
                 	 </div>';
-		return $errorhtml;
+		return $errorHtml;
 	}
 
 }
 
 class RDFIORequestData {
-	public $mAction = "";
-	public $mEditToken = "";
-	public $mNSPrefixInWikiTitlesProperties = "";
-	public $mShowAbbrScreenProperties = "";
-	public $mNSPrefixInWikiTitlesEntities = "";
-	public $mShowAbbrScreenEntities = "";
-
-	public function __construct() {
-	   // Nothing here so far ...	
-	}
+	public $action;
+	public $editToken;
+	public $nsPrefixInWikiTitlesProperties;
+	public $nsPrefixInWikiTitlesEntities;
+	public $importData;
+	public $dataFormat;
+	public $hasWriteAccess;
+	public $articlePath;
+	
+	public function __construct() {}
 }
