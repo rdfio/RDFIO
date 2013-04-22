@@ -80,10 +80,10 @@ class RDFIOARC2StoreWrapper {
      * @return string $wikititle;
      */
     public function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
-           $wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
+        $wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
         $resolveruri = $this->getLocalWikiNamespace();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
-        $wikititle = $this->decodeURI( $wikititle );
+        $wikititle = SMWExporter::decodeURI( $wikititle );
         return $wikititle;
     }
     
@@ -92,23 +92,13 @@ class RDFIOARC2StoreWrapper {
     // TODO: Should these methods be static?
     
     /**
-     * This function unescapes URIs generated with SMWExporter::encodeURI. This
-     * allows services that receive a URI to extract e.g. the according wiki page.
-     */
-    static public function decodeURI( $uri ) {
-        $uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
-            array( ':', '"', '#', '&', "'", '+', '!', '%' ), $uri );
-           $uri = str_replace( '%2D', '-', $uri );
-           return $uri;
-    }    
-    
-    /**
      * Get the base URI used by SMW to identify wiki articles
      * @return string $localWikiNamespace
      */
     function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
         global $smwgNamespace;
-        if ( $smwgNamespace != "" ) {
+        $tempStr = substr( $smwgNamespace, 0, 7 );
+        if ( $tempStr === "http://" ) {
             $localWikiNamespace = $smwgNamespace;
         } else {
             $resolver = SpecialPage::getTitleFor( 'URIResolver' );
