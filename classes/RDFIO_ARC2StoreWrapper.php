@@ -38,8 +38,8 @@ class RDFIOARC2StoreWrapper {
             }
         } else {
             foreach ( $store->getErrors() as $error ) {
-        		echo( "<pre>Error in getEquivURIsForURI: " . $error . "</pre>" );
-        	}
+                echo( "<pre>Error in getEquivURIsForURI: " . $error . "</pre>" );
+            }
         }
         return $equivuris;
     }
@@ -53,22 +53,22 @@ class RDFIOARC2StoreWrapper {
         $uri = '';
         $store = $this->arcStore;
         if ( $is_property ) {
-        	$equivuriuri = $this->getEquivPropertyURIURI();
+            $equivuriuri = $this->getEquivPropertyURIURI();
         } else {
-        	$equivuriuri = $this->getEquivURIURI();
+            $equivuriuri = $this->getEquivURIURI();
         }
         $q = "SELECT ?uri WHERE { ?uri <$equivuriuri> <$equivuri> }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
             $rows = $rs['result']['rows'];
             if ( count($rows) > 0 ) {
-	            $row = $rows[0];
-	            $uri = $row['uri'];
+                $row = $rows[0];
+                $uri = $row['uri'];
             }
         } else {
             foreach ( $store->getErrors() as $error ) {
-        		echo( "<pre>Error in getURIForEquivURI: " . $error . "</pre>" );
-        	}
+                echo( "<pre>Error in getURIForEquivURI: " . $error . "</pre>" );
+            }
         }
         return $uri;
     }
@@ -80,8 +80,8 @@ class RDFIOARC2StoreWrapper {
      * @return string $wikititle;
      */
     public function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
-   		$wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
-        $resolveruri = $this->getURIResolverURI();
+           $wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
+        $resolveruri = $this->getLocalWikiNamespace();
         $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
         $wikititle = $this->decodeURI( $wikititle );
         return $wikititle;
@@ -96,20 +96,26 @@ class RDFIOARC2StoreWrapper {
      * allows services that receive a URI to extract e.g. the according wiki page.
      */
     static public function decodeURI( $uri ) {
-    	$uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
-    		array( ':', '"', '#', '&', "'", '+', '!', '%' ), $uri );
-   		$uri = str_replace( '%2D', '-', $uri );
-	   	return $uri;
+        $uri = str_replace( array( '-3A', '-22', '-23', '-26', '-27', '-2B', '-21', '-' ),
+            array( ':', '"', '#', '&', "'", '+', '!', '%' ), $uri );
+           $uri = str_replace( '%2D', '-', $uri );
+           return $uri;
     }    
     
     /**
      * Get the base URI used by SMW to identify wiki articles
-     * @return string $uriresolveruri
+     * @return string $localWikiNamespace
      */
-    function getURIResolverURI() {
-    	$resolver = SpecialPage::getTitleFor( 'URIResolver' );
-    	$uriresolveruri = $resolver->getFullURL() . '/';
-    	return $uriresolveruri;
+    function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
+        global $smwgNamespace;
+        if ( $smwgNamespace != "" ) {
+            $localWikiNamespace = $smwgNamespace;
+        } else {
+            $resolver = SpecialPage::getTitleFor( 'URIResolver' );
+            $uriresolveruri = $resolver->getFullURL() . '/';
+            $localWikiNamespace = $uriresolveruri;
+        }
+        return $localWikiNamespace;
     }
     
     /**
@@ -117,8 +123,8 @@ class RDFIOARC2StoreWrapper {
      * @return string
      */
     function getEquivURIURI() {
-    	// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
-    	return 'http://www.w3.org/2002/07/owl#sameAs';
+        // return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
+        return 'http://www.w3.org/2002/07/owl#sameAs';
     }
     
     /**
