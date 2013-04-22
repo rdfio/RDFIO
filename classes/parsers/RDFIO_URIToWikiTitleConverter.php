@@ -43,7 +43,7 @@ class RDFIOURIToTitleConverter {
 			try {
 				$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
 				// TODO: Remove "debug code"?
-				$wgOut->addWikiText("Succeeded to find title ($wikiPageTitle) for $uriToConvert using " . $currentStrategy . "()");
+				$wgOut->addWikiText("Found title [[$wikiPageTitle]] for $uriToConvert (using " . $currentStrategy . "())");
 				
 				return $wikiPageTitle;
 			} catch ( WikiTitleNotFoundException $e ) { 
