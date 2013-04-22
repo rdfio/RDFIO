@@ -12,7 +12,7 @@ class RDFIOURIToTitleConverter {
 	function __construct( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		$this->arc2Store = new RDFIOARC2StoreWrapper();
 
-		# Store paramters as class variables
+		// Store paramters as class variables
 		$this->arc2Triples = $arc2Triples;
 		$this->arc2ResourceIndex = $arc2ResourceIndex;
 		$this->arc2NSPrefixes = $arc2NSPrefixes;
@@ -27,9 +27,9 @@ class RDFIOURIToTitleConverter {
 	public function convert( $uriToConvert ) {
 		global $wgOut;
 
-		# Define the conversion functions to try, in 
-		# specified order (the first one first).
-		# You'll find them defined further below in this file.
+		// Define the conversion functions to try, in 
+		// specified order (the first one first).
+		// You'll find them defined further below in this file.
 		$uriToWikiTitleConversionStrategies = array(
 			'getExistingTitleForURI',
 			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
@@ -42,12 +42,12 @@ class RDFIOURIToTitleConverter {
 		foreach ($uriToWikiTitleConversionStrategies as $currentStrategy ) {
 			try {
 				$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
-				// DEBUG
+				// TODO: Remove "debug code"?
 				$wgOut->addWikiText("Succeeded to find title ($wikiPageTitle) for $uriToConvert using " . $currentStrategy . "()");
 				
 				return $wikiPageTitle;
-			} catch ( WikiTitleNotFoundException $e ) {
-				// Continue ...
+			} catch ( WikiTitleNotFoundException $e ) { 
+				// Should just continue and try the next strategy ...
 			}
 		}
 
@@ -56,7 +56,7 @@ class RDFIOURIToTitleConverter {
 		}
 	}
 
-	# CONVERSION STRATEGIES ######################################################################################
+	/////// CONVERSION STRATEGIES ///////
 
 	/**
 	 * URI to WikiTitle Strategy 1
@@ -110,18 +110,16 @@ class RDFIOURIToTitleConverter {
 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
 		global $rdfiogBaseURIs;
 
-		// 3. [x] Shorten the Namespace (even for entities, optionally) into an NS Prefix
+		// Shorten the Namespace (even for entities, optionally) into an NS Prefix
 		// according to mappings from parser (Such as chemInf:Blabla ...)
 		$nsPrefixes = $this->arc2NSPrefixes;
 		$wikiPageTitle = '';
 
-		// 4. [x] The same, but according to mappings from LocalSettings.php
+		// The same, but according to mappings from LocalSettings.php
 		if ( is_array( $rdfiogBaseURIs ) ) {
 			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
 		}
 		
-		// DEPRECATED FOR NOW: 5. [ ] The same, but according to abbreviation screen
-
 		// Collect all the inputs for abbreviation, and apply:
 		if ( is_array( $nsPrefixes ) ) {
 			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uriToConvert, $nsPrefixes );
@@ -139,7 +137,7 @@ class RDFIOURIToTitleConverter {
 	 * URI to WikiTitle Strategy 4
 	 */
 	function extractLocalPartFromURI( $uriToConvert ) {
-		// 6. [x] As a default, just try to get the local part of the URL
+		// As a default, just try to get the local part of the URL
 		$parts = $this->splitURI( $uriToConvert );
 		if ( $parts[1] != "" ) {
 			$wikiPageTitle = $parts[1];
@@ -152,7 +150,7 @@ class RDFIOURIToTitleConverter {
 		}	
 	}
 
-	# HELPER METHODS #############################################################################################
+	/////// HELPER METHODS ///////
 
 	function globalSettingForPropertiesToUseAsWikiTitleExists() {
 		return isset( $rdfiogPropertiesToUseAsWikiTitle );
@@ -187,10 +185,9 @@ class RDFIOURIToTitleConverter {
 			}
 		}
 
-		// ----------------------------------------------------
-		// Take care of some special cases:
-		// ----------------------------------------------------
-		
+		/*
+		 * Take care of some special cases:
+		 */
 		if ( $basepart === '' &&  $localpart === '' ) {
 			$uriParts = $this->splitURI( $uri );
 			$basepart = $uriParts[0];
@@ -258,17 +255,17 @@ class RDFIOURIToTitleConverter {
 				}
 			}
 		}
-		/* auto-splitting on / or # */
-		// $re = '^(.*?)([A-Z_a-z][-A-Z_a-z0-9.]*)$';
+		// auto-splitting on / or #
 		if ( preg_match( '/^(.*[\#])([^\#]+)$/', $uri, $matches ) ) {
 			return array( $matches[1], $matches[2] );
 		}
 		if ( preg_match( '/^(.*[\:])([^\:\/]+)$/', $uri, $matches ) ) {
 			return array( $matches[1], $matches[2] );
 		}
+		// auto-splitting on last special char, e.g. urn:foo:bar
 		if ( preg_match( '/^(.*[\/])([^\/]+)$/', $uri, $matches ) ) {
 			return array( $matches[1], $matches[2] );
-		}        /* auto-splitting on last special char, e.g. urn:foo:bar */
+		} 
 		return array( $uri, '' );
 	}
 
@@ -286,17 +283,7 @@ class RDFIOURIToTitleConverter {
 
 }
 
-#######################################################################################
-# Class: RDFIOURIToWikiTitleConverter #################################################
-#######################################################################################
-
-class RDFIOURIToWikiTitleConverter extends RDFIOURIToTitleConverter {
-
-}
-
-#######################################################################################
-# Class: RDFIOURIToWikiTitleConverter #################################################
-#######################################################################################
+class RDFIOURIToWikiTitleConverter extends RDFIOURIToTitleConverter {}
 
 class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 
@@ -307,7 +294,7 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 	 */
 	function convert( $propertyURI ) {
 		$propertyTitle = '';
-		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $is_property=true);
+		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $isProperty=true);
 		if ( $existingPropTitle != "" ) {
 			// If the URI had an existing title, use that
 			$propertyTitle = $existingPropTitle;
@@ -321,4 +308,3 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 
 }	
 
-?>
