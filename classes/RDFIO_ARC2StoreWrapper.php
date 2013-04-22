@@ -89,16 +89,13 @@ class RDFIOARC2StoreWrapper {
     
     /////// Utility methods ///////
     
-    // TODO: Should these methods be static?
-    
     /**
      * Get the base URI used by SMW to identify wiki articles
      * @return string $localWikiNamespace
      */
-    function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
+    public static function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
         global $smwgNamespace;
-        $tempStr = substr( $smwgNamespace, 0, 7 );
-        if ( $tempStr === "http://" ) {
+        if ( substr( $smwgNamespace, 0, 4 ) === "http" ) {
             $localWikiNamespace = $smwgNamespace;
         } else {
             $resolver = SpecialPage::getTitleFor( 'URIResolver' );
@@ -112,7 +109,7 @@ class RDFIOARC2StoreWrapper {
      * Get SMWs internal URI for corresponding to the "Equivalent URI" property
      * @return string
      */
-    function getEquivURIURI() {
+    public static function getEquivURIURI() {
         // return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
         return 'http://www.w3.org/2002/07/owl#sameAs';
     }
@@ -122,7 +119,7 @@ class RDFIOARC2StoreWrapper {
      * for property pages
      * @return string
      */
-    function getEquivPropertyURIURI() {
+    public static function getEquivPropertyURIURI() {
     	return 'http://www.w3.org/2002/07/owl#equivalentProperty';
     }
     
