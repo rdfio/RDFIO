@@ -6,12 +6,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 global $IP;
 
-#require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/SMW_SQLStore2.php" );
-require_once( "$IP/extensions/SemanticMediaWiki/includes/storage/compatSQLStore/SMW_SQLStore2.php" );
-# SMW_SQLStore3.php SemanticMediaWiki/includes/storage/SQLStore/SMW_SQLStore3.php
-
 /**
- * SMWARC2Store extends SMWSQLStore2 and forwards all update/delete to ARC2 via SPARQL+
+ * SMWARC2Store extends SMWSQLStore3 and forwards all update/delete to ARC2 via SPARQL+
  * queries. The class was based on JosekiStore in the SparqlExtension, which in turn is
  * loosely based on/insipred by RAPStore.
  * @author samuel.lampa@gmail.com
@@ -24,98 +20,66 @@ class SMWARC2Store extends SMWSQLStore3 {
         parent::__construct();
         global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $smwgARC2StoreConfig;
 
-        /* instantiation */
         $this->arc2store = ARC2::getStore( $smwgARC2StoreConfig );
     }
 
     /**
-     * wraps removeDataForURI
+     * wraps removeDataForURI() 
      * @param $subject
      */
-    function deleteSubject( Title $subject ) {
+    public function deleteSubject( Title $subject ) {
         $subject_uri = SMWExporter::expandURI( $this->getURI( $subject ) );
         $this->removeDataForURI( $subject_uri );
 
-        return parent::deleteSubject( $subject );
-    }
-
-    /**
-     * deletes triples that have $uri as subject
-     * @param $uri
-     */
-    function removeDataForURI( $uri ) {
-        $sparqlUpdateText = "DELETE { <" . $uri . "> ?x ?y . }";
-        wfDebugLog( 'SPARQL_LOG', "===DELETE===\n" . $sparqlUpdateText );
-        $response = $this->do_arc2_query( $sparqlUpdateText );
-        return $response;
+        return parent::deleteSubject( $subject ); // Also update via SQLStore3
     }
 
     /**
      * Does update. First deletes, then inserts.
      * @param $data
      */
-    function updateData( SMWSemanticData $data ) {
-        $export = SMWExporter::makeExportData( $data );
-        $subject_uri = SMWExporter::expandURI( $export->getSubject()->getUri() );
+    public function updateData( SMWSemanticData $data ) {
+    	// TODO: Should doDataUpdate() be used instead? (See SMWStore class)
+        $exportData = SMWExporter::makeExportData( $data );
+        $subjectUri = SMWExporter::expandURI( $exportData->getSubject()->getUri() );
 
-        // remove subject from triple store
-        $this->removeDataForURI( $subject_uri );
+        $this->removeDataForURI( $subjectUri );
+        $tripleList = $exportData->getTripleList();
 
-        $triple_list = $export->getTripleList();
-
-        $sparqlUpdateText = "INSERT INTO <> {\n";
-
-        foreach ( $triple_list as $triple ) {
-
+        $sparqlUpdateText = "INSERT INTO <> {\n"; // Follows ARC2 SPARQL+ syntax (not SPARQL Update)
+        foreach ( $tripleList as $triple ) {
             $subject = $triple[0];
             $predicate = $triple[1];
             $object = $triple[2];
 
-            $obj_str = "";
-            $sub_str = "";
-            $pre_str = "";
+            $objectStr = "";
+            $subjectStr = "";
+            $predicateStr = "";
 
             if ( $object instanceof SMWExpLiteral ) {
-            	// FIXME: Add escaping for results of getLexicalForm()?
-                $obj_str = "\"" . $object->getLexicalForm() . "\"" . ( ( $object->getDatatype() == "" ) ? "" : "^^<" . $object->getDatatype() . ">" );
+            	// TODO: Add escaping for results of getLexicalForm()?
+                $objectStr = "\"" . $object->getLexicalForm() . "\"" . ( ( $object->getDatatype() == "" ) ? "" : "^^<" . $object->getDatatype() . ">" );
             } elseif ( $object instanceof SMWExpResource ) {
-                $obj_str = "<" . SMWExporter::expandURI( $object->getUri() ) . ">";
+                $objectStr = "<" . SMWExporter::expandURI( $object->getUri() ) . ">";
             } else {
-                $obj_str = "\"\"";
+                $objectStr = "\"\"";
             }
 
             if ( $subject instanceof SMWExpResource ) {
-                $sub_str = "<" . SMWExporter::expandURI( $subject->getUri() ) . ">";
+                $subjectStr = "<" . SMWExporter::expandURI( $subject->getUri() ) . ">";
             }
 
             if ( $predicate instanceof SMWExpResource ) {
-                $pre_str = "<" . SMWExporter::expandURI( $predicate->getUri() ) . ">";
+                $predicateStr = "<" . SMWExporter::expandURI( $predicate->getUri() ) . ">";
             }
 
-            $sparqlUpdateText .= $sub_str . " " . $pre_str . " " . $obj_str . " .\n";
+            $sparqlUpdateText .= $subjectStr . " " . $predicateStr . " " . $objectStr . " .\n";
         }
         $sparqlUpdateText .= "}\n";
 
-        // echo "<p style='background: #ccddff'><pre>SPARQL Update text:" . $this->unhtmlify( $sparqlUpdateText ) . " ... tjohoo</pre></p>";
-        // var_dump();
-        // TODO Debug-code
-
-        wfDebugLog( 'SPARQL_LOG', "===INSERT===\n" . $sparqlUpdateText );
-
-        $response = $this->do_arc2_query( $sparqlUpdateText );
-
+        wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Remove debug code?
+        $response = $this->executeArc2Query( $sparqlUpdateText );
         return parent::updateData( $data );
-    }
-
-    /**
-     * Insert new pages into endpoint. Used to import data.
-     * @param $title
-     */
-    function insertData( Title $title, $pageid ) {
-        $newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-        $newpage->setValues( $title->getDBkey(), $title->getNamespace(), $pageid );
-        $semdata = $this->getSemanticData( $newpage );
-        $this->updateData( $semdata );
     }
 
     /**
@@ -125,23 +89,22 @@ class SMWARC2Store extends SMWSQLStore3 {
      * @param $pageid
      * @param $redirid
      */
-    function changeTitle( Title $oldtitle, Title $newtitle, $pageid, $redirid = 0 ) {
-
+    public function changeTitle( Title $oldTitle, Title $newTitle, $pageId, $redirectId = 0 ) {
         // Save it in parent store now!
         // We need that so we get all information correctly!
-        $result = parent::changeTitle( $oldtitle, $newtitle, $pageid, $redirid );
+        $result = parent::changeTitle( $oldTitle, $newTitle, $pageId, $redirectId );
 
-        // delete old stuff
-        $old_uri = SMWExporter::expandURI( $this->getURI( $oldtitle ) );
-        $this->removeDataForURI( $old_uri );
+        // Delete old stuff
+        $oldUri = SMWExporter::expandURI( $this->getURI( $oldTitle ) );
+        $this->removeDataForURI( $oldUri );
 
         $newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-        $newpage->setValues( $newtitle->getDBkey(), $newtitle->getNamespace(), $pageid );
+        $newpage->setValues( $newTitle->getDBkey(), $newTitle->getNamespace(), $pageId );
         $semdata = $this->getSemanticData( $newpage );
         $this->updateData( $semdata );
 
         $oldpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-        $oldpage->setValues( $oldtitle->getDBkey(), $oldtitle->getNamespace(), $redirid );
+        $oldpage->setValues( $oldTitle->getDBkey(), $oldTitle->getNamespace(), $redirectId );
         $semdata = $this->getSemanticData( $oldpage );
         $this->updateData( $semdata, false );
 
@@ -149,48 +112,21 @@ class SMWARC2Store extends SMWSQLStore3 {
     }
 
     /**
-     * no setup required
-     * @param unknown_type $verbose
+     * Insert new pages into endpoint. Used to import data.
+     * @param $title
      */
-    function setup( $verbose = true ) {
-        return parent::setup( $verbose );
+    private function insertData( Title $title, $pageid ) {
+    	$newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
+    	$newpage->setValues( $title->getDBkey(), $title->getNamespace(), $pageid );
+    	$semdata = $this->getSemanticData( $newpage );
+    	$this->updateData( $semdata );
     }
-
-
-    function drop( $verbose = true ) {
-        return parent::drop();
-    }
-
-    /**
-     * Communicates with joseki update service via post
-     * TODO: Deprecated, replaced by do_arc2_query
-     * @param $requestString
-     */
-    function do_arc2_post( $requestString ) {
-        $postdata = http_build_query(
-        array(
-                'request' => $requestString
-        )
-        );
-        $opts = array( 'http' =>
-        array(
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'content' => $postdata
-        )
-        );
-
-        $context  = stream_context_create( $opts );
-        $result = file_get_contents( SPARQL_ENDPOINT_UPDATE_URL, false, $context );
-        return $result;
-    }
-
 
     /**
      * Communicates with ARC2 RDF Store
      * @param $requestString
      */
-    function do_arc2_query( $requestString ) {
+    private function executeArc2Query( $requestString ) {
 
         $q = $requestString;
         $rs = $this->arc2store->query( $q );
@@ -209,19 +145,30 @@ class SMWARC2Store extends SMWSQLStore3 {
      * @param string $instring
      * @return string $outstring
      */
-    function unhtmlify( $instring ) {
+    private function unhtmlify( $instring ) {
         $outstring = str_replace( '<', '&lt;', $instring );
         $outstring = str_replace( '>', '&gt;', $outstring );
         return $outstring;
     }
 
     /**
+     * deletes triples that have $uri as subject
+     * @param $uri
+     */
+    private function removeDataForURI( $uri ) {
+    	$sparqlUpdateText = "DELETE { <" . $uri . "> ?x ?y . }";
+    	wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Keep?
+    	$response = $this->executeArc2Query( $sparqlUpdateText );
+    	return $response;
+    }
+    
+    /**
      * Having a title of a page, what is the URI that is described by that page?
      * The result still requires expandURI()
      * @param string $title
      * @return string $uri
      */
-    protected function getURI( $title ) {
+    private function getURI( $title ) {
         $uri = "";
         if ( $title instanceof Title ) {
             $wikiPageDI = SMWDIWikiPage::newFromTitle( $title );

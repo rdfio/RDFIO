@@ -9,7 +9,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'Not an entry point.' );
 }
 
-define( 'RDFIO_VERSION', '1.9.0 alpha' );
+define( 'RDFIO_VERSION', '1.9.5 beta' ); // TODO: UPdate
 
 global $wgExtensionCredits;
 
@@ -45,16 +45,17 @@ if ( ! file_exists( $smwgARC2MainFile )) {
  *  ARC2 RDF Store config *
  **************************/
 
+/* Customize these details if you   *
+ * want to use an external database */
 $smwgARC2StoreConfig = array(
-              /* Customize these details if you   *
-               * want to use an external database */
-                'db_host' => $wgDBserver,
-                'db_name' => $wgDBname,
-                'db_user' => $wgDBuser,
-                'db_pwd' =>  $wgDBpassword,
-                'store_name' => $wgDBprefix . 'arc2store',
+		'db_host' => $wgDBserver,
+        'db_name' => $wgDBname,
+        'db_user' => $wgDBuser,
+        'db_pwd' =>  $wgDBpassword,
+        'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 );
-$smwgDefaultStore = 'SMWARC2Store'; // Determines database table prefix
+
+$smwgDefaultStore = 'SMWARC2Store'; 
 
 require_once( "$IP/extensions/RDFIO/stores/SMW_ARC2Store.php" );
 require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
@@ -66,24 +67,18 @@ require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
 $rdfioDir = dirname( __FILE__ );
 
 include_once $rdfioDir . '/specials/SpecialRDFImport.php';
-include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; // Not updated yet ...
+include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; 
 
-#$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/Utils.php';
+# Misc
 $wgAutoloadClasses['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
-#$wgAutoloadClasses['RDFIOSMWBatchWriter'] = $rdfioDir . '/classes/SMWBatchWriter.php';
-#$wgAutoloadClasses['RDFIOPageHandler'] = $rdfioDir . '/classes/PageHandler.php';
 $wgAutoloadClasses['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
 $wgAutoloadClasses['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
 
 # Parsers
-#$wgAutoloadClasses['RDFIOIOService'] = $rdfioDir . '/classes/parsers/RDFIO_IOService.php';
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
-#$wgAutoloadClasses['RDFIOARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2Parser.php';
-#$wgAutoloadClasses['RDFIOARC2ToRDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToRDFIOParser.php';
 $wgAutoloadClasses['RDFIORDFXMLToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_RDFXMLToARC2Parser.php';
 $wgAutoloadClasses['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_TurtleToARC2Parser.php';
-#$wgAutoloadClasses['RDFIOEquivalentURIPropertyCreator'] = $rdfioDir . '/classes/parsers/RDFIO_EquivalentURIPropertyCreator.php';
 $wgAutoloadClasses['RDFIORDFImporter'] = $rdfioDir . '/classes/RDFIO_RDFImporter.php';
 $wgAutoloadClasses['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToWikiConverter.php';
 $wgAutoloadClasses['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
