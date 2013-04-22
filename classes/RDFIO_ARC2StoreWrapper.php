@@ -19,46 +19,46 @@ class RDFIOARC2StoreWrapper {
      * For a given RDF URI, return it's corresponding equivalend URIs
      * as defined in wiki articles by the Equivalent URI property
      * @param string $uri
-     * @param boolean $is_property
-     * @return array $equivuris
+     * @param boolean $isProperty
+     * @return array $equivUris
      */
-    public function getEquivURIsForURI( $uri, $is_property = false ) {
-        $equivuris = array();
+    public function getEquivURIsForURI( $uri, $isProperty = false ) {
+        $equivUris = array();
         $store = $this->arcStore;
-        if ( $is_property ) {
-            $equivuriuri = $this->getEquivPropertyURIURI();
+        if ( $isProperty ) {
+            $equivUriUri = $this->getEquivPropertyURIURI();
         } else {
-            $equivuriuri = $this->getEquivURIURI();
+            $equivUriUri = $this->getEquivURIURI();
         }
-        $q = "SELECT ?equivuri WHERE { <$uri> <$equivuriuri> ?equivuri }";
+        $q = "SELECT ?equivUri WHERE { <$uri> <$equivUriUri> ?equivUri }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
-            $equivuris = $rs['result']['rows'];
-            foreach ( $equivuris as $equivuriid => $equivuri ) {
-                $equivuris[$equivuriid] = $equivuri['equivuri'];
+            $equivUris = $rs['result']['rows'];
+            foreach ( $equivUris as $equivUriId => $equivUri ) {
+                $equivUris[$equivUriId] = $equivUri['equivUri'];
             }
         } else {
             foreach ( $store->getErrors() as $error ) {
                 echo( "<pre>Error in getEquivURIsForURI: " . $error . "</pre>" );
             }
         }
-        return $equivuris;
+        return $equivUris;
     }
 
     /**
      * Given an Equivalent URI (ast defined in a wiki article, return the URI used by SMW
-     * @param string $equivuri
+     * @param string $equivUri
      * @return string $uri
      */
-    public function getURIForEquivURI( $equivuri, $is_property ) {
+    public function getURIForEquivURI( $equivUri, $isProperty ) {
         $uri = '';
         $store = $this->arcStore;
-        if ( $is_property ) {
-            $equivuriuri = $this->getEquivPropertyURIURI();
+        if ( $isProperty ) {
+            $equivUriUri = $this->getEquivPropertyURIURI();
         } else {
-            $equivuriuri = $this->getEquivURIURI();
+            $equivUriUri = $this->getEquivURIURI();
         }
-        $q = "SELECT ?uri WHERE { ?uri <$equivuriuri> <$equivuri> }";
+        $q = "SELECT ?uri WHERE { ?uri <$equivUriUri> <$equivUri> }";
         $rs = $store->query( $q );
         if ( !$store->getErrors() ) {
             $rows = $rs['result']['rows'];
@@ -80,12 +80,12 @@ class RDFIOARC2StoreWrapper {
      * @param string $uri
      * @return string $wikititle;
      */
-    public function getWikiTitleByEquivalentURI( $uri, $is_property = false ) {
-        $wikititleresolveruri = $this->getURIForEquivURI( $uri, $is_property );
-        $resolveruri = $this->getLocalWikiNamespace();
-        $wikititle = str_replace( $resolveruri, '', $wikititleresolveruri );
-        $wikititle = SMWExporter::decodeURI( $wikititle );
-        return $wikititle;
+    public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
+        $wikiTitleResolverUri = $this->getURIForEquivURI( $uri, $isProperty );
+        $resolverUri = $this->getLocalWikiNamespace();
+        $wikiTitle = str_replace( $resolverUri, '', $wikiTitleResolverUri );
+        $wikiTitle = SMWExporter::decodeURI( $wikiTitle );
+        return $wikiTitle;
     }
     
     /////// Utility methods ///////
@@ -100,8 +100,8 @@ class RDFIOARC2StoreWrapper {
             $localWikiNamespace = $smwgNamespace;
         } else {
             $resolver = SpecialPage::getTitleFor( 'URIResolver' );
-            $uriresolveruri = $resolver->getFullURL() . '/';
-            $localWikiNamespace = $uriresolveruri;
+            $uriResolverUri = $resolver->getFullURL() . '/';
+            $localWikiNamespace = $uriResolverUri;
         }
         return $localWikiNamespace;
     }
