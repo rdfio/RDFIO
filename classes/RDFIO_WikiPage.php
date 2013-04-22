@@ -6,10 +6,6 @@ class RDFIOWikiPage {
 	protected $facts;
 	protected $categories;
 
-	/*
-	 * Public ----------------------------------------------------------------
-	 */
-	
 	function __construct( $title ) {
 		$this->title = $title;
 		$this->equivalentUris = array();
@@ -18,7 +14,7 @@ class RDFIOWikiPage {
 	}
 
 	public function addEquivalentURI( $equivURI ) {
-		# Add Equivalent URI, if not exists
+		// Add Equivalent URI, if not exists
 		if ( !$this->equivalentURIExists( $equivURI ) ) {
 			$this->equivalentUris[] = $equivURI;
 		}
@@ -48,10 +44,6 @@ class RDFIOWikiPage {
 		return $this->categories;
 	}
 	
-	/*
-	 * Private ----------------------------------------------------------------
-	 */
-		
 	private function equivalentURIExists( $equivURI ) {
 		return in_array( $equivURI, $this->equivalentUris );
 	}
