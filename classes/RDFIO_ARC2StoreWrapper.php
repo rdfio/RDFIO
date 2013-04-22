@@ -2,7 +2,8 @@
 
 /**
  * RDFIOARC2StoreWrapper contains utility functionality that requires connecting to the
- * ARC based RDF store
+ * ARC2 triplestore (Not to confuse with the RDFIOARC2Store, which is an implementation
+ * of SMWStore "interface". Here we're wrapping some direct queries to the ARC2 triplestore. 
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
