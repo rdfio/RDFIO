@@ -22,6 +22,7 @@ class RDFIOWikiPage {
 		// Add Equivalent URI, if not exists
 		if ( !$this->equivalentURIExists( $equivURI ) ) {
 			$this->equivalentUris[] = $equivURI;
+			$this->addFact( array( 'p' => 'Equivalent URI', 'o' => $equivURI ) );
 		}
 	}
 	

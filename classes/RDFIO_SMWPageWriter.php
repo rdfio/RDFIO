@@ -22,11 +22,6 @@ class RDFIOSMWPageWriter {
 			$equivUris = $wikiPage->getEquivalentUris();
 			$categories = $wikiPage->getCategories();
 				
-			// Populate the facts array also with the equivalent URI "facts"
-			foreach ( $equivUris as $equivUri ) {
-				$facts[] = array( 'p' => "Equivalent URI", 'o' => $equivUri );
-			}
-			
 			// Get property objects from WOM
 			$womPropertyObjs = array();
 			$womCategoryObjs = array();
