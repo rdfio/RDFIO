@@ -1,7 +1,17 @@
 <?php
 
+/**
+ * Exception used in the RDFIOURIToTitleConverter class
+ */
 class WikiTitleNotFoundException extends MWException { }
 
+/**
+ * Converter that takes an RDF URI and returns a suitable Wiki title for that URI
+ * based on various strategies, which are tried one at a time, until a usable title 
+ * is found.
+ * @author samuel
+ *
+ */
 class RDFIOURIToTitleConverter { 
 
 	protected $arc2Triples = null;
@@ -59,7 +69,7 @@ class RDFIOURIToTitleConverter {
 	/////// CONVERSION STRATEGIES ///////
 
 	/**
-	 * URI to WikiTitle Strategy 1
+	 * Strategy 1: URI to WikiTitle
 	 */
 	function getExistingTitleForURI( $uri ) {
 		# 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
@@ -72,7 +82,7 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * URI to WikiTitle Strategy 2
+	 * Strategy 2: URI to WikiTitle 
 	 */
 	function applyGlobalSettingForPropertiesToUseAsWikiTitle( $uri ) {
 		global $rdfiogPropertiesToUseAsWikiTitle;
@@ -105,7 +115,7 @@ class RDFIOURIToTitleConverter {
 	}	
 
 	/**
-	 * URI to WikiTitle Strategy 3
+	 * Strategy 3: URI to WikiTitle
 	 */
 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
 		global $rdfiogBaseURIs;
@@ -134,7 +144,7 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * URI to WikiTitle Strategy 4
+	 * Strategy 4: URI to WikiTitle
 	 */
 	function extractLocalPartFromURI( $uriToConvert ) {
 		// As a default, just try to get the local part of the URL
@@ -152,9 +162,17 @@ class RDFIOURIToTitleConverter {
 
 	/////// HELPER METHODS ///////
 
+	/**
+	 * Just tell if $rdfiogPropertiesToUseAsWikiTitle is set or not.
+	 */
 	function globalSettingForPropertiesToUseAsWikiTitleExists() {
 		return isset( $rdfiogPropertiesToUseAsWikiTitle );
 	}
+	
+	/**
+	 * Default settings for which RDF properties to use for getting
+	 * possible candidates for wiki page title names.
+	 */
 	function setglobalSettingForPropertiesToUseAsWikiTitleToDefult() {
 		global $rdfiogPropertiesToUseAsWikiTitle;
 		$rdfiogPropertiesToUseAsWikiTitle = array(
@@ -166,6 +184,11 @@ class RDFIOURIToTitleConverter {
 		);
 	}
 
+	/**
+	 * Remove some characters that are not allowed in Wiki titles.
+	 * @param string $title
+	 * @return string $title
+	 */
 	function removeInvalidChars( $title ) {
 		$title = str_replace('[', '', $title);
 		$title = str_replace(']', '', $title);
@@ -173,6 +196,12 @@ class RDFIOURIToTitleConverter {
 		return $title;
 	}
 
+	/**
+	 * Use the namespaces from the RDF / SPARQL source, to shorten the URIs.
+	 * @param string $uri
+	 * @param array $nsPrefixes
+	 * @return string
+	 */
 	function abbreviateParserNSPrefixes( $uri, $nsPrefixes ) {
 		foreach ( $nsPrefixes as $namespace => $prefix ) {
 			$nslength = strlen( $namespace );
@@ -269,22 +298,45 @@ class RDFIOURIToTitleConverter {
 		return array( $uri, '' );
 	}
 
+	/**
+	 * Check whether the string starts with an '_'
+	 * @param string $str
+	 * @return boolean
+	 */
 	function startsWithUnderscore( $str ) {
 		return substr( $str, 0, 1 ) === '_';
 	}
 
+	/**
+	 * Check whether the string starts with 'http://' or 'https://'
+	 * @param string $str
+	 * @return boolean
+	 */
 	function startsWithHttpOrHttps( $str ) {
 		return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
 	}
 
+	/**
+	 * Check whether the string ends with a ':'
+	 * @param string $str
+	 * @return boolean
+	 */
 	function endsWithColon( $str ) {
 		return ( substr( $str, -1 ) === ':' );
 	}
 
 }
 
+/**
+ * Subclass of the more general RDFIOURIToTitleConverter.
+ * For normal wiki pages. 
+ */
 class RDFIOURIToWikiTitleConverter extends RDFIOURIToTitleConverter {}
 
+/**
+ * Subclass of the more general RDFIOURIToTitleConverter
+ * For property pages (those where titles start with "Property:")  
+ */
 class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 
 	/**

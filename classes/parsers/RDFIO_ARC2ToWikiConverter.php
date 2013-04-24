@@ -7,6 +7,16 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$this->wikiPages = array();
 	}
 	
+	/**
+	 * Take ARC2 array data structures (triples, triple index, and namespaces)
+	 * and convert to an array of RDFIOWikiPage objects.
+	 * 
+	 * @param array $arc2Triples
+	 * @param array $arc2ResourceIndex
+	 * @param array $arc2NSPrefixes
+	 * @throws MWException
+	 * @return Ambigous <multitype:, RDFIOWikiPage>
+	 */
 	public function convert( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		// Instatiate wiki title converters (converting from URI and related RDF data to Wiki Title)
 		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
@@ -88,6 +98,14 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		return $this->wikiPages;
 	}
 	
+	/**
+	 * Convenience function to add a $fact (predicate/object tuple) or $category into 
+	 * the RDFIOWikiPage according to the title specified in $pageTitle
+	 * @param string $pageTitle
+	 * @param string $equivURI
+	 * @param string $fact
+	 * @param string $category
+	 */
 	private function addDataToPage( $pageTitle, $equivURI, $fact = null, $category = null ) {
 		// Create page array if not exists in array
 		if ( !array_key_exists( $pageTitle, $this->wikiPages ) ) {
@@ -99,7 +117,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	}
 	
 	private function addCategoryPagesToPagesArray( $wikiPageTitle, $subjectURI, $categoryPageTitle, $wikiPages ) {
-		// FIXME: Implement
+		// FIXME: Why isn't this implemented?
 		if ( array_key_exists( $pageTitle, $pagesArray ) ) {
 			// Nothing
 		} else {

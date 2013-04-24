@@ -1,6 +1,11 @@
 <?php 
 
-class RDFIORDFXMLToARC2Parser extends RDFIOARC2Parser { // TODO: RDFIOARC2Parser does not exist
+/**
+ * Wrapper for ARC2:s RDF/XML parser
+ * @author samuel.lampa@gmail.com
+ *
+ */
+class RDFIORDFXMLToARC2Parser extends RDFIOParser { 
 	
 	public function __construct() {
 		parent::__construct();
