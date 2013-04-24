@@ -4,6 +4,11 @@ class RDFIOSMWPageWriter {
 
 	public function __construct() {}
 
+	/**
+	 * Main function, that takes an array of RDFIOWikiPage objects, and writes to
+	 * MediaWiki using the WikiObjectModel extension.
+	 * @param array $wikiPages
+	 */
 	public function import( $wikiPages ) {
 		global $wgOut;
 
@@ -118,6 +123,13 @@ class RDFIOSMWPageWriter {
 		}
 	}
 	
+	/**
+	 * The actual write function, that takes the parsed and updated content as 
+	 * a string and writes to the wiki.
+	 * @param string $wikiTitle
+	 * @param string $content
+	 * @param string $summary
+	 */
 	protected function writeToArticle( $wikiTitle, $content, $summary ) {
 		$mwTitleObj = Title::newFromText( $wikiTitle );
 		$mwArticleObj = new Article( $mwTitleObj );

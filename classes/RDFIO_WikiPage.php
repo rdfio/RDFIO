@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * RDFIO specific class for holding data (title, facts (property/object tuples),
+ * categories, equivalentURIs etc. about a wiki article, to make it easy to 
+ * collect data and later write these data to MediaWiki. 
+ */
 class RDFIOWikiPage {
 	protected $title;
 	protected $equivalentUris;
