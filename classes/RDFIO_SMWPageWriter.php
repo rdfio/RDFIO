@@ -13,10 +13,6 @@ class RDFIOSMWPageWriter {
 		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-			// Sanitize the title a bit
-			$wikiTitle = str_replace('[','',$wikiTitle);
-			$wikiTitle = str_replace(']','',$wikiTitle);
-			
 			// Get data from Wiki Page object
 			$facts = $wikiPage->getFacts();
 			$equivUris = $wikiPage->getEquivalentUris();

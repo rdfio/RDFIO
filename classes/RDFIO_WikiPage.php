@@ -12,7 +12,7 @@ class RDFIOWikiPage {
 	protected $categories;
 
 	function __construct( $title ) {
-		$this->title = $title;
+		$this->setTitle( $title );
 		$this->equivalentUris = array();
 		$this->facts = array();
 		$this->categories = array();
@@ -50,6 +50,13 @@ class RDFIOWikiPage {
 		return $this->categories;
 	}
 	
+	public function setTitle( $wikiTitle ) {
+		// Sanitize the title a bit
+		$wikiTitle = str_replace('[','',$wikiTitle);
+		$wikiTitle = str_replace(']','',$wikiTitle);
+		$this->title = $wikiTitle;		
+	}
+	
 	private function equivalentURIExists( $equivURI ) {
 		return in_array( $equivURI, $this->equivalentUris );
 	}
@@ -59,4 +66,3 @@ class RDFIOWikiPage {
 	}
 }
 
-?>
