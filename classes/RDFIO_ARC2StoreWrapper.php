@@ -9,10 +9,12 @@
  */
 class RDFIOARC2StoreWrapper {
     protected $arcStore;
+    protected $uriResolverUrl;
 
     function __construct() {
         global $smwgARC2StoreConfig;
         $this->arcStore = ARC2::getStore( $smwgARC2StoreConfig );
+    	$this->uriResolverUrl = '';
     }
 
     /**
@@ -94,14 +96,15 @@ class RDFIOARC2StoreWrapper {
      * Get the base URI used by SMW to identify wiki articles
      * @return string $localWikiNamespace
      */
-    public static function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
+    public function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
         global $smwgNamespace;
         if ( substr( $smwgNamespace, 0, 4 ) === "http" ) {
             $localWikiNamespace = $smwgNamespace;
         } else {
-            $resolver = SpecialPage::getTitleFor( 'URIResolver' );
-            $uriResolverUri = $resolver->getFullURL() . '/';
-            $localWikiNamespace = $uriResolverUri;
+        	if ( $this->uriResolverUrl === '' ) {
+        		$this->uriResolverUrl = SpecialPage::getTitleFor( 'URIResolver' ) . '/';
+        	}
+            $localWikiNamespace = $this->uriResolverUrl;
         }
         return $localWikiNamespace;
     }
