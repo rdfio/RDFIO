@@ -12,7 +12,7 @@ $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'ARC2Admin',
 	'author' => 'Samuel Lampa',
-	'url' => 'http://www.mediawiki.org/wiki/Extension:SMWRDFConnector',
+	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-arc2admin-desc',
 	'version' => '0.0.0',
 );

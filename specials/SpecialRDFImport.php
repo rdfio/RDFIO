@@ -12,7 +12,7 @@ $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'RDFImport',
 	'author' => 'Samuel Lampa',
-	'url' => 'http://www.mediawiki.org/wiki/Extension:SMWRDFConnector',
+	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-rdfimport-desc',
 	'version' => '0.0.0',
 );
