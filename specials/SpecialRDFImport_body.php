@@ -138,6 +138,8 @@ class RDFImport extends SpecialPage {
 	 * @return string $htmlFormContent
 	 */
 	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
+		$urlChecked = ( $requestData->importSource === 'url' ) ? 'checked="true"' : '';
+		$textfieldChecked = ( $requestData->importSource === 'textfield' ) ? 'checked="true"' : '';
 
 		// Create the HTML form for RDF/XML Import
 		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
@@ -146,8 +148,8 @@ class RDFImport extends SpecialPage {
 			<table border="0"><tbody>
 			<tr><td colspan="3">
 			Action:
-			<input type="radio" name="importsrc" value="url">Import RDF from URL</input>,
-			<input type="radio" name="importsrc" value="textfield">Paste RDF</input>
+			<input type="radio" name="importsrc" value="url" ' . $urlChecked .'>Import RDF from URL</input>,
+			<input type="radio" name="importsrc" value="textfield" ' . $textfieldChecked . '>Paste RDF</input>
 			</td></tr>
 			<tr><td colspan="3">
 					<input type="text" size="100" name="extrdfurl">
