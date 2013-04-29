@@ -13,6 +13,7 @@ $specialPageAliases['en'] = array(
 	'SPARQLEndpoint' => array( 'SPARQLEndpoint' ),
 	'ARC2Admin' => array( 'ARC2Admin' ),
 	'RDFImport' => array( 'RDFImport' ),
+	'SPARQLImport' => array( 'SPARQLImport' ),
 );
 
 /** Arabic (العربية) */

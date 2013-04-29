@@ -67,6 +67,7 @@ require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
 $rdfioDir = dirname( __FILE__ );
 
 include_once $rdfioDir . '/specials/SpecialRDFImport.php';
+include_once $rdfioDir . '/specials/SpecialSPARQLImport.php';
 include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; 
 
 # Misc
