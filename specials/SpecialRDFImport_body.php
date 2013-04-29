@@ -9,17 +9,21 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		# Set HTML headers sent to the browser
-		$this->setHeaders();
-
-		# The main code
-		$requestData = $this->getRequestData();
-		if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
-			$this->importData( $requestData );
-		} else if ( !$requestData->hasWriteAccess ) {
-			global $wgOut;
-			$wgOut->addHTML("<b>User does not have write access!</b>");
-		} else {
+		try {
+			# Set HTML headers sent to the browser
+			$this->setHeaders();
+			
+			# The main code
+			$requestData = $this->getRequestData();
+			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
+				$this->importData( $requestData );
+			} else if ( !$requestData->hasWriteAccess ) {
+				throw new RDFIOUIException("User does not have write access");
+			} else {
+				$this->outputHTMLForm( $requestData );
+			}
+		} catch (RDFIOUIException $e) {
+			$this->showErrorMessage('Error!', $e->getMessage());
 			$this->outputHTMLForm( $requestData );
 		}
 	}
@@ -30,9 +34,15 @@ class RDFImport extends SpecialPage {
 	function importData( RDFIORequestData $requestData ) {
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
+			if ( $requestData->externalRdfUrl === '' )
+				throw new RDFIOUIException('URL field is empty!');				
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
-			$rdfData =  $requestData->importData;
+			if ( $requestData->importData === '' )
+				throw new RDFIOUIException('RDF/XML field is empty!');				
+			$rdfData = $requestData->importData;
+		} else {
+			throw new RDFIOUIException('Import source is not selected!');
 		}
 		$rdfImporter->importRdfXml( $rdfData );
 
@@ -182,7 +192,7 @@ class RDFImport extends SpecialPage {
 		return $exampleDataJs;
 	}
 	
-	static function showErrorMessage( $title, $message ) {
+	function showErrorMessage( $title, $message ) {
 		global $wgOut;
 		$errorHtml = $this->formatErrorHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
@@ -195,7 +205,7 @@ class RDFImport extends SpecialPage {
 	 * @return string $errorhtml
 	 */
 	static function formatErrorHTML( $title, $message ) {
-		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #D8000C; background-color: #FFBABA;">
+		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
                 	 <h3>' . $title . '</h3>
                 	 <p>' . $message . '</p>
                 	 </div>';
