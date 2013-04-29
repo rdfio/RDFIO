@@ -14,7 +14,7 @@ class RDFImport extends SpecialPage {
 
 		# The main code
 		$requestData = $this->getRequestData();
-		if ( $requestData->hasWriteAccess && $requestData->action == 'import' ) {
+		if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
 			$this->importData( $requestData );
 		} else if ( !$requestData->hasWriteAccess ) {
 			global $wgOut;
@@ -27,9 +27,14 @@ class RDFImport extends SpecialPage {
 	/**
 	 * Import data into wiki pages
 	 */
-	function importData( $requestData ) {
+	function importData( RDFIORequestData $requestData ) {
 		$rdfImporter = new RDFIORDFImporter();
-		$rdfImporter->importRdfXml( $requestData->importData );
+		if ( $requestData->importSource === 'url' ) {
+			$rdfData = file_get_contents( $requestData->externalRdfUrl );
+		} else if ( $requestData->importSource === 'textfield' ) {
+			$rdfData =  $requestData->importData;
+		}
+		$rdfImporter->importRdfXml( $rdfData );
 
 		global $wgOut;
 		$wgOut->addHTML('Tried to import the data ...');
@@ -44,8 +49,10 @@ class RDFImport extends SpecialPage {
 		$requestData = new RDFIORequestData();
 		$requestData->action = $wgRequest->getText( 'action' );
 		$requestData->editToken = $wgRequest->getText( 'token' );
+		$requestData->importSource = $wgRequest->getText( 'importsrc' );
 		$requestData->nsPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
 		$requestData->nsPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
+		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' ); 
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
 		$requestData->hasWriteAccess = $this->userHasWriteAccess();
@@ -127,7 +134,15 @@ class RDFImport extends SpecialPage {
 			name="createEditQuery"><input type="hidden" name="action" value="import">
 			' . $extraFormContent . '
 			<table border="0"><tbody>
-			<tr><td colspan="3">RDF/XML data to import:</td><tr>
+			<tr><td colspan="3">
+			Action:
+			<input type="radio" name="importsrc" value="url">Import RDF from URL</input>,
+			<input type="radio" name="importsrc" value="textfield">Paste RDF</input>
+			</td></tr>
+			<tr><td colspan="3">
+					<input type="text" size="100" name="extrdfurl">
+			</td></tr>
+					<tr><td colspan="3">RDF/XML data to import:</td><tr>
 			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea>
 			</td></tr>
 			<tr><td width="100">Data format:</td>
@@ -192,8 +207,10 @@ class RDFImport extends SpecialPage {
 class RDFIORequestData {
 	public $action;
 	public $editToken;
+	public $importSource;
 	public $nsPrefixInWikiTitlesProperties;
 	public $nsPrefixInWikiTitlesEntities;
+	public $externalRdfUrl;
 	public $importData;
 	public $dataFormat;
 	public $hasWriteAccess;
