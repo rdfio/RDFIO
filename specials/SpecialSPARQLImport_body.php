@@ -13,13 +13,24 @@ class SPARQLImport extends SpecialPage {
 		global $wgOut, $wgRequest;
 		try {
 			$this->setHeaders();
+
+			// Figure out the submit button caption, which should change after doing the first batch.
+			if ( $wgRequest->getText( 'action' ) === 'import' ) {
+				$offset = $wgRequest->getVal( 'offset', 0 );
+				$limit = $this->triplesPerBatch;
+				$submitButtonText = "Import next $limit triples...";
+			} else {
+				$submitButtonText = 'Import';
+			}
+			// Print the form
+			$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+
+			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
 				$externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 				if ( $externalSparqlUrl === '' ) {
 					throw new RDFIOUIException('External SPARQL Url is empty!');
 				}
-				$offset = $wgRequest->getVal( 'offset', 0 );
-				$limit = $this->triplesPerBatch;
 				$sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
 				$sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
 				$sparqlResultXml = file_get_contents($sparqlQueryUrl);
@@ -28,26 +39,25 @@ class SPARQLImport extends SpecialPage {
 				$wgOut->addHTML("SPARQL query: " . $sparqlQuery . "\n\n");
 				$wgOut->addHTML( "Results:\n" . htmlentities( $sparqlResultXml ) . "\n</pre>" );
 			} 
-			$wgOut->addHTML( $this->getHTMLForm() );
 		} catch (RDFIOUIException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
 			$wgOut->addHTML( $this->getHTMLForm() );
 		}
 	}
 	
-	protected function getHTMLForm() {
+	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
 		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', 'http://hhpid.bio2rdf.org/sparql' );
 		$limit = $this->triplesPerBatch;
 		$offset = $wgRequest->getText( 'offset', 0 - $limit ) + $limit;
 		$htmlForm = <<<EOD
-		<form method="get" action="$thisPageUrl" >
+		<form method="post" action="$thisPageUrl" >
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<input type="text" name="extsparqlurl" size="60" value="$extSparqlUrl"></input>
 				<input type="hidden" name="offset" value=$offset>
-				<input type="submit" value="Import">
+				<input type="submit" value="$buttonText">
 		</form>
 EOD;
 		return $htmlForm;
