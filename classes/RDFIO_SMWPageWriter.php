@@ -25,7 +25,7 @@ class RDFIOSMWPageWriter {
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
 			// If page exists, get it's data from WOM
-			if ( $mwTitleObj->exists() ) {
+			if ( is_object($mwTitleObj) && $mwTitleObj->exists() ) {
 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
 				
 				// Get wiki text
