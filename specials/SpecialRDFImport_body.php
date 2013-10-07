@@ -138,9 +138,18 @@ class RDFImport extends SpecialPage {
 	 * @return string $htmlFormContent
 	 */
 	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
-		$urlChecked = ( $requestData->importSource === 'url' ) ? 'checked="true"' : '';
-		$textfieldChecked = ( $requestData->importSource === 'textfield' ) ? 'checked="true"' : '';
+		$urlChecked = ( $requestData->importSource === 'url' );
+		$textfieldChecked = ( $requestData->importSource === 'textfield' );
+		
+		// Show (and pre-select) the URL field, as default
+		if ( !$urlChecked && !$textfieldChecked ) {
+			$urlChecked = true;
+			$textfieldHiddenContent = 'style="display: none"';
+		}
 
+		$urlCheckedContent = $urlChecked ? 'checked="true"' : '';
+		$textfieldCheckedContent = $textfieldChecked ? 'checked="true"' : '';
+		
 		// Create the HTML form for RDF/XML Import
 		$htmlFormContent = '<script type="text/javascript">
 				function showUrlFields() {
@@ -150,47 +159,53 @@ class RDFImport extends SpecialPage {
 				function showDataFields() {
 					document.getElementById("urlfields").style.display = "none";
 					document.getElementById("datafields").style.display = "";
-	}
+				}
 				</script>
 				<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
 				name="createEditQuery"><input type="hidden" name="action" value="import">
 				' . $extraFormContent . '
-						<table border="0"><tbody>
-						<tr><td colspan="3">
-						Action:
-						<input type="radio" name="importsrc" value="url" ' . $urlChecked .' onclick="javascript:showUrlFields();" />Import RDF from URL,
-						<input type="radio" name="importsrc" value="textfield" ' . $textfieldChecked . ' onclick="javascript:showDataFields();" />Paste RDF
-										</td></tr>
-										</tbody>
-										</table>
-											
-										<div id="urlfields">
-											External URL:
-											<input type="text" size="100" name="extrdfurl">
-										</div>
-											
-										<div id="datafields">
-										<table style="border: none"><tbody>
-										<tr><td colspan="3">RDF/XML data to import:</td><tr>
-										<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea>
-												</td></tr>
-												<tr><td style="width: 100px;">Data format:</td>
-												<td>
-												<select id="dataformat" name="dataformat">
-												<option value="rdfxml" selected="selected">RDF/XML</option>
-												<!-- option value="turtle" >Turtle</option -->
-												</select>
-												</td>
-												<td style="text-align: right; font-size: 10px;">
-												[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
-												[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
-												</td>
-												</tr>
-												</tbody></table>
-												</div>
-													
-												<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
-														</form>';
+					<table border="0">
+						<tbody>
+							<tr>
+								<td colspan="3">
+								Action:
+								<input type="radio" name="importsrc" value="url" ' . $urlCheckedContent .' onclick="javascript:showUrlFields();" />Import RDF from URL,
+								<input type="radio" name="importsrc" value="textfield" ' . $textfieldCheckedContent . ' onclick="javascript:showDataFields();" />Paste RDF
+								</td>
+							</tr>
+						</tbody>
+					</table>
+						
+					<div id="urlfields">
+						External URL:
+						<input type="text" size="100" name="extrdfurl">
+					</div>
+						
+					<div id="datafields" ' . $textfieldHiddenContent . '>
+						<table style="border: none"><tbody>
+							<tr>
+								<td colspan="3">RDF/XML data to import:</td>
+							</tr>
+							<tr>
+								<td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea></td>
+							</tr>
+							<tr>
+								<td style="width: 100px;">Data format:</td>
+								<td>
+									<select id="dataformat" name="dataformat">
+									<option value="rdfxml" selected="selected">RDF/XML</option>
+									<!-- option value="turtle" >Turtle</option -->
+									</select>
+								</td>
+								<td style="text-align: right; font-size: 10px;">
+									[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
+									[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
+								</td>
+							</tr>
+						</tbody></table>
+					</div>
+					<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
+				</form>';
 
 		return $htmlFormContent;
 	}
