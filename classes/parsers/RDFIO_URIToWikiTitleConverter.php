@@ -50,19 +50,10 @@ class RDFIOURIToTitleConverter {
 		$wikiPageTitle = '';
 
 		foreach ($uriToWikiTitleConversionStrategies as $currentStrategy ) {
-			try {
-				$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
-				// TODO: Remove "debug code"?
-				$wgOut->addWikiText("Found title [[$wikiPageTitle]] for $uriToConvert (using " . $currentStrategy . "())");
-				
+			$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
+			if ($wikiPageTitle != null) {
 				return $wikiPageTitle;
-			} catch ( WikiTitleNotFoundException $e ) { 
-				// Should just continue and try the next strategy ...
 			}
-		}
-
-		if ( $wikiPageTitle == '' ) {
-			throw new MWException("Failed to convert to Wiki Title: $uriToConvert");
 		}
 	}
 
@@ -77,7 +68,7 @@ class RDFIOURIToTitleConverter {
 		if ( $wikiTitle != '' ) {
 			return $wikiTitle;
 		} else {
-			throw new WikiTitleNotFoundException("WikiTitle not found by getExistingTitleForURI()");
+			return null;
 		}
 	}
 
@@ -110,7 +101,7 @@ class RDFIOURIToTitleConverter {
 		if ( $wikiPageTitle != '' ) {
 			return $wikiPageTitle;
 		} else {
-			throw new WikiTitleNotFoundException("WikiTitle not found by applyGlobalSettingForPropertiesToUseAsWikiTitle()");
+			return null;
 		}
 	}	
 
@@ -139,7 +130,7 @@ class RDFIOURIToTitleConverter {
 		if ( $wikiPageTitle != '' ) {
 			return $wikiPageTitle;
 		} else {
-			throw new WikiTitleNotFoundException("WikiTitle not found by shortenURINamespaceToAliasInSourceRDF()");
+			return null;
 		}	
 	}
 
@@ -156,7 +147,7 @@ class RDFIOURIToTitleConverter {
 		if ( $wikiPageTitle != '' ) {
 			return $wikiPageTitle;
 		} else {
-			throw new WikiTitleNotFoundException("WikiTitle not found by extractLocalPartFromURI()");
+			return null;
 		}	
 	}
 
