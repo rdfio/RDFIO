@@ -12,7 +12,7 @@ class RDFImport extends SpecialPage {
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
-			
+				
 			# The main code
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
@@ -35,11 +35,11 @@ class RDFImport extends SpecialPage {
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' )
-				throw new RDFIOUIException('URL field is empty!');				
+				throw new RDFIOUIException('URL field is empty!');
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
 			if ( $requestData->importData === '' )
-				throw new RDFIOUIException('RDF/XML field is empty!');				
+				throw new RDFIOUIException('RDF/XML field is empty!');
 			$rdfData = $requestData->importData;
 		} else {
 			throw new RDFIOUIException('Import source is not selected!');
@@ -62,12 +62,12 @@ class RDFImport extends SpecialPage {
 		$requestData->importSource = $wgRequest->getText( 'importsrc' );
 		$requestData->nsPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
 		$requestData->nsPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
-		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' ); 
+		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
 		$requestData->hasWriteAccess = $this->userHasWriteAccess();
 		$requestData->articlePath = $wgArticlePath;
-		
+
 		return $requestData;
 	}
 
@@ -85,7 +85,7 @@ class RDFImport extends SpecialPage {
 	 */
 	function outputHTMLForm( $requestData ) {
 		global $wgOut;
-		$wgOut->addScript( $this->getExampleDataJs() );
+		$wgOut->addScript( $this->getJsCode() );
 		$wgOut->addHTML( $this->getHTMLFormContent( $requestData ) );
 	}
 
@@ -95,39 +95,39 @@ class RDFImport extends SpecialPage {
 	 */
 	public function getExampleRDFXMLData() {
 		return '<rdf:RDF\\n\
-    xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
-    xmlns:cd=\\"http://www.recshop.fake/cd#\\"\\n\
-    xmlns:countries=\\"http://www.countries.org/onto/\\"\\n\
-    xmlns:rdfs=\\"http://www.w3.org/2000/01/rdf-schema#\\"\\n\
-    >\\n\
-\\n\
-    <rdf:Description\\n\
-        rdf:about=\\"http://www.recshop.fake/cd/Empire Burlesque\\">\\n\
-          <cd:artist>Bob Dylan</cd:artist>\\n\
-            <cd:country rdf:resource=\\"http://www.countries.org/onto/USA\\"/>\\n\
-              <cd:company>Columbia</cd:company>\\n\
-                <cd:price>10.90</cd:price>\\n\
-                  <cd:year>1985</cd:year>\\n\
-              </rdf:Description>\\n\
-\\n\
-    <rdf:Description\\n\
-        rdf:about=\\"http://www.recshop.fake/cd/Hide your heart\\">\\n\
-            <cd:artist>Bonnie Tyler</cd:artist>\\n\
-            <cd:country>UK</cd:country>\\n\
-            <cd:company>CBS Records</cd:company>\\n\
-            <cd:price>9.90</cd:price>\\n\
-            <cd:year>1988</cd:year>\\n\
-    </rdf:Description>\\n\
-\\n\
-    <rdf:Description\\n\
-       rdf:about=\\"http://www.countries.org/onto/USA\\">\\n\
-            <rdfs:label>USA</rdfs:label>\\n\
-    </rdf:Description>\\n\
-\\n\
-    <rdf:Description rdf:about=\\"http://www.countries.org/onto/Albums\\">\\n\
-         <rdfs:subClassOf rdf:resource=\\"http://www.countries.org/onto/MediaCollections\\"/>\\n\
-    </rdf:Description>\\n\
-</rdf:RDF>';
+				xmlns:rdf=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
+				xmlns:cd=\\"http://www.recshop.fake/cd#\\"\\n\
+				xmlns:countries=\\"http://www.countries.org/onto/\\"\\n\
+				xmlns:rdfs=\\"http://www.w3.org/2000/01/rdf-schema#\\"\\n\
+				>\\n\
+				\\n\
+				<rdf:Description\\n\
+				rdf:about=\\"http://www.recshop.fake/cd/Empire Burlesque\\">\\n\
+				<cd:artist>Bob Dylan</cd:artist>\\n\
+				<cd:country rdf:resource=\\"http://www.countries.org/onto/USA\\"/>\\n\
+				<cd:company>Columbia</cd:company>\\n\
+				<cd:price>10.90</cd:price>\\n\
+				<cd:year>1985</cd:year>\\n\
+				</rdf:Description>\\n\
+				\\n\
+				<rdf:Description\\n\
+				rdf:about=\\"http://www.recshop.fake/cd/Hide your heart\\">\\n\
+				<cd:artist>Bonnie Tyler</cd:artist>\\n\
+				<cd:country>UK</cd:country>\\n\
+				<cd:company>CBS Records</cd:company>\\n\
+				<cd:price>9.90</cd:price>\\n\
+				<cd:year>1988</cd:year>\\n\
+				</rdf:Description>\\n\
+				\\n\
+				<rdf:Description\\n\
+				rdf:about=\\"http://www.countries.org/onto/USA\\">\\n\
+				<rdfs:label>USA</rdfs:label>\\n\
+				</rdf:Description>\\n\
+				\\n\
+				<rdf:Description rdf:about=\\"http://www.countries.org/onto/Albums\\">\\n\
+				<rdfs:subClassOf rdf:resource=\\"http://www.countries.org/onto/MediaCollections\\"/>\\n\
+				</rdf:Description>\\n\
+				</rdf:RDF>';
 	}
 
 	/**
@@ -142,36 +142,55 @@ class RDFImport extends SpecialPage {
 		$textfieldChecked = ( $requestData->importSource === 'textfield' ) ? 'checked="true"' : '';
 
 		// Create the HTML form for RDF/XML Import
-		$htmlFormContent = '<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
-			name="createEditQuery"><input type="hidden" name="action" value="import">
-			' . $extraFormContent . '
-			<table border="0"><tbody>
-			<tr><td colspan="3">
-			Action:
-			<input type="radio" name="importsrc" value="url" ' . $urlChecked .'>Import RDF from URL</input>,
-			<input type="radio" name="importsrc" value="textfield" ' . $textfieldChecked . '>Paste RDF</input>
-			</td></tr>
-			<tr><td colspan="3">
-					<input type="text" size="100" name="extrdfurl">
-			</td></tr>
-					<tr><td colspan="3">RDF/XML data to import:</td><tr>
-			<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea>
-			</td></tr>
-			<tr><td width="100">Data format:</td>
-			<td>
-			<select id="dataformat" name="dataformat">
-			  <option value="rdfxml" selected="selected">RDF/XML</option>
-			  <!-- option value="turtle" >Turtle</option -->
-			</select>
-			</td>
-			<td style="text-align: right; font-size: 10px;">
-			[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
-			[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
-			</td>
-			</tr>
-			</tbody></table>
-			<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
-			</form>';
+		$htmlFormContent = '<script type="text/javascript">
+				function showUrlFields() {
+					document.getElementById("urlfields").style.display = "";
+					document.getElementById("datafields").style.display = "none";
+				}
+				function showDataFields() {
+					document.getElementById("urlfields").style.display = "none";
+					document.getElementById("datafields").style.display = "";
+	}
+				</script>
+				<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
+				name="createEditQuery"><input type="hidden" name="action" value="import">
+				' . $extraFormContent . '
+						<table border="0"><tbody>
+						<tr><td colspan="3">
+						Action:
+						<input type="radio" name="importsrc" value="url" ' . $urlChecked .' onclick="javascript:showUrlFields();" />Import RDF from URL,
+						<input type="radio" name="importsrc" value="textfield" ' . $textfieldChecked . ' onclick="javascript:showDataFields();" />Paste RDF
+										</td></tr>
+										</tbody>
+										</table>
+											
+										<div id="urlfields">
+											External URL:
+											<input type="text" size="100" name="extrdfurl">
+										</div>
+											
+										<div id="datafields">
+										<table style="border: none"><tbody>
+										<tr><td colspan="3">RDF/XML data to import:</td><tr>
+										<tr><td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea>
+												</td></tr>
+												<tr><td style="width: 100px;">Data format:</td>
+												<td>
+												<select id="dataformat" name="dataformat">
+												<option value="rdfxml" selected="selected">RDF/XML</option>
+												<!-- option value="turtle" >Turtle</option -->
+												</select>
+												</td>
+												<td style="text-align: right; font-size: 10px;">
+												[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
+												[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
+												</td>
+												</tr>
+												</tbody></table>
+												</div>
+													
+												<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
+														</form>';
 
 		return $htmlFormContent;
 	}
@@ -181,25 +200,25 @@ class RDFImport extends SpecialPage {
 	 * loading example data into the main textarea
 	 * @return string $exampleDataJs
 	 */
-	public function getExampleDataJs() {
-		$exampleDataJs = '
-			<script type="text/javascript">
-			function pasteExampleRDFXMLData(textFieldId) {
-			var textfield = document.getElementById(textFieldId);
-			var exampledata = "' . $this->getExampleRDFXMLData() . '";
-			textfield.value = exampledata;
-			}
-			</script>
-			';
-		return $exampleDataJs;
+	public function getJsCode() {
+		$jsCode = '
+<script type="text/javascript">
+function pasteExampleRDFXMLData(textFieldId) {
+	var textfield = document.getElementById(textFieldId);
+	var exampledata = "' . $this->getExampleRDFXMLData() . '";
+	textfield.value = exampledata;
+}
+</script>
+						';
+		return $jsCode;
 	}
-	
+
 	function showErrorMessage( $title, $message ) {
 		global $wgOut;
 		$errorHtml = $this->formatErrorHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
 	}
-	
+
 	/**
 	 * Format an error message with HTML, based on a message title and the message
 	 * @param string $title
@@ -208,9 +227,9 @@ class RDFImport extends SpecialPage {
 	 */
 	static function formatErrorHTML( $title, $message ) {
 		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
-                	 <h3>' . $title . '</h3>
-                	 <p>' . $message . '</p>
-                	 </div>';
+				<h3>' . $title . '</h3>
+						<p>' . $message . '</p>
+								</div>';
 		return $errorHtml;
 	}
 
@@ -227,6 +246,7 @@ class RDFIORequestData {
 	public $dataFormat;
 	public $hasWriteAccess;
 	public $articlePath;
-	
-	public function __construct() {}
+
+	public function __construct() {
+	}
 }
