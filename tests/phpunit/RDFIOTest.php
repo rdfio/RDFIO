@@ -1,15 +1,20 @@
 <?php
 
-class RDFIOTest extends PHPUnit_Framework_TestCase {
+// Register hooks
+$wgHooks['UnitTestsList'][] = 'RDFIOTest::testPhpUnitSetup';
 
-	function setUp() {}
+class RDFIOTest extends MediaWikiTestCase { 
+
+	function setUp() {
+		parent::setUp();		
+	}
 	function tearDown() {}
-	
+
 	/**
-	 * Simple test to see that the PHPUnit test framework 
-	 * (And the MakeGood Eclipse plugin) is correctly set up. 
+	 * Simple test to see that the PHPUnit test framework
+	 * (And the MakeGood Eclipse plugin) is correctly set up.
 	 */
-	public function testRdfio() {
+	public function testPhpUnitSetup() {
 		$this->assertTrue(true);
 	}
 	
