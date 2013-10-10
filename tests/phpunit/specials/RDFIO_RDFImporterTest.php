@@ -24,6 +24,24 @@ class RDFIORDFImporterTest extends MediaWikiTestCase {
 		$this->assertEquals(0, $arc2rdfxmlparser->countTriples(), 'Triples found even for invalid RDF data!');
 	}
 	
+	public function testConvertFromArc2DataToRDFIOData() {
+		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
+		$importData = $this->getTestImportData();
+
+		$arc2rdfxmlparser->parseData( $importData );
+		
+		$triples = $arc2rdfxmlparser->triples;
+		$tripleIndex = $arc2rdfxmlparser->getSimpleIndex();
+		$namespaces = $arc2rdfxmlparser->nsp;
+		
+		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
+		$wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
+		// Debug stuff
+		// echo "No of wiki pages: " . count($wikiPages);
+
+		$this->assertGreaterThan(0, count($wikiPages), "No wiki pages converted from triples!");
+	}
+	
 	function getTestImportData() {
 		$testImportData = '<rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
