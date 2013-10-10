@@ -39,7 +39,7 @@ class RDFIORDFImporterTest extends MediaWikiTestCase {
 		// Debug stuff
 		// echo "No of wiki pages: " . count($wikiPages);
 
-		$this->assertGreaterThan(0, count($wikiPages), "No wiki pages converted from triples!");
+		$this->assertEquals(11, count($wikiPages), "No wiki pages converted from triples!");
 	}
 	
 	function getTestImportData() {
