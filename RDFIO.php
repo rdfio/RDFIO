@@ -85,3 +85,10 @@ $wgAutoloadClasses['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/R
 $wgAutoloadClasses['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
 $wgAutoloadClasses['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
 $wgAutoloadClasses['RDFIOUIException'] = $rdfioDir . '/classes/RDFIO_UIException.php';
+
+/**************************
+ *     Register hooks     *
+ **************************/
+
+include_once $rdfioDir . '/RDFIO.hooks.php';
+$wgHooks['UnitTestsList'][] = 'RDFIOHooks::onUnitTestsList';
