@@ -1,8 +1,5 @@
 <?php
 
-// Register hooks
-$wgHooks['UnitTestsList'][] = 'RDFIOTest::testPhpUnitSetup';
-
 class RDFIOTest extends MediaWikiTestCase { 
 
 	function setUp() {
