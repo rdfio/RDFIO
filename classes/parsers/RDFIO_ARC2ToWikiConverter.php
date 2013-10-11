@@ -115,15 +115,6 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		$this->wikiPages[$pageTitle]->addFact( $fact );
 		$this->wikiPages[$pageTitle]->addCategory( $category );
 	}
-	
-	private function addCategoryPagesToPagesArray( $wikiPageTitle, $subjectURI, $categoryPageTitle, $wikiPages ) {
-		// FIXME: Why isn't this implemented?
-		if ( array_key_exists( $pageTitle, $pagesArray ) ) {
-			// Nothing
-		} else {
-			// Nothing
-		}
-	}
 		
 }
 
