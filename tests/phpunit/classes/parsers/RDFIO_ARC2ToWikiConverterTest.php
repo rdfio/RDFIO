@@ -8,7 +8,9 @@ class RDFIOARC2ToWikiConverterTest extends MediaWikiTestCase {
 	
 	protected function tearDown() {}
 
-	
+	/**
+	 * @covers RDFIOARC2ToWikiConverter
+	 */
 	public function testConvert() {
 		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
 		$importData = $this->getTestImportData();
@@ -21,8 +23,6 @@ class RDFIOARC2ToWikiConverterTest extends MediaWikiTestCase {
 	
 		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
 		$wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
-		// Debug stuff
-		// echo "No of wiki pages: " . count($wikiPages);
 	
 		$this->assertEquals(11, count($wikiPages), "No wiki pages converted from triples!");
 	}	

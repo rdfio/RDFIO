@@ -167,6 +167,9 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 //		return isset( $rdfiogPropertiesToUseAsWikiTitle );
 // 	}
 
+	/**
+	 * @covers RDFIOURIToTitleConverter::globalSettingForPropertiesToUseAsWikiTitleExists
+	 */
 	public function testGlobalSettingForPropertiesToUseAsWikiTitleExistsReturnsTrueOnExists() {
 	    global $rdfiogPropertiesToUseAsWikiTitle;
 		$uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
@@ -179,6 +182,9 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 		$this->assertFalse($uriToWikiTitleConverter->globalSettingForPropertiesToUseAsWikiTitleExists());
 	}
 	
+	/**
+	 * @covers RDFIOURIToTitleConverter::globalSettingForPropertiesToUseAsWikiTitleExists
+	 */
 	public function testGlobalSettingForPropertiesToUseAsWikiTitleExistsReturnsFalseOnDOesntExist() {
 	    global $rdfiogPropertiesToUseAsWikiTitle;
 		$uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
