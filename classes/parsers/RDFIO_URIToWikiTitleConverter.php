@@ -80,7 +80,7 @@ class RDFIOURIToTitleConverter {
 		$wikiPageTitle = '';
 
 		if ( !$this->globalSettingForPropertiesToUseAsWikiTitleExists() ) {
-			$this->setglobalSettingForPropertiesToUseAsWikiTitleToDefult();
+			$this->setglobalSettingForPropertiesToUseAsWikiTitleToDefault();
 		}
 
 		$index = $this->arc2ResourceIndex;
@@ -164,7 +164,7 @@ class RDFIOURIToTitleConverter {
 	 * Default settings for which RDF properties to use for getting
 	 * possible candidates for wiki page title names.
 	 */
-	function setglobalSettingForPropertiesToUseAsWikiTitleToDefult() {
+	function setglobalSettingForPropertiesToUseAsWikiTitleToDefault() {
 		global $rdfiogPropertiesToUseAsWikiTitle;
 		$rdfiogPropertiesToUseAsWikiTitle = array(
 			'http://semantic-mediawiki.org/swivt/1.0#page', // Suggestion for new property
