@@ -157,6 +157,7 @@ class RDFIOURIToTitleConverter {
 	 * Just tell if $rdfiogPropertiesToUseAsWikiTitle is set or not.
 	 */
 	function globalSettingForPropertiesToUseAsWikiTitleExists() {
+		global $rdfiogPropertiesToUseAsWikiTitle;
 		return isset( $rdfiogPropertiesToUseAsWikiTitle );
 	}
 	
