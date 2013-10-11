@@ -14,7 +14,7 @@ class RDFIOARC2StoreWrapper {
     function __construct() {
         global $smwgARC2StoreConfig;
         $this->arcStore = ARC2::getStore( $smwgARC2StoreConfig );
-    	$this->uriResolverUrl = '';
+        $this->uriResolverUrl = '';
     }
 
     /**
