@@ -203,6 +203,7 @@ class RDFIOURIToTitleConverter {
 			if ( $uriContainsNamepace ) {
 				$localpart = substr( $uri, $nslength );
 				$basepart = $prefix;
+				break;
 			}
 		}
 
