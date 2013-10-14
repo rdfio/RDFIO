@@ -16,6 +16,17 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 
 	protected function setUp() {
 		parent::setUp();
+		$testData = new RDFIOTestData();
+		
+		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
+		$arc2rdfxmlparser->parseData( $testData->getTestImportData() );
+		
+		$triples = $arc2rdfxmlparser->triples;
+		$tripleIndex = $arc2rdfxmlparser->getSimpleIndex();
+		$namespaces = $arc2rdfxmlparser->nsp;
+		
+		$this->uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $triples, $tripleIndex, $namespaces );
+		$this->uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $triples, $tripleIndex, $namespaces );	
 	}
 	
 	protected function tearDown() {}
@@ -139,6 +150,21 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 			return null;
 // 		}	
 // 	}
+
+	public function testShortenURINamespaceToAliasInSourceRDF() {
+	    $GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
+          'http://semantic-mediawiki.org/swivt/1.0#page',
+          'http://www.w3.org/2000/01/rdf-schema#label',
+          'http://purl.org/dc/elements/1.1/title',
+          'http://www.w3.org/2004/02/skos/core#preferredLabel',
+          'http://xmlns.com/foaf/0.1/name',
+          'http://www.nmrshiftdb.org/onto#spectrumId'
+        );
+	    
+	    $uri = 'http://www.countries.org/onto/USA';
+	    $wikiTitle = $this->uriToWikiTitleConverter->convert($uri);
+	    $this->assertEquals('USA', $wikiTitle);
+	}
 
 	/**
 	 * Strategy 4: URI to WikiTitle
