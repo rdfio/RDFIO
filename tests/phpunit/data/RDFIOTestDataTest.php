@@ -28,12 +28,17 @@ class RDFIOTestData {
 				<cd:year>1988</cd:year>
 				</rdf:Description>
     
-				<rdf:Description
+				<!-- rdf:Description
 				rdf:about="http://www.countries.org/onto/USA">
 				<rdfs:label>USA</rdfs:label>
-				</rdf:Description>
+				</rdf:Description -->
     
-				<rdf:Description rdf:about="http://www.countries.org/onto/Albums">
+				<rdf:Description
+				rdf:about="http://something.totally.unrelated.to/its/label">
+				<rdfs:label>SomeTotallyUnrelatedLabel</rdfs:label>
+				</rdf:Description>                
+                
+                <rdf:Description rdf:about="http://www.countries.org/onto/Albums">
 				<rdfs:subClassOf rdf:resource="http://www.countries.org/onto/MediaCollections"/>
 				</rdf:Description>
 				</rdf:RDF>';

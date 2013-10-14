@@ -110,7 +110,7 @@ class RDFIOURIToTitleConverter {
 	 */
 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
 		global $rdfiogBaseURIs;
-
+		
 		// Shorten the Namespace (even for entities, optionally) into an NS Prefix
 		// according to mappings from parser (Such as chemInf:Blabla ...)
 		$nsPrefixes = $this->arc2NSPrefixes;
@@ -120,7 +120,7 @@ class RDFIOURIToTitleConverter {
 		if ( is_array( $rdfiogBaseURIs ) ) {
 			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
 		}
-		
+			
 		// Collect all the inputs for abbreviation, and apply:
 		if ( is_array( $nsPrefixes ) ) {
 			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uriToConvert, $nsPrefixes );
@@ -140,7 +140,7 @@ class RDFIOURIToTitleConverter {
 	function extractLocalPartFromURI( $uriToConvert ) {
 		// As a default, just try to get the local part of the URL
 		$parts = $this->splitURI( $uriToConvert );
-		if ( $parts[1] != "" ) {
+		if ( $parts[1] != '' ) {
 			$wikiPageTitle = $parts[1];
 		}
 

@@ -31,20 +31,6 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	
 	protected function tearDown() {}
 
-// 	protected $arc2Triples = null;
-// 	protected $arc2ResourceIndex = null;
-// 	protected $arc2NSPrefixes = null;
-// 	protected $arc2Store = null;
-
-// 	function __construct( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
-// 		$this->arc2Store = new RDFIOARC2StoreWrapper();
-
-// 		// Store paramters as class variables
-// 		$this->arc2Triples = $arc2Triples;
-// 		$this->arc2ResourceIndex = $arc2ResourceIndex;
-// 		$this->arc2NSPrefixes = $arc2NSPrefixes;
-// 	}
-
 	/**
 	 * The main method, converting from URI:s to wiki titles.
 	 * NOTE: Properties are taken care of py a special method below!
@@ -74,54 +60,38 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 		}
 // 	}
 
-	/////// CONVERSION STRATEGIES ///////
-
 	/**
-	 * Strategy 1: URI to WikiTitle
+	 * @covers RDFIOURIToTitleConverter::applyGlobalSettingForPropertiesToUseAsWikiTitle
 	 */
-// 	function getExistingTitleForURI( $uri ) {
-// 		# 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
-// 		$wikiTitle = $this->arc2Store->getWikiTitleByEquivalentURI( $uri );
-// 		if ( $wikiTitle != '' ) {
-// 			return $wikiTitle;
-// 		} else {
-// 			return null;
-// 		}
-// 	}
+	public function testApplyGlobalSettingForPropertiesToUseAsWikiTitleWorksWithCorrectSettings() {
+	    $GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
+	            'http://semantic-mediawiki.org/swivt/1.0#page',
+	            'http://www.w3.org/2000/01/rdf-schema#label',
+	            'http://purl.org/dc/elements/1.1/title',
+	            'http://www.w3.org/2004/02/skos/core#preferredLabel',
+	            'http://xmlns.com/foaf/0.1/name',
+	            'http://www.nmrshiftdb.org/onto#spectrumId'
+	    );
+	     
+	    $uri = 'http://something.totally.unrelated.to/its/label';
+	    $wikiTitle = $this->uriToWikiTitleConverter->convert($uri);
+	    $this->assertEquals('SomeTotallyUnrelatedLabel', $wikiTitle);
+	}	
 
-	/**
-	 * Strategy 2: URI to WikiTitle 
-	 */
-// 	function applyGlobalSettingForPropertiesToUseAsWikiTitle( $uri ) {
-// 		global $rdfiogPropertiesToUseAsWikiTitle;
-// 		$wikiPageTitle = '';
-
-// 		if ( !$this->globalSettingForPropertiesToUseAsWikiTitleExists() ) {
-// 			$this->setglobalSettingForPropertiesToUseAsWikiTitleToDefult();
-// 		}
-
-// 		$index = $this->arc2ResourceIndex;
-// 		if ( is_array($index) ) {
-// 			foreach ( $index as $subject => $properties ) {
-// 				if ( $subject === $uri ) {
-// 					foreach ( $properties as $property => $object ) {
-// 						if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
-// 							$wikiPageTitle = $object[0];
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 		if ( $wikiPageTitle != '' ) {
-// 			$wikiPageTitle = $this->removeInvalidChars( $wikiPageTitle );
-// 		}
-// 		if ( $wikiPageTitle != '' ) {
-// 			return $wikiPageTitle;
-// 		} else {
-// 			return null;
-// 		}
-// 	}	
-
+	public function testApplyGlobalSettingForPropertiesToUseAsWikiTitleDoesNotWorkWithWrongSetting() {
+	    $GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
+	            'http://semantic-mediawiki.org/swivt/1.0#page',
+	            'http://purl.org/dc/elements/1.1/title',
+	            'http://www.w3.org/2004/02/skos/core#preferredLabel',
+	            'http://xmlns.com/foaf/0.1/name',
+	            'http://www.nmrshiftdb.org/onto#spectrumId'
+	    );
+	     
+	    $uri = 'http://something.totally.unrelated.to/its/label';
+	    $wikiTitle = $this->uriToWikiTitleConverter->convert($uri);
+	    $this->assertNotEquals('SomeTotallyUnrelatedLabel', $wikiTitle);
+	}
+		
 	/**
 	 * Strategy 3: URI to WikiTitle
 	 */
@@ -152,46 +122,36 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 	}
 
 	public function testShortenURINamespaceToAliasInSourceRDF() {
-	    $GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
-          'http://semantic-mediawiki.org/swivt/1.0#page',
-          'http://www.w3.org/2000/01/rdf-schema#label',
-          'http://purl.org/dc/elements/1.1/title',
-          'http://www.w3.org/2004/02/skos/core#preferredLabel',
-          'http://xmlns.com/foaf/0.1/name',
-          'http://www.nmrshiftdb.org/onto#spectrumId'
-        );
-	    
-	    $uri = 'http://www.countries.org/onto/USA';
-	    $wikiTitle = $this->uriToWikiTitleConverter->convert($uri);
-	    $this->assertEquals('USA', $wikiTitle);
+	    global $rdfiogBaseURIs;
+
+	    $title = $this->uriToWikiTitleConverter->shortenURINamespaceToAliasInSourceRDF('http://www.countries.org/onto/Canada');
+	    $this->assertEquals('countries:Canada', $title);
 	}
 
-	/**
-	 * Strategy 4: URI to WikiTitle
+	/** 
+	 * @covers RDFIOURIToTitleConverter::extractLocalPartFromURI
+	 * @covers RDFIOURIToTitleConverter::splitURI
 	 */
-// 	function extractLocalPartFromURI( $uriToConvert ) {
-// 		// As a default, just try to get the local part of the URL
-// 		$parts = $this->splitURI( $uriToConvert );
-// 		if ( $parts[1] != "" ) {
-// 			$wikiPageTitle = $parts[1];
-// 		}
+	public function testExtractLocalPartFromURIWorks() {
+	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
 
-// 		if ( $wikiPageTitle != '' ) {
-// 			return $wikiPageTitle;
-// 		} else {
-// 			return null;
-// 		}	
-// 	}
+	    $newUri1 = $uriToWikiTitleConverter->extractLocalPartFromURI('http://some.url.with.a/localpart');
+	    $this->assertEquals('localpart', $newUri1);
+
+	    $newUri2 = $uriToWikiTitleConverter->extractLocalPartFromURI('https://some.url.with.a/localpart');
+	    $this->assertEquals('localpart', $newUri2);
+	     
+	    $newUri3 = $uriToWikiTitleConverter->extractLocalPartFromURI('http://some.url/with.a#localpart');
+	    $this->assertEquals('localpart', $newUri3);
+	     
+	    $newUri4 = $uriToWikiTitleConverter->extractLocalPartFromURI('http://some.url/with.a/localpart');
+	    $this->assertEquals('localpart', $newUri4);
+	     
+	    $newUri4 = $uriToWikiTitleConverter->extractLocalPartFromURI('http://some.com/url/with.a#localpart');
+	    $this->assertEquals('localpart', $newUri4);
+	}
 
 	/////// HELPER METHODS ///////
-
-	/**
-	 * Just tell if $rdfiogPropertiesToUseAsWikiTitle is set or not.
-	 */
-// 	function globalSettingForPropertiesToUseAsWikiTitleExists() {
-// 		global $rdfiogPropertiesToUseAsWikiTitle;
-//		return isset( $rdfiogPropertiesToUseAsWikiTitle );
-// 	}
 
 	/**
 	 * @covers RDFIOURIToTitleConverter::globalSettingForPropertiesToUseAsWikiTitleExists
@@ -221,31 +181,13 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	}	
 	
 	/**
-	 * Default settings for which RDF properties to use for getting
-	 * possible candidates for wiki page title names.
+	 * @covers RDFIOURIToTitleConverter::removeInvalidChars
 	 */
-// 	function setglobalSettingForPropertiesToUseAsWikiTitleToDefult() {
-// 		global $rdfiogPropertiesToUseAsWikiTitle;
-// 		$rdfiogPropertiesToUseAsWikiTitle = array(
-// 			'http://semantic-mediawiki.org/swivt/1.0#page', // Suggestion for new property
-// 			'http://www.w3.org/2000/01/rdf-schema#label',
-// 		    'http://purl.org/dc/elements/1.1/title',
-// 		    'http://www.w3.org/2004/02/skos/core#preferredLabel',
-// 		    'http://xmlns.com/foaf/0.1/name'
-// 		);
-// 	}
-
-	/**
-	 * Remove some characters that are not allowed in Wiki titles.
-	 * @param string $title
-	 * @return string $title
-	 */
-// 	function removeInvalidChars( $title ) {
-// 		$title = str_replace('[', '', $title);
-// 		$title = str_replace(']', '', $title);
-// 		// TODO: Add more here later ...
-// 		return $title;
-// 	}
+	public function testRemoveInvalidChars() {
+	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
+	    $cleanedTitle = $uriToWikiTitleConverter->removeInvalidChars( '[Some] words in the title' );
+	    $this->assertEquals('Some words in the title', $cleanedTitle);
+	}
 
 	/**
 	 * Use the namespaces from the RDF / SPARQL source, to shorten the URIs.
@@ -304,85 +246,38 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 	}
 
 
-	/**
-	 * Customized version of the splitURI($uri) of the ARC2 library (http://arc.semsol.org)
-	 * Splits a URI into its base part and local part, and returns them as an
-	 * array of two strings
-	 * @param string $uri
-	 * @return array
-	 */
-// 	public function splitURI( $uri ) {
-// 		global $rdfiogBaseURIs;
-// 		/* ADAPTED FROM ARC2 WITH SOME MODIFICATIONS
-// 		 * the following namespaces may lead to conflated URIs,
-// 		 * we have to set the split position manually
-// 		 */
-// 		if ( strpos( $uri, 'www.w3.org' ) ) {
-// 			$specials = array(
-// 		        'http://www.w3.org/XML/1998/namespace',
-// 		        'http://www.w3.org/2005/Atom',
-// 		        'http://www.w3.org/1999/xhtml',
-// 			);
-// 			if ( $rdfiogBaseURIs != '' ) {
-// 				$specials = array_merge( $specials, $rdfiogBaseURIs );
-// 			}
-// 			foreach ( $specials as $ns ) {
-// 				if ( strpos( $uri, $ns ) === 0 ) {
-// 					$local_part = substr( $uri, strlen( $ns ) );
-// 					if ( !preg_match( '/^[\/\#]/', $local_part ) ) {
-// 						return array( $ns, $local_part );
-// 					}
-// 				}
-// 			}
-// 		}
-// 		// auto-splitting on / or #
-// 		if ( preg_match( '/^(.*[\#])([^\#]+)$/', $uri, $matches ) ) {
-// 			return array( $matches[1], $matches[2] );
-// 		}
-// 		if ( preg_match( '/^(.*[\:])([^\:\/]+)$/', $uri, $matches ) ) {
-// 			return array( $matches[1], $matches[2] );
-// 		}
-// 		// auto-splitting on last special char, e.g. urn:foo:bar
-// 		if ( preg_match( '/^(.*[\/])([^\/]+)$/', $uri, $matches ) ) {
-// 			return array( $matches[1], $matches[2] );
-// 		} 
-// 		return array( $uri, '' );
-// 	}
 
 	/**
-	 * Check whether the string starts with an '_'
-	 * @param string $str
-	 * @return boolean
+	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
 	 */
-// 	function startsWithUnderscore( $str ) {
-// 		return substr( $str, 0, 1 ) === '_';
-// 	}
+	public function testStartsWithUnderscore() {
+	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
+	    $this->assertTrue( $uriToWikiTitleConverter->startsWithUnderscore( '_blabla' ) );
+	    $this->assertFalse( $uriToWikiTitleConverter->startsWithUnderscore( 'blabla' ) );
+	}
 
 	/**
-	 * Check whether the string starts with 'http://' or 'https://'
-	 * @param string $str
-	 * @return boolean
+	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
 	 */
-// 	function startsWithHttpOrHttps( $str ) {
-// 		return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
-// 	}
+	public function testStartsWithHttpOrHttps() {
+	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
+	    $this->assertTrue( $uriToWikiTitleConverter->startsWithHttpOrHttps('http://example.com') );
+	    $this->assertTrue( $uriToWikiTitleConverter->startsWithHttpOrHttps('https://example.com') );
+	    $this->assertFalse( $uriToWikiTitleConverter->startsWithHttpOrHttps('ftp://example.com') );
+	}
+	
 
 	/**
-	 * Check whether the string ends with a ':'
-	 * @param string $str
-	 * @return boolean
+	 * @covers RDFIOURIToTitleConverter::endsWithColon
 	 */
-// 	function endsWithColon( $str ) {
-// 		return ( substr( $str, -1 ) === ':' );
-// 	}
+	public function testEndsWithColon() {
+	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
+	    $this->assertTrue( $uriToWikiTitleConverter->endsWithColon('http:') );
+	    $this->assertFalse( $uriToWikiTitleConverter->endsWithColon('https://') );
+	}
 
 }
 
-/**
- * Subclass of the more general RDFIOURIToTitleConverter.
- * For normal wiki pages. 
- */
-// class RDFIOURIToWikiTitleConverter extends RDFIOURIToTitleConverter {}
 
 /**
  * Subclass of the more general RDFIOURIToTitleConverter
@@ -409,4 +304,5 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 		return $propertyTitle;
 // 	}
 //}	
+
 

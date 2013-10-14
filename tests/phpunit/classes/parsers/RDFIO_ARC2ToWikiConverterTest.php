@@ -24,7 +24,7 @@ class RDFIOARC2ToWikiConverterTest extends MediaWikiTestCase {
 		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
 		$wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
 	
-		$this->assertEquals(11, count($wikiPages), "No wiki pages converted from triples!");
+		$this->assertEquals(12, count($wikiPages), "No wiki pages converted from triples!");
 	}	
 		
 }
