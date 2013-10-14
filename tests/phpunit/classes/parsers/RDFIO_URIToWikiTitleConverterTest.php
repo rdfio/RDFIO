@@ -1,16 +1,7 @@
 <?php
 
 /**
- * Exception used in the RDFIOURIToTitleConverter class
- */
-// class WikiTitleNotFoundException extends MWException { }
-
-/**
- * Converter that takes an RDF URI and returns a suitable Wiki title for that URI
- * based on various strategies, which are tried one at a time, until a usable title 
- * is found.
- * @author samuel
- *
+ * @covers RDFIOURIToTitleConverter
  */
 class RDFIOURIToTitleConverterTest extends MediaWikiTestCase { 
 
@@ -32,57 +23,25 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	protected function tearDown() {}
 
 	/**
-	 * The main method, converting from URI:s to wiki titles.
-	 * NOTE: Properties are taken care of py a special method below!
-	 * @param string $uriToConvert
-	 * @return string $wikiTitle
-	 */
-// 	public function convert( $uriToConvert ) {
-// 		global $wgOut;
-
-// 		// Define the conversion functions to try, in 
-// 		// specified order (the first one first).
-// 		// You'll find them defined further below in this file.
-// 		$uriToWikiTitleConversionStrategies = array(
-// 			'getExistingTitleForURI',
-// 			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
-// 			'shortenURINamespaceToAliasInSourceRDF',
-// 			'extractLocalPartFromURI'
-// 		);
-
-// 		$wikiPageTitle = '';
-
-// 		foreach ($uriToWikiTitleConversionStrategies as $currentStrategy ) {
-// 			$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
-// 			if ($wikiPageTitle != null) {
-// 				return $wikiPageTitle;
-// 			}
-// 		}
-// 	}
-
-	/**
 	 * @covers RDFIOURIToTitleConverter::convert
+	 * @covers RDFIOURIToPropertyTitleConverter::convert
 	 */
-	public function testConvert() {
+	public function testConvertWithABunchOfExampleURLs() {
 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
 	    $this->assertEquals('Empire Burlesque', $title1);
 
 	    $uri2 = 'http://www.recshop.fake/cd#artist';
 	    $title2 = $this->uriToPropertyTitleConverter->convert( $uri2 );
-	    $this->assertEquals('cd:Empire Burlesque', $title2);
+	    $this->assertEquals('cd:artist', $title2);
 	     
-// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
-// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
-// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
+ 	    $uri3 = 'http://www.countries.org/onto/USA';
+ 	    $title3 = $this->uriToWikiTitleConverter->convert( $uri3 );
+ 	    $this->assertEquals('countries:USA', $title3);
 	     
-// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
-// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
-// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
-	     
-// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
-// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
-// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
+ 	    $uri4 = 'http://something.totally.unrelated.to/its/label';
+ 	    $title4 = $this->uriToWikiTitleConverter->convert( $uri4 );
+ 	    $this->assertEquals('SomeTotallyUnrelatedLabel', $title4);
 	}
 
 	/**
@@ -116,36 +75,11 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	    $wikiTitle = $this->uriToWikiTitleConverter->convert($uri);
 	    $this->assertNotEquals('SomeTotallyUnrelatedLabel', $wikiTitle);
 	}
-		
+
 	/**
-	 * Strategy 3: URI to WikiTitle
+	 * @covers RDFIOURIToTitleConverter::shortenURINamespaceToAliasInSourceRDF
+	 * @covers RDFIOURIToTitleConverter::abbreviateParserNSPrefixes
 	 */
-// 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
-// 		global $rdfiogBaseURIs;
-
-// 		// Shorten the Namespace (even for entities, optionally) into an NS Prefix
-// 		// according to mappings from parser (Such as chemInf:Blabla ...)
-// 		$nsPrefixes = $this->arc2NSPrefixes;
-// 		$wikiPageTitle = '';
-
-// 		// The same, but according to mappings from LocalSettings.php
-// 		if ( is_array( $rdfiogBaseURIs ) ) {
-// 			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
-// 		}
-		
-// 		// Collect all the inputs for abbreviation, and apply:
-// 		if ( is_array( $nsPrefixes ) ) {
-// 			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uriToConvert, $nsPrefixes );
-// 			$wikiPageTitle = $abbreviatedUri;
-// 		}
-
-// 		if ( $wikiPageTitle != '' ) {
-// 			return $wikiPageTitle;
-// 		} else {
-// 			return null;
-// 		}	
-// 	}
-
 	public function testShortenURINamespaceToAliasInSourceRDF() {
 	    global $rdfiogBaseURIs;
 
@@ -215,64 +149,6 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * Use the namespaces from the RDF / SPARQL source, to shorten the URIs.
-	 * @param string $uri
-	 * @param array $nsPrefixes
-	 * @return string
-	 */
-// 	function abbreviateParserNSPrefixes( $uri, $nsPrefixes ) {
-// 		foreach ( $nsPrefixes as $namespace => $prefix ) {
-// 			$nslength = strlen( $namespace );
-// 			$basepart = '';
-// 			$localpart = '';
-// 			$uriContainsNamepace = substr( $uri, 0, $nslength ) === $namespace;
-// 			if ( $uriContainsNamepace ) {
-// 				$localpart = substr( $uri, $nslength );
-// 				$basepart = $prefix;
-// 			}
-// 		}
-
-// 		/*
-// 		 * Take care of some special cases:
-// 		 */
-// 		if ( $basepart === '' &&  $localpart === '' ) {
-// 			$uriParts = $this->splitURI( $uri );
-// 			$basepart = $uriParts[0];
-// 			$localpart = $uriParts[1];
-// 		}
-
-// 		if ( $localpart === '' ) {
-// 			$abbreviatedUri = $basepart;
-// 		} elseif ( $this->startsWithUnderscore( $basepart ) ) {
-// 			// FIXME: Shouldn't the above check the local part instead??
-
-// 			// Change ARC:s default "random string", to indicate more clearly that
-// 			// it lacks title
-// 			$abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
-
-// 		} elseif ( $this->startsWithHttpOrHttps( $basepart ) ) {
-// 			// If the abbreviation does not seem to have succeeded,
-// 			// fall back to use only the local part
-// 			$abbreviatedUri = $localpart;
-
-// 		} elseif ( $this->endsWithColon( $basepart ) ) {
-// 			// Don't add another colon
-// 			$abbreviatedUri = $basepart . $localpart;
-
-// 		} elseif ( $basepart == false || $basepart == '' ) {
-// 			$abbreviatedUri = $localpart;
-
-// 		} else {
-// 			$abbreviatedUri = $basepart . ':' . $localpart;
-
-// 		}
-
-// 		return $abbreviatedUri;
-// 	}
-
-
-
-	/**
 	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
 	 */
 	public function testStartsWithUnderscore() {
@@ -302,32 +178,3 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	}
 
 }
-
-
-/**
- * Subclass of the more general RDFIOURIToTitleConverter
- * For property pages (those where titles start with "Property:")  
- */
-// class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
-
-	/**
-	 * The main method, which need some special handling.
-	 * @param string $propertyURI
-	 * @return string $propertyTitle
-	 */
-// 	function convert( $propertyURI ) {
-// 		$propertyTitle = '';
-// 		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $isProperty=true);
-// 		if ( $existingPropTitle != "" ) {
-// 			// If the URI had an existing title, use that
-// 			$propertyTitle = $existingPropTitle;
-// 		} else {
-// 			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
-// 			$propertyTitle = $uriToWikiTitleConverter->convert( $propertyURI );
-// 		}
-// 		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
-// 		return $propertyTitle;
-// 	}
-//}	
-
-
