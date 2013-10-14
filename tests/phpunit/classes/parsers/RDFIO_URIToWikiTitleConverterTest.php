@@ -66,7 +66,23 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	public function testConvert() {
 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
-	    $this->assertEquals('cd:Empire Burlesque', $title1);
+	    $this->assertEquals('Empire Burlesque', $title1);
+
+	    $uri2 = 'http://www.recshop.fake/cd#artist';
+	    $title2 = $this->uriToPropertyTitleConverter->convert( $uri2 );
+	    $this->assertEquals('cd:Empire Burlesque', $title2);
+	     
+// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
+// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
+// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
+	     
+// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
+// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
+// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
+	     
+// 	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
+// 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
+// 	    $this->assertEquals('cd:Empire Burlesque', $title1);
 	}
 
 	/**
