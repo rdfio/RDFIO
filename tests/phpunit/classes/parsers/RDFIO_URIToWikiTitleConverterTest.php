@@ -61,6 +61,15 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 // 	}
 
 	/**
+	 * @covers RDFIOURIToTitleConverter::convert
+	 */
+	public function testConvert() {
+	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
+	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
+	    $this->assertEquals('cd:Empire Burlesque', $title1);
+	}
+
+	/**
 	 * @covers RDFIOURIToTitleConverter::applyGlobalSettingForPropertiesToUseAsWikiTitle
 	 */
 	public function testApplyGlobalSettingForPropertiesToUseAsWikiTitleWorksWithCorrectSettings() {

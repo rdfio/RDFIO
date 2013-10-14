@@ -5,7 +5,7 @@ class RDFIOTestData {
     function getTestImportData() {
         $testImportData = '<rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-				xmlns:cd="http://www.recshop.fake/cd#"
+				xmlns:cd="http://www.recshop.fake/cd/"
 				xmlns:countries="http://www.countries.org/onto/"
 				xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 				>
