@@ -36,12 +36,6 @@ class SPARQLImport extends SpecialPage {
 				$sparqlResultXml = file_get_contents($sparqlQueryUrl);
 								
 				$sparqlResultXmlObj = simplexml_load_string($sparqlResultXml);
-				
-				// Some output for debugging purposes
-				$wgOut->addWikiText("== Result from reading SPARQL ==");
-				$wgOut->addHTML("<pre>URL read:     " . $externalSparqlUrl . "\n");
-				$wgOut->addHTML("SPARQL query: " . $sparqlQuery . "\n\n");
-				$wgOut->addHTML( "Results:\n" );
 	
 				$importTriples = array();
 				
@@ -78,6 +72,20 @@ class SPARQLImport extends SpecialPage {
 					}
 				}
 				
+				// Provide some user feedback if we were successful so far ...
+				
+				$wgOut->addHTML("<p style='color: #009900: text-weight: bold;'>Successfully imported the following triples:</p>");
+				$wgOut->addHTML("<table><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+				
+				foreach( $importTriples as $triple ) {
+				    $s = $triple['s'];
+				    $p = $triple['p'];
+				    $o = $triple['o'];
+				    $wgOut->addHTML("<tr><td style='padding: 2px 4px;'>$s</td><td style='padding: 2px 4px;'>$p</td><td style='padding: 2px 4px;'>$o</td></tr>");				    
+				} 
+				
+				$wgOut->addHTML("</tbody></table>");
+				
 				$rdfImporter = new RDFIORDFImporter();			
 				$rdfImporter->importTriples($importTriples);
 				
@@ -100,7 +108,7 @@ class SPARQLImport extends SpecialPage {
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
-		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', 'http://hhpid.bio2rdf.org/sparql' );
+		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', 'http://www.semantic-systems-biology.org/biogateway/endpoint' );
 		$limit = $this->triplesPerBatch;
 		$offset = $wgRequest->getText( 'offset', 0 - $limit ) + $limit;
 		$htmlForm = <<<EOD
