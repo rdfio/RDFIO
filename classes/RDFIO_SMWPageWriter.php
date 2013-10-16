@@ -13,11 +13,6 @@ class RDFIOSMWPageWriter {
 		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-			// Get data from Wiki Page object
-			$facts = $wikiPage->getFacts();
-			$equivUris = $wikiPage->getEquivalentUris();
-			$categories = $wikiPage->getCategories();
-				
 			// Get property objects from WOM
 			$womPropertyObjs = array();
 			$womCategoryObjs = array();
@@ -41,7 +36,7 @@ class RDFIOSMWPageWriter {
 						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
 					}
 				} catch( Exception $e ) {
-					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
+					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
 				}
 				
 				// Get categories
@@ -53,14 +48,14 @@ class RDFIOSMWPageWriter {
 						$womCategoryObjs[$womCategoryName] = $womCategoryObj; 
 					}
 				} catch( Exception $e ) {
-					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 				}
 				
 			}
 
 			// Add facts (properties) to the wiki text
 			$newPropertiesAsWikiText = "\n";
-			foreach ( $facts as $fact ) {
+			foreach ( $wikiPage->getFacts() as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
 				
@@ -96,7 +91,7 @@ class RDFIOSMWPageWriter {
 			
 			// Add categories to the wiki text
 			$newCategoriesAsWikiText = "\n";
-			foreach( $categories as $category ) {
+			foreach( $wikiPage->getCategories() as $category ) {
 
 				$categoryTitle = Title::newFromText( $category );
 				$categoryTitleWikified = $categoryTitle->getText();
