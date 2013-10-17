@@ -20,7 +20,9 @@ class RDFIOSMWPageWriter {
 			$mwTitleObj = Title::newFromText( $wikiTitle );
 			
 			// If page exists, get it's data from WOM
-			if ( is_object($mwTitleObj) && $mwTitleObj->exists() ) {
+			$titleIsObj = is_object($mwTitleObj);
+			$titleExists = $mwTitleObj->exists();
+			if ( $titleIsObj && $titleExists ) {
 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
 				
 				// Get wiki text
@@ -64,7 +66,7 @@ class RDFIOSMWPageWriter {
 				
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
-				if ( $hasLocalUrl && $isEquivURI ) {
+				if ( $hasLocalUrl && $isEquivURI ) { 
 					// Don't update Equivalent URI if the URL is a local URL (thus containing
 					// "Special:URIResolver").
 				} else if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
@@ -77,10 +79,18 @@ class RDFIOSMWPageWriter {
 					// Store the old wiki text for the fact, in order to replace later
 					$oldPropertyText = $womPropertyObj->getWikiText();
 					
-					// Create an updated property
-					$objTitle = Title::newFromText( $obj );
-					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
-					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
+					if ( $isEquivURI ) {
+					    // FIXME: Should be done for all "URL type" facts, not just
+					    //        Equivalent URI:s
+					    // Since this is a URL, it should not be made into a WikiTitle
+					    $newSMWValue = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
+					} else {
+					    // Create an updated property
+					    $objTitle = Title::newFromText( $obj );					    	
+					    $newSMWValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
+					}
+					
+					$womPropertyObj->setSMWDataValue( $newSMWValue );
 					$newPropertyText = $womPropertyObj->getWikiText();
 						
 					// Replace the existing property with new value
