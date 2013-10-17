@@ -1,0 +1,319 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.8/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.8/ http://www.mediawiki.org/xml/export-0.8.xsd" version="0.8" xml:lang="en">
+  <siteinfo>
+    <sitename>SMW</sitename>
+    <base>http://localhost/smw/index.php/Main_Page</base>
+    <generator>MediaWiki 1.21.2</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="-2" case="first-letter">Media</namespace>
+      <namespace key="-1" case="first-letter">Special</namespace>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="3" case="first-letter">User talk</namespace>
+      <namespace key="4" case="first-letter">SMW</namespace>
+      <namespace key="5" case="first-letter">SMW talk</namespace>
+      <namespace key="6" case="first-letter">File</namespace>
+      <namespace key="7" case="first-letter">File talk</namespace>
+      <namespace key="8" case="first-letter">MediaWiki</namespace>
+      <namespace key="9" case="first-letter">MediaWiki talk</namespace>
+      <namespace key="10" case="first-letter">Template</namespace>
+      <namespace key="11" case="first-letter">Template talk</namespace>
+      <namespace key="12" case="first-letter">Help</namespace>
+      <namespace key="13" case="first-letter">Help talk</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+      <namespace key="15" case="first-letter">Category talk</namespace>
+      <namespace key="102" case="first-letter">Property</namespace>
+      <namespace key="103" case="first-letter">Property talk</namespace>
+      <namespace key="108" case="first-letter">Concept</namespace>
+      <namespace key="109" case="first-letter">Concept talk</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Main Page</title>
+    <ns>0</ns>
+    <id>1</id>
+    <revision>
+      <id>1</id>
+      <timestamp>2013-10-07T12:43:39Z</timestamp>
+      <contributor>
+        <username>MediaWiki default</username>
+        <id>0</id>
+      </contributor>
+      <text xml:space="preserve" bytes="524">'''MediaWiki has been successfully installed.'''
+
+Consult the [//meta.wikimedia.org/wiki/Help:Contents User's Guide] for information on using the wiki software.
+
+== Getting started ==
+* [//www.mediawiki.org/wiki/Manual:Configuration_settings Configuration settings list]
+* [//www.mediawiki.org/wiki/Manual:FAQ MediaWiki FAQ]
+* [https://lists.wikimedia.org/mailman/listinfo/mediawiki-announce MediaWiki release mailing list]
+* [//www.mediawiki.org/wiki/Localisation#Translation_resources Localise MediaWiki for your language]</text>
+      <sha1>c3gchhvaaxh8pbro7ta0bvbj2slrbyl</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>MediaWiki:Sidebar</title>
+    <ns>8</ns>
+    <id>2</id>
+    <revision>
+      <id>3</id>
+      <parentid>2</parentid>
+      <timestamp>2013-10-16T19:19:37Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <text xml:space="preserve" bytes="375">
+* navigation
+** mainpage|mainpage-description
+** portal-url|portal
+** currentevents-url|currentevents
+** recentchanges-url|recentchanges
+** randompage-url|randompage
+** helppage|help
+* Semantic Tools
+** Special:ARC2Admin|ARC2 Admin
+** Special:RDFImport|RDF Import
+** Special:SPARQLEndpoint|SPARQL Endpoint
+** Special:SPARQLImport|SPARQL Import
+* SEARCH
+* TOOLBOX
+* LANGUAGES</text>
+      <sha1>kwep17v9761f056obcpa1t1x6gfp16y</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default-iid</title>
+    <ns>0</ns>
+    <id>3</id>
+    <revision>
+      <id>4</id>
+      <timestamp>2013-10-17T07:23:19Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="107">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default-iid]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>2dsqnbwfme24ycybzk81givbbwofzgu</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Category:QuadMapFormat</title>
+    <ns>14</ns>
+    <id>4</id>
+    <revision>
+      <id>5</id>
+      <timestamp>2013-10-17T07:23:19Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="76">
+[[Equivalent URI::http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat]]</text>
+      <sha1>4t3a4rs7w1rvl2pkmglqlhqa76iykt1</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default-iid-nullable</title>
+    <ns>0</ns>
+    <id>5</id>
+    <revision>
+      <id>6</id>
+      <timestamp>2013-10-17T07:23:20Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="116">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default-iid-nullable]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>mwfjxuy5v1ivc73mkw8kj2qdqcaqywe</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default-iid-nonblank</title>
+    <ns>0</ns>
+    <id>6</id>
+    <revision>
+      <id>7</id>
+      <timestamp>2013-10-17T07:23:20Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="116">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default-iid-nonblank]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>lhke72cwkfoj5jymyjx13mbsj6u2tya</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default-iid-nonblank-nullable</title>
+    <ns>0</ns>
+    <id>7</id>
+    <revision>
+      <id>8</id>
+      <timestamp>2013-10-17T07:23:20Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="125">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default-iid-nonblank-nullable]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>kzvhhiqrr09nnklomslg1l2jh5yxnjp</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default</title>
+    <ns>0</ns>
+    <id>8</id>
+    <revision>
+      <id>9</id>
+      <timestamp>2013-10-17T07:23:21Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="103">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>7zu5lysueu9s1qknrvc2j6a3u8bnnac</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Default-nullable</title>
+    <ns>0</ns>
+    <id>9</id>
+    <revision>
+      <id>10</id>
+      <timestamp>2013-10-17T07:23:21Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="112">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#default-nullable]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>c66r4jccjcb5wn83cg90islvywfi1g8</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Sql-varchar</title>
+    <ns>0</ns>
+    <id>10</id>
+    <revision>
+      <id>11</id>
+      <timestamp>2013-10-17T07:23:22Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="107">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#sql-varchar]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>cz59gztp48elkstpeaovejpwqp87k2l</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Sql-varchar-nullable</title>
+    <ns>0</ns>
+    <id>11</id>
+    <revision>
+      <id>12</id>
+      <timestamp>2013-10-17T07:23:22Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="116">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#sql-varchar-nullable]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>dku31xw3eble6s146ppfi1yjuognmam</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Sql-varchar-dt</title>
+    <ns>0</ns>
+    <id>12</id>
+    <revision>
+      <id>13</id>
+      <timestamp>2013-10-17T07:23:22Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="110">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#sql-varchar-dt]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>0ftng4r1c68q5ncupa8dswju9oo6qc0</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+  <page>
+    <title>Sql-varchar-dt-nullable</title>
+    <ns>0</ns>
+    <id>13</id>
+    <revision>
+      <id>14</id>
+      <timestamp>2013-10-17T07:23:23Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Update by RDFIO</comment>
+      <text xml:space="preserve" bytes="119">
+[[Equivalent URI::http://www.openlinksw.com/virtrdf-data-formats#sql-varchar-dt-nullable]]
+
+[[Category:QuadMapFormat]]</text>
+      <sha1>dqmj2t19tu68bxugaf4hy5c0sr0h4an</sha1>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+    </revision>
+  </page>
+</mediawiki>
