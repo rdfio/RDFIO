@@ -1,3 +1,3 @@
 #!/bin/bash
 php ../../../../maintenance/dumpBackup.php --current > out.xml
-diff default.xml out.xml|less -S
+diff -y --suppress-common-lines default.xml out.xml|grep -v "<timestamp>"
