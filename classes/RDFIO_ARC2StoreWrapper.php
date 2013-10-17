@@ -83,10 +83,15 @@ class RDFIOARC2StoreWrapper {
      * @return string $wikititle;
      */
     public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
-        $wikiTitleResolverUri = $this->getURIForEquivURI( $uri, $isProperty );
-        $resolverUri = $this->getLocalWikiNamespace();
-        $wikiTitle = str_replace( $resolverUri, '', $wikiTitleResolverUri );
-        $wikiTitle = SMWExporter::decodeURI( $wikiTitle );
+        $uriEncoded = str_replace(' ', '%20', $uri);
+        $wikiTitleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
+        $wikiTitleResolverUriDecoded = SMWExporter::decodeURI( $wikiTitleResolverUri );
+
+        $uriParts = explode('/', rtrim( $wikiTitleResolverUriDecoded , '/') ); 
+        $wikiTitle = str_replace('_', ' ', array_pop( $uriParts ));
+        if ( $isProperty ) {
+            $wikiTitle = str_replace('Property:', '', $wikiTitle);
+        }
         return $wikiTitle;
     }
     
