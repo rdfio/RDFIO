@@ -540,7 +540,7 @@ class SPARQLEndpoint extends SpecialPage {
                 $uri = $row[$sparql_varname];
                 if ( $type === 'uri' ) {
                     $equivuris = $this->store->getEquivURIsForURI( $uri );
-                    if ( !$this->arrayEmpty( $equivuris ) ) {
+                    if ( !RDFIOUtils::arrayEmpty( $equivuris ) ) {
                         $equivuri = $equivuris[0];
                         # Replace the URI with the Equivalent URI
                         $rows[$rowid][$sparql_varname] = $equivuri;
@@ -838,21 +838,15 @@ Output Equivalent
         $_POST['output'] = $type;
     }
 
-    function stringContains( $needle, $haystack ) {
-        return strpos( $needle, $haystack ) != false;
-    }
-
-    function arrayEmpty( $array ) {
-        return ( count( $array ) < 1 );
-    }
-    
     function successMsg( $message ) {
     	global $wgOut;
-    	$wgOut->addHTML('<span style="color: green;">' . $message . '</span><br>');
+    	$successHtml = RDFIOUtils::formatSuccessMessageHTML("Success!", $message);
+    	$wgOut->addHTML( $successHtml );
     }
     function failMsg( $message ) {
     	global $wgOut;
-    	$wgOut->addHTML('<span style="color: red;">' . $message . '</span><br>');
+    	$errorHtml = RDFIOUtils::formatErrorHTML("Error!", $message);
+    	$wgOut->addHTML( $errorHtml );
     }
     
 }

@@ -38,7 +38,7 @@ class RDFIOUtils {
     static function formatErrorHTML( $title, $message ) {
         $errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
 				<h3>' . $title . '</h3>
-						<p>' . $message . '</p>
+				<p>' . $message . '</p>
 								</div>';
         return $errorHtml;
     }
@@ -49,6 +49,14 @@ class RDFIOUtils {
 				<p>' . $message . '</p>
 								</div>';
         return $successHtml;
+    }
+
+    static function inString( $needle, $haystack ) {
+        return strpos( $needle, $haystack ) != false;
+    }
+    
+    static function arrayEmpty( $array ) {
+        return ( count( $array ) < 1 );
     }
     
 }
