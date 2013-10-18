@@ -39,7 +39,7 @@ class RDFIOSMWPageWriter {
 					}
 				} catch( MWException $e ) {
 					// WOM is sending unspecific exceptions that are not really errors ...
-				    //$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
+				    //$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 				}
 				
 				// Get categories
