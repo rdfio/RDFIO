@@ -14,83 +14,19 @@ class SPARQLImport extends SpecialPage {
 		try {
 			$this->setHeaders();
 
-			// Figure out the submit button caption, which should change after doing the first batch.
-			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-				$offset = $wgRequest->getVal( 'offset', 0 );
-				$limit = $this->triplesPerBatch;
-				$submitButtonText = "Import next $limit triples...";
-			} else {
-				$submitButtonText = 'Import';
-			}
-			// Print the form
-			$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-
 			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-				$externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
-				if ( $externalSparqlUrl === '' ) {
-					throw new RDFIOUIException('External SPARQL Url is empty!');
-				}
-				$sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
-				$sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
-				$sparqlResultXml = file_get_contents($sparqlQueryUrl);
-								
-				$sparqlResultXmlObj = simplexml_load_string($sparqlResultXml);
-	
-				$importTriples = array();
-				
-				if (is_object($sparqlResultXmlObj)) {
-					foreach ($sparqlResultXmlObj->results->children() as $result ) {
-						$triple = array();
-						// $wgOut->addHTML( print_r($result, true) );
-						foreach( $result as $binding ) {
-							if ($binding['name'] == 's') {
-								$s = (string) $binding->uri[0];
-								if ($s == '') {
-									throw new Exception('Could not extract subject from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
-								}
-								$triple['s'] = $s;
-								$triple['s_type'] = $this->resourceType($triple['s']);
-							} else if ($binding['name'] == 'p') {
-								$p = (string) $binding->uri[0];
-								if ($p == '') {
-									throw new Exception('Could not extract predicate from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
-								}
-								$triple['p'] = $p;
-								$triple['p_type'] = $this->resourceType($triple['p']);
-							} else if ($binding['name'] == 'o') {
-								$o = (string) $binding->uri[0];
-								if ($o == '') {
-									throw new Exception('Could not extract object from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
-								}
-								$triple['o'] = $o;
-								$triple['o_type'] = $this->resourceType($triple['o']);
-								$triple['o_datatype'] = '';
-							}
-						}
-						$importTriples[] = $triple;
-					}
-				}
-				
-				// Provide some user feedback if we were successful so far ...
-				
-				$wgOut->addHTML("<p style='color: #009900: text-weight: bold;'>Successfully imported the following triples:</p>");
-				$wgOut->addHTML("<table><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
-				
-				foreach( $importTriples as $triple ) {
-				    $s = $triple['s'];
-				    $p = $triple['p'];
-				    $o = $triple['o'];
-				    $wgOut->addHTML("<tr><td style='padding: 2px 4px;'>$s</td><td style='padding: 2px 4px;'>$p</td><td style='padding: 2px 4px;'>$o</td></tr>");				    
-				} 
-				
-				$wgOut->addHTML("</tbody></table>");
-				
-				$rdfImporter = new RDFIORDFImporter();			
-				$rdfImporter->importTriples($importTriples);
-				
-				$wgOut->addHTML( "\n</pre>" );
-			} 
+		        if ( $this->currentUserHasWriteAccess() ) {
+		            $offset = $wgRequest->getVal( 'offset', 0 );
+		            $limit = $this->triplesPerBatch;
+		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText = "Import next $limit triples..." ) );
+		            $this->import( $limit, $offset );
+		        } else {
+		            $this->showErrorMessage("No write access", "The current logged in user does not have write access");
+		        }
+			} else {
+			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText = "Import" ) );
+			}
 		} catch (RDFIOUIException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
 			$wgOut->addHTML( $this->getHTMLForm() );
@@ -104,6 +40,75 @@ class SPARQLImport extends SpecialPage {
 			return 'literal';
 		}
 	}
+	
+	protected function import( $limit = 10, $offset = 0 ) {
+	    global $wgOut, $wgRequest;
+	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
+	    if ( $externalSparqlUrl === '' ) {
+	        throw new RDFIOUIException('External SPARQL Url is empty!');
+	    }
+	    $sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
+	    $sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
+	    $sparqlResultXml = file_get_contents($sparqlQueryUrl);
+	    
+	    $sparqlResultXmlObj = simplexml_load_string($sparqlResultXml);
+	    
+	    $importTriples = array();
+	    
+	    if (is_object($sparqlResultXmlObj)) {
+	        foreach ($sparqlResultXmlObj->results->children() as $result ) {
+	            $triple = array();
+	            // $wgOut->addHTML( print_r($result, true) );
+	            foreach( $result as $binding ) {
+	                if ($binding['name'] == 's') {
+	                    $s = (string) $binding->uri[0];
+	                    if ($s == '') {
+	                        throw new Exception('Could not extract subject from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
+	                    }
+	                    $triple['s'] = $s;
+	                    $triple['s_type'] = $this->resourceType($triple['s']);
+	                } else if ($binding['name'] == 'p') {
+	                    $p = (string) $binding->uri[0];
+	                    if ($p == '') {
+	                        throw new Exception('Could not extract predicate from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
+	                    }
+	                    $triple['p'] = $p;
+	                    $triple['p_type'] = $this->resourceType($triple['p']);
+	                } else if ($binding['name'] == 'o') {
+	                    $o = (string) $binding->uri[0];
+	                    if ($o == '') {
+	                        throw new Exception('Could not extract object from empty string (' . print_r($binding->uri, true) . '), in SPARQLImport');
+	                    }
+	                    $triple['o'] = $o;
+	                    $triple['o_type'] = $this->resourceType($triple['o']);
+	                    $triple['o_datatype'] = '';
+	                }
+	            }
+	            $importTriples[] = $triple;
+	        }
+	    }
+	    
+	    // Provide some user feedback if we were successful so far ...
+	    
+	    $wgOut->addHTML("<p style='color: #009900: text-weight: bold;'>Successfully imported the following triples:</p>");
+	    $wgOut->addHTML("<table><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+	    
+	    foreach( $importTriples as $triple ) {
+	        $s = $triple['s'];
+	        $p = $triple['p'];
+	        $o = $triple['o'];
+	        $wgOut->addHTML("<tr><td style='padding: 2px 4px;'>$s</td><td style='padding: 2px 4px;'>$p</td><td style='padding: 2px 4px;'>$o</td></tr>");
+	    }
+	    
+	    $wgOut->addHTML("</tbody></table>");
+	    
+	    $rdfImporter = new RDFIORDFImporter();
+	    $rdfImporter->importTriples($importTriples);
+	    
+	    $wgOut->addHTML( "\n</pre>" );
+    }
+	
+
 	
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
@@ -127,7 +132,7 @@ EOD;
 	/**
 	 * Check whether the current user has rights to edit or create pages
 	 */
-	protected function userHasWriteAccess() {
+	protected function currentUserHasWriteAccess() {
 		global $wgUser;
 		$userRights = $wgUser->getRights();
 		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
