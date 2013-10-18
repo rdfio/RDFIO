@@ -21,6 +21,15 @@ class RDFIORDFImporter {
 		$triples = $arc2rdfxmlparser->triples;
 		$tripleIndex = $arc2rdfxmlparser->getSimpleIndex();
 		$namespaces = $arc2rdfxmlparser->nsp;
+
+		/* DEBUGGING
+		echo "*** Triples ***";
+		echo( print_r( $triples, true ));
+		echo "*** Triple index ***";
+		echo( print_r( $tripleIndex, true ));
+		echo "*** Namespaces ***";
+		echo( print_r( $namespaces, true ));
+		*/
 		
 		$this->importFromArc2Data( $triples, $wikiPages, $namespaces );
 	}
@@ -38,7 +47,16 @@ class RDFIORDFImporter {
 	    $triples = $arc2turtleparser->triples;
 	    $tripleIndex = $arc2turtleparser->getSimpleIndex();
 	    $namespaces = $arc2turtleparser->nsp;
-	
+	    
+	    /* DEBUGGING
+	    echo "*** Triples ***";
+	    echo( print_r( $triples, true ));
+	    echo "*** Triple index ***";
+	    echo( print_r( $tripleIndex, true ));
+	    echo "*** Namespaces ***";
+	    echo( print_r( $namespaces, true ));
+	     */
+	     
 	    $this->importFromArc2Data( $triples, $wikiPages, $namespaces );
 	}	
 
