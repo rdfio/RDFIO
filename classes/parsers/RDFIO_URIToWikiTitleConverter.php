@@ -96,7 +96,7 @@ class RDFIOURIToTitleConverter {
 			}
 		}
 		if ( $wikiPageTitle != '' ) {
-			$wikiPageTitle = $this->removeInvalidChars( $wikiPageTitle );
+			$wikiPageTitle = $this->cleanWikiTitle( $wikiPageTitle );
 		}
 		if ( $wikiPageTitle != '' ) {
 			return $wikiPageTitle;
@@ -181,7 +181,7 @@ class RDFIOURIToTitleConverter {
 	 * @param string $title
 	 * @return string $title
 	 */
-	function removeInvalidChars( $title ) {
+	function cleanWikiTitle( $title ) {
 		$title = str_replace('[', '', $title);
 		$title = str_replace(']', '', $title);
 		// TODO: Add more here later ...
@@ -320,7 +320,7 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
 			$propertyTitle = $uriToWikiTitleConverter->convert( $propertyURI );
 		}
-		$propertyTitle = $this->removeInvalidChars( $propertyTitle );
+		$propertyTitle = $this->cleanWikiTitle( $propertyTitle );
 		return $propertyTitle;
 	}
 
