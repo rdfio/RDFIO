@@ -24,6 +24,23 @@ class RDFIORDFImporter {
 		
 		$this->importFromArc2Data( $triples, $wikiPages, $namespaces );
 	}
+	
+	/**
+	 * Import RDF/XML, e.g. from the RDF Import Special Page.
+	 * @param string $importData
+	 */
+	public function importTurtle( $importData ) {
+	    // Parse RDF/XML to triples
+	    $arc2turtleparser = ARC2::getTurtleParser($importData);
+	    $arc2turtleparser->parseData( $importData );
+	
+	    // Receive the data
+	    $triples = $arc2turtleparser->triples;
+	    $tripleIndex = $arc2turtleparser->getSimpleIndex();
+	    $namespaces = $arc2turtleparser->nsp;
+	
+	    $this->importFromArc2Data( $triples, $wikiPages, $namespaces );
+	}	
 
 	/**
 	 * Import triples, e.g. from the SPARQL Endpoint Special Page.

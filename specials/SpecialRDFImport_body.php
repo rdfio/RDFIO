@@ -39,12 +39,18 @@ class RDFImport extends SpecialPage {
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
 			if ( $requestData->importData === '' )
-				throw new RDFIOUIException('RDF/XML field is empty!');
+				throw new RDFIOUIException('RDF field is empty!');
 			$rdfData = $requestData->importData;
 		} else {
 			throw new RDFIOUIException('Import source is not selected!');
 		}
-		$rdfImporter->importRdfXml( $rdfData );
+
+	    switch ( $requestData->dataFormat ) {
+	        case 'rdfxml':
+	            $rdfImporter->importRdfXml( $rdfData );
+	        case 'turtle':
+	            $rdfImporter->importTurtle( $rdfData );
+	    }
 
 		global $wgOut;
 		$wgOut->addHTML('Tried to import the data ...');
@@ -184,7 +190,7 @@ class RDFImport extends SpecialPage {
 					<div id="datafields" ' . $textfieldHiddenContent . '>
 						<table style="border: none"><tbody>
 							<tr>
-								<td colspan="3">RDF/XML data to import:</td>
+								<td colspan="3">Data to import:</td>
 							</tr>
 							<tr>
 								<td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea></td>
@@ -193,8 +199,8 @@ class RDFImport extends SpecialPage {
 								<td style="width: 100px;">Data format:</td>
 								<td>
 									<select id="dataformat" name="dataformat">
-									<option value="rdfxml" selected="selected">RDF/XML</option>
-									<!-- option value="turtle" >Turtle</option -->
+    									<option value="rdfxml" selected="selected">RDF/XML</option>
+    									<option value="turtle">Turtle</option>
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">

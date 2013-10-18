@@ -1,0 +1,25 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix cd: <http://www.recshop.fake/cd#> .
+@prefix countries: <http://www.countries.org/onto/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+countries:Albums
+    rdfs:subClassOf countries:MediaCollections .
+
+countries:USA
+    rdfs:label "USA" .
+
+<http://www.recshop.fake/cd/Empire Burlesque>
+    cd:artist "Bob Dylan" ;
+    cd:company "Columbia" ;
+    cd:country countries:USA ;
+    cd:price "10.90" ;
+    cd:year "1985" .
+
+<http://www.recshop.fake/cd/Hide your heart>
+    cd:artist "Bonnie Tyler" ;
+    cd:company "CBS Records" ;
+    cd:country "UK" ;
+    cd:price "9.90" ;
+    cd:year "1988" .
+
