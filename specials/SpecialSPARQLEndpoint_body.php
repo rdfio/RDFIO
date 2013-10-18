@@ -30,7 +30,6 @@ class SPARQLEndpoint extends SpecialPage {
         $this->setHeaders();
         try {
         	$this->requestdata = $this->handleRequestData();
-            #$wgOut->addWikiText("Successfully parsed SPARQL query!");
 		} catch (Exception $e) {
        		$this->failMsg($e->getMessage());
        	}
@@ -51,7 +50,6 @@ class SPARQLEndpoint extends SpecialPage {
                 case 'insert':
                 	try {
                 		$this->importTriplesInQuery();
-	                	$this->successMsg("Successfully imported the triples!");
 					} catch (MWException $e) {
                 		$this->failMsg("ERROR: Could not perform import!");
                 		$this->failMsg("Error message:");
@@ -79,7 +77,7 @@ class SPARQLEndpoint extends SpecialPage {
                             break;
                         case 'rdfxml':
                             if ( $this->requestdata->querytype != 'construct' ) {
-                                $wgOut->addHTML( $this->formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+                                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
                                 $this->printHTMLForm();
                             } else {
                                $this->prepareCreatingDownloadableFile();
@@ -307,13 +305,13 @@ class SPARQLEndpoint extends SpecialPage {
         global $wgOut;
 
         if ( $this->wrongEditTokenDetected() ) {
-            $wgOut->addHTML( $this->formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
+            $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
             return false;
         } else {
             if ( $this->user->hasWriteAccess() ) {
                 return true;
             } else {
-                $wgOut->addHTML( $this->formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
+                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
                 return false;
             }
         }
@@ -347,7 +345,7 @@ class SPARQLEndpoint extends SpecialPage {
             } else {
                 $errortitle = "Permission error";
                 $errormessage = "The current user lacks access either to edit or delete pages (or both) in this wiki.";
-                $wgOut->addHTML( $this->formatErrorHTML( $errortitle, $errormessage ) );
+                $wgOut->addHTML( RDFIOUtils::formatErrorHTML( $errortitle, $errormessage ) );
                 return false;
             }
         }
@@ -428,6 +426,7 @@ class SPARQLEndpoint extends SpecialPage {
             
             $rdfImporter = new RDFIORDFImporter();
             $rdfImporter->importTriples( $triples );
+            $this->successMsg("Successfully imported the triples!");
         }
     }
 

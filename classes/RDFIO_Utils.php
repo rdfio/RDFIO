@@ -28,5 +28,19 @@ class RDFIOUtils {
     static function startsWithUnderscore( $str ) {
         return substr( $str, 0, 1 ) === '_';
     }
+
+    /**
+     * Format an error message with HTML, based on a message title and the message
+     * @param string $title
+     * @param string $message
+     * @return string $errorhtml
+     */
+    static function formatErrorHTML( $title, $message ) {
+        $errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
+				<h3>' . $title . '</h3>
+						<p>' . $message . '</p>
+								</div>';
+        return $errorHtml;
+    }
     
 }
