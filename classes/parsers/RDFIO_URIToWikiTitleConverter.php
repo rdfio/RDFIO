@@ -218,19 +218,19 @@ class RDFIOURIToTitleConverter {
 
 		if ( $localpart === '' ) {
 			$abbreviatedUri = $basepart;
-		} elseif ( $this->startsWithUnderscore( $basepart ) ) {
+		} elseif ( RDFIOUtils::isURI( $basepart ) ) {
 			// FIXME: Shouldn't the above check the local part instead??
 
 			// Change ARC:s default "random string", to indicate more clearly that
 			// it lacks title
 			$abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
 
-		} elseif ( $this->startsWithHttpOrHttps( $basepart ) ) {
+		} elseif ( RDFIOUtils::isURI( $basepart ) ) {
 			// If the abbreviation does not seem to have succeeded,
 			// fall back to use only the local part
 			$abbreviatedUri = $localpart;
 
-		} elseif ( $this->endsWithColon( $basepart ) ) {
+		} elseif ( RDFIOUtils::endsWithColon( $basepart ) ) {
 			// Don't add another colon
 			$abbreviatedUri = $basepart . $localpart;
 
@@ -289,33 +289,6 @@ class RDFIOURIToTitleConverter {
 			return array( $matches[1], $matches[2] );
 		} 
 		return array( $uri, '' );
-	}
-
-	/**
-	 * Check whether the string starts with an '_'
-	 * @param string $str
-	 * @return boolean
-	 */
-	function startsWithUnderscore( $str ) {
-		return substr( $str, 0, 1 ) === '_';
-	}
-
-	/**
-	 * Check whether the string starts with 'http://' or 'https://'
-	 * @param string $str
-	 * @return boolean
-	 */
-	function startsWithHttpOrHttps( $str ) {
-		return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
-	}
-
-	/**
-	 * Check whether the string ends with a ':'
-	 * @param string $str
-	 * @return boolean
-	 */
-	function endsWithColon( $str ) {
-		return ( substr( $str, -1 ) === ':' );
 	}
 
 }

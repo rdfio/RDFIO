@@ -171,9 +171,5 @@ EOD;
 		$wgOut->addHTML( $errorHtml );
 	}
 	
-	protected function isUri( $str ) {
-        return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
-	}
-	
 
 }

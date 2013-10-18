@@ -148,33 +148,4 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	    $this->assertEquals('Some words in the title', $cleanedTitle);
 	}
 
-	/**
-	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
-	 */
-	public function testStartsWithUnderscore() {
-	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
-	    $this->assertTrue( $uriToWikiTitleConverter->startsWithUnderscore( '_blabla' ) );
-	    $this->assertFalse( $uriToWikiTitleConverter->startsWithUnderscore( 'blabla' ) );
-	}
-
-	/**
-	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
-	 */
-	public function testStartsWithHttpOrHttps() {
-	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
-	    $this->assertTrue( $uriToWikiTitleConverter->startsWithHttpOrHttps('http://example.com') );
-	    $this->assertTrue( $uriToWikiTitleConverter->startsWithHttpOrHttps('https://example.com') );
-	    $this->assertFalse( $uriToWikiTitleConverter->startsWithHttpOrHttps('ftp://example.com') );
-	}
-	
-
-	/**
-	 * @covers RDFIOURIToTitleConverter::endsWithColon
-	 */
-	public function testEndsWithColon() {
-	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
-	    $this->assertTrue( $uriToWikiTitleConverter->endsWithColon('http:') );
-	    $this->assertFalse( $uriToWikiTitleConverter->endsWithColon('https://') );
-	}
-
 }
