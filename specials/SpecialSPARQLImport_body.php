@@ -108,7 +108,7 @@ class SPARQLImport extends SpecialPage {
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
-		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', 'http://www.semantic-systems-biology.org/biogateway/endpoint' );
+		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', '' );
 		$limit = $this->triplesPerBatch;
 		$offset = $wgRequest->getText( 'offset', 0 - $limit ) + $limit;
 		$htmlForm = <<<EOD
@@ -116,6 +116,7 @@ class SPARQLImport extends SpecialPage {
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<input type="text" name="extsparqlurl" size="60" value="$extSparqlUrl"></input>
+				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
 				<input type="hidden" name="offset" value=$offset>
 				<input type="submit" value="$buttonText">
 		</form>
