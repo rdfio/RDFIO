@@ -13,7 +13,6 @@ class SPARQLImport extends SpecialPage {
 		global $wgOut, $wgRequest;
 		try {
 			$this->setHeaders();
-
 			$submitButtonText = "Import";
 			
 			// For now, print the result XML from the SPARQL query
@@ -22,15 +21,19 @@ class SPARQLImport extends SpecialPage {
 		            $offset = $wgRequest->getVal( 'offset', 0 );
 		            $limit = $this->triplesPerBatch;
 		            $submitButtonText = "Import next $limit triples...";
+		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 		            $this->import( $limit, $offset );
 		        } else {
-		            $this->showErrorMessage("No write access", "The current logged in user does not have write access");
+		            $errTitle = "No write access";
+		            $errMsg = "The current logged in user does not have write access";
+		            $this->showErrorMessage($errTitle, $errMsg);
 		        }
-			} 
+			} else {
+			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+			}
 		} catch (RDFIOException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
 		}
-		$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 		
 	}
 	
@@ -88,13 +91,13 @@ class SPARQLImport extends SpecialPage {
 	                }
 	            }
 	            $importTriples[] = $triple;
-
-	            $rdfImporter = new RDFIORDFImporter();
-	            $rdfImporter->importTriples($importTriples);
-	            
-	            // Provide some user feedback if we were successful so far ...
-	             
-	            $style_css = <<<EOD
+	        }
+	        $rdfImporter = new RDFIORDFImporter();
+	        $rdfImporter->importTriples($importTriples);
+	         
+	        // Provide some user feedback if we were successful so far ...
+	        
+	        $style_css = <<<EOD
         	    table .rdfio- th {
         	        font-weight: bold;
         	        padding: 2px 4px;
@@ -103,33 +106,28 @@ class SPARQLImport extends SpecialPage {
         	    table.rdfio-table th {
         	        font-size: 11px;
         	    }
-        	    .rdfio-successmsg {
-        	        color: green;
-        	        font-weight: bold;
-        	    }
 EOD;
-	            $wgOut->addInlineStyle($style_css);
-	            $wgOut->addHTML("<p class=\"rdfio-successmsg\">Successfully imported the following triples:</p>");
-	            $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
-	             
-	            foreach( $importTriples as $triple ) {
-	                $s = $triple['s'];
-	                $p = $triple['p'];
-	                $o = $triple['o'];
-	                if ( RDFIOUtils::isURI( $s )) {
-	                    $s = "<a href=\"$s\">$s</a>";
-	                }
-	                if ( RDFIOUtils::isURI( $p )) {
-	                    $p = "<a href=\"$p\">$p</a>";
-	                }
-	                if ( RDFIOUtils::isURI( $o )) {
-	                $o = "<a href=\"$o\">$o</a>";
-	                }
-	                $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
+	        $wgOut->addInlineStyle($style_css);
+	        $this->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
+	        $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+	        
+	        foreach( $importTriples as $triple ) {
+	            $s = $triple['s'];
+	            $p = $triple['p'];
+	            $o = $triple['o'];
+	            if ( RDFIOUtils::isURI( $s )) {
+	                $s = "<a href=\"$s\">$s</a>";
 	            }
-	             
-	            $wgOut->addHTML("</tbody></table>");
+	            if ( RDFIOUtils::isURI( $p )) {
+	                $p = "<a href=\"$p\">$p</a>";
+	            }
+	            if ( RDFIOUtils::isURI( $o )) {
+	                $o = "<a href=\"$o\">$o</a>";
+	            }
+	            $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
 	        }
+	        
+	        $wgOut->addHTML("</tbody></table>");
 	    } else {
 	        $wgOut->addHTML(RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?"));
 	    }
@@ -166,12 +164,14 @@ EOD;
 
 	function showErrorMessage( $title, $message ) {
 		global $wgOut;
-		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
-                	 <h3>' . $title . '</h3>
-                	 <p>' . $message . '</p>
-                	 </div>';
+		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
-	}
+	}	
 	
+	function showSuccessMessage( $title, $message ) {
+	    global $wgOut;
+	    $sucessMsgHtml = RDFIOUtils::formatSuccessMessageHTML( $title, $message );
+	    $wgOut->addHTML( $sucessMsgHtml );
+	}
 
 }

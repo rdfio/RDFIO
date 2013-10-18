@@ -43,4 +43,12 @@ class RDFIOUtils {
         return $errorHtml;
     }
     
+    static function formatSuccessMessageHTML( $title, $message ) {
+        $successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #99FF99; background-color: #DDFFDD;">
+				<h3>' . $title . '</h3>
+				<p>' . $message . '</p>
+								</div>';
+        return $successHtml;
+    }
+    
 }

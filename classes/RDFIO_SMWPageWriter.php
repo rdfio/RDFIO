@@ -37,8 +37,9 @@ class RDFIOSMWPageWriter {
 						$womPropertyName = $womPropertyObj->getPropertyName();
 						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
 					}
-				} catch( Exception $e ) {
-					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
+				} catch( MWException $e ) {
+					// WOM is sending unspecific exceptions that are not really errors ...
+				    //$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
 				}
 				
 				// Get categories
@@ -49,8 +50,9 @@ class RDFIOSMWPageWriter {
 						$womCategoryName = $womCategoryObj->getName();
 						$womCategoryObjs[$womCategoryName] = $womCategoryObj; 
 					}
-				} catch( Exception $e ) {
-					$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+				} catch( MWException $e ) {
+					// WOM is sending unspecific exceptions that are not really errors ...
+					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 				}
 				
 			}
