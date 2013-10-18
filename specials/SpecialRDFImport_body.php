@@ -230,7 +230,7 @@ function pasteExampleRDFXMLData(textFieldId) {
 
 	function showErrorMessage( $title, $message ) {
 		global $wgOut;
-		$errorHtml = $this->formatErrorHTML( $title, $message );
+		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
 	}
 }
