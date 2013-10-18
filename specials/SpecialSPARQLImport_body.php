@@ -112,13 +112,13 @@ EOD;
 	        $s = $triple['s'];
 	        $p = $triple['p'];
 	        $o = $triple['o'];
-	        if ( $this->isUri( $s )) {
+	        if ( RDFIOUtils::isURI( $s )) {
 	            $s = "<a href=\"$s\">$s</a>";
 	        }
-	        if ( $this->isUri( $p )) {
+	        if ( RDFIOUtils::isURI( $p )) {
 	            $p = "<a href=\"$p\">$p</a>"; 
 	        }
-	        if ( $this->isUri( $o )) {
+	        if ( RDFIOUtils::isURI( $o )) {
 	            $o = "<a href=\"$o\">$o</a>"; 
 	        }
 	        $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
