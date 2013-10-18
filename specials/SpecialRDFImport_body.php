@@ -18,14 +18,12 @@ class RDFImport extends SpecialPage {
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
 				$this->importData( $requestData );
 			} else if ( !$requestData->hasWriteAccess ) {
-				throw new RDFIOUIException("User does not have write access");
-			} else {
-				$this->outputHTMLForm( $requestData );
-			}
-		} catch (RDFIOUIException $e) {
+				throw new RDFIOException("User does not have write access");
+			} 
+		} catch (MWException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
-			$this->outputHTMLForm( $requestData );
 		}
+		$this->outputHTMLForm( $requestData );
 	}
 
 	/**
@@ -34,15 +32,18 @@ class RDFImport extends SpecialPage {
 	function importData( RDFIORequestData $requestData ) {
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
-			if ( $requestData->externalRdfUrl === '' )
-				throw new RDFIOUIException('URL field is empty!');
+			if ( $requestData->externalRdfUrl === '' ) {
+			    throw new RDFIOException('URL field is empty!');
+			} else if ( !RDFIOUtils::isURI( $requestData->externalRdfUrl ) ) {
+			    throw new RDFIOException('Invalid URL provided!');
+			}
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
 			if ( $requestData->importData === '' )
-				throw new RDFIOUIException('RDF field is empty!');
+				throw new RDFIOException('RDF field is empty!');
 			$rdfData = $requestData->importData;
 		} else {
-			throw new RDFIOUIException('Import source is not selected!');
+			throw new RDFIOException('Import source is not selected!');
 		}
 
 	    switch ( $requestData->dataFormat ) {

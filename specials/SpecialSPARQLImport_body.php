@@ -27,7 +27,7 @@ class SPARQLImport extends SpecialPage {
 		            $this->showErrorMessage("No write access", "The current logged in user does not have write access");
 		        }
 			} 
-		} catch (RDFIOUIException $e) {
+		} catch (RDFIOException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
 		}
 		$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
@@ -46,9 +46,9 @@ class SPARQLImport extends SpecialPage {
 	    global $wgOut, $wgRequest;
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
-	        throw new RDFIOUIException('Empty SPARQL Url provided!');
+	        throw new RDFIOException('Empty SPARQL Url provided!');
 	    } else if ( !RDFIOUtils::isURI( $externalSparqlUrl ) ) {
-	        throw new RDFIOUIException('Invalid SPARQL Url provided! (Must start with \'http://\' or \'https://\')');
+	        throw new RDFIOException('Invalid SPARQL Url provided! (Must start with \'http://\' or \'https://\')');
 	    }
 	    $sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
 	    $sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
