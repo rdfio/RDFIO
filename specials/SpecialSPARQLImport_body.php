@@ -14,23 +14,24 @@ class SPARQLImport extends SpecialPage {
 		try {
 			$this->setHeaders();
 
+			$submitButtonText = "Import";
+			
 			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
 		        if ( $this->currentUserHasWriteAccess() ) {
 		            $offset = $wgRequest->getVal( 'offset', 0 );
 		            $limit = $this->triplesPerBatch;
-		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText = "Import next $limit triples..." ) );
+		            $submitButtonText = "Import next $limit triples...";
 		            $this->import( $limit, $offset );
 		        } else {
 		            $this->showErrorMessage("No write access", "The current logged in user does not have write access");
 		        }
-			} else {
-			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText = "Import" ) );
-			}
+			} 
 		} catch (RDFIOUIException $e) {
 			$this->showErrorMessage('Error!', $e->getMessage());
-			$wgOut->addHTML( $this->getHTMLForm() );
 		}
+		$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+		
 	}
 	
 	function resourceType( $resourceStr ) {
@@ -45,7 +46,9 @@ class SPARQLImport extends SpecialPage {
 	    global $wgOut, $wgRequest;
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
-	        throw new RDFIOUIException('External SPARQL Url is empty!');
+	        throw new RDFIOUIException('Empty SPARQL Url provided!');
+	    } else if ( !RDFIOUtils::isURI( $externalSparqlUrl ) ) {
+	        throw new RDFIOUIException('Invalid SPARQL Url provided! (Must start with \'http://\' or \'https://\')');
 	    }
 	    $sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
 	    $sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
@@ -85,53 +88,52 @@ class SPARQLImport extends SpecialPage {
 	                }
 	            }
 	            $importTriples[] = $triple;
-	        }
-	    }
-	    
-	    // Provide some user feedback if we were successful so far ...
-	    
-	    $style_css = <<<EOD
-	    table .rdfio- th {
-	        font-weight: bold;
-	        padding: 2px 4px;
-	    }
-	    table.rdfio-table td,
-	    table.rdfio-table th {
-	        font-size: 11px;
-	    }
-	    .rdfio-successmsg {
-	        color: green;
-	        font-weight: bold;    
-	    }
+
+	            $rdfImporter = new RDFIORDFImporter();
+	            $rdfImporter->importTriples($importTriples);
+	            
+	            // Provide some user feedback if we were successful so far ...
+	             
+	            $style_css = <<<EOD
+        	    table .rdfio- th {
+        	        font-weight: bold;
+        	        padding: 2px 4px;
+        	    }
+        	    table.rdfio-table td,
+        	    table.rdfio-table th {
+        	        font-size: 11px;
+        	    }
+        	    .rdfio-successmsg {
+        	        color: green;
+        	        font-weight: bold;
+        	    }
 EOD;
-	    $wgOut->addInlineStyle($style_css);
-	    $wgOut->addHTML("<p class=\"rdfio-successmsg\">Successfully imported the following triples:</p>");
-	    $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
-	    
-	    foreach( $importTriples as $triple ) {
-	        $s = $triple['s'];
-	        $p = $triple['p'];
-	        $o = $triple['o'];
-	        if ( RDFIOUtils::isURI( $s )) {
-	            $s = "<a href=\"$s\">$s</a>";
+	            $wgOut->addInlineStyle($style_css);
+	            $wgOut->addHTML("<p class=\"rdfio-successmsg\">Successfully imported the following triples:</p>");
+	            $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+	             
+	            foreach( $importTriples as $triple ) {
+	                $s = $triple['s'];
+	                $p = $triple['p'];
+	                $o = $triple['o'];
+	                if ( RDFIOUtils::isURI( $s )) {
+	                    $s = "<a href=\"$s\">$s</a>";
+	                }
+	                if ( RDFIOUtils::isURI( $p )) {
+	                    $p = "<a href=\"$p\">$p</a>";
+	                }
+	                if ( RDFIOUtils::isURI( $o )) {
+	                $o = "<a href=\"$o\">$o</a>";
+	                }
+	                $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
+	            }
+	             
+	            $wgOut->addHTML("</tbody></table>");
 	        }
-	        if ( RDFIOUtils::isURI( $p )) {
-	            $p = "<a href=\"$p\">$p</a>"; 
-	        }
-	        if ( RDFIOUtils::isURI( $o )) {
-	            $o = "<a href=\"$o\">$o</a>"; 
-	        }
-	        $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
+	    } else {
+	        $wgOut->addHTML(RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?"));
 	    }
-	    
-	    $wgOut->addHTML("</tbody></table>");
-	    
-	    $rdfImporter = new RDFIORDFImporter();
-	    $rdfImporter->importTriples($importTriples);
-	    
-	    $wgOut->addHTML( "\n</pre>" );
     }
-	
 
 	
 	protected function getHTMLForm( $buttonText ) {
