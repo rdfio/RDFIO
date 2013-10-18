@@ -48,8 +48,10 @@ class RDFImport extends SpecialPage {
 	    switch ( $requestData->dataFormat ) {
 	        case 'rdfxml':
 	            $rdfImporter->importRdfXml( $rdfData );
+	            break;
 	        case 'turtle':
 	            $rdfImporter->importTurtle( $rdfData );
+	            break;
 	    }
 
 		global $wgOut;
