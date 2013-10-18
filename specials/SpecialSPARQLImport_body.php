@@ -90,14 +90,38 @@ class SPARQLImport extends SpecialPage {
 	    
 	    // Provide some user feedback if we were successful so far ...
 	    
-	    $wgOut->addHTML("<p style='color: #009900: text-weight: bold;'>Successfully imported the following triples:</p>");
-	    $wgOut->addHTML("<table><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+	    $style_css = <<<EOD
+	    table .rdfio- th {
+	        font-weight: bold;
+	        padding: 2px 4px;
+	    }
+	    table.rdfio-table td,
+	    table.rdfio-table th {
+	        font-size: 11px;
+	    }
+	    .rdfio-successmsg {
+	        color: green;
+	        font-weight: bold;    
+	    }
+EOD;
+	    $wgOut->addInlineStyle($style_css);
+	    $wgOut->addHTML("<p class=\"rdfio-successmsg\">Successfully imported the following triples:</p>");
+	    $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
 	    
 	    foreach( $importTriples as $triple ) {
 	        $s = $triple['s'];
 	        $p = $triple['p'];
 	        $o = $triple['o'];
-	        $wgOut->addHTML("<tr><td style='padding: 2px 4px;'>$s</td><td style='padding: 2px 4px;'>$p</td><td style='padding: 2px 4px;'>$o</td></tr>");
+	        if ( $this->isUri( $s )) {
+	            $s = "<a href=\"$s\">$s</a>";
+	        }
+	        if ( $this->isUri( $p )) {
+	            $p = "<a href=\"$p\">$p</a>"; 
+	        }
+	        if ( $this->isUri( $o )) {
+	            $o = "<a href=\"$o\">$o</a>"; 
+	        }
+	        $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
 	    }
 	    
 	    $wgOut->addHTML("</tbody></table>");
@@ -145,6 +169,10 @@ EOD;
                 	 <p>' . $message . '</p>
                 	 </div>';
 		$wgOut->addHTML( $errorHtml );
+	}
+	
+	protected function isUri( $str ) {
+        return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
 	}
 	
 
