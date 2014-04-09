@@ -138,6 +138,37 @@ class RDFImport extends SpecialPage {
 				</rdf:Description>\\n\
 				</rdf:RDF>';
 	}
+	
+		/**
+	 * Get Turtle stub for for the import form, including namespace definitions
+	 * @return string
+	 */
+	public function getExampleTurtleData() {
+		return '@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
+				@prefix cd: <http://www.recshop.fake/cd#> .\\n\
+				@prefix countries: <http://www.countries.org/onto/> .\\n\
+				@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\\n\
+				\\n\
+				<http://www.recshop.fake/cd/Empire Burlesque>\\n\
+					cd:artist \\"Bob Dylan\\" ;\\n\
+					cd:country countries:USA ;\\n\
+					cd:company \\"Columbia\\" ;\\n\
+					cd:price \\"10.90\\" ;\\n\
+					cd:year \\"1985\\" .\\n\
+				\\n\
+				<http://www.recshop.fake/cd/Hide your heart>\\n\
+					cd:artist \\"Bonnie Tyler\\" ;\\n\
+					cd:country \\"UK\\" ;\\n\
+					cd:company \\"CBS Records\\" ;\\n\
+					cd:price \\"9.90\\" ;\\n\
+					cd:year \\"1988\\" .\\n\
+				\\n\
+				countries:USA\\n\
+					rdfs:label \\"USA\\" .\\n\
+				\\n\
+				countries:Albums\\n\
+					rdfs:subClassOf countries:MediaCollections .';
+	}
 
 	/**
 	 * Generate the main HTML form, if the variable $extraFormContent is set, the
@@ -207,7 +238,8 @@ class RDFImport extends SpecialPage {
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
-									[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">Paste example data</a>]
+									[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">RDFXML example data</a>]
+									[<a href="#" onClick="pasteExampleTurtleData(\'importdata\');">Turtle example data</a>]
 									[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
 								</td>
 							</tr>
@@ -222,6 +254,7 @@ class RDFImport extends SpecialPage {
 	/**
 	 * Generate the javascriptcode used in the main HTML form for
 	 * loading example data into the main textarea
+	 * also set the dataformat to the correct one
 	 * @return string $exampleDataJs
 	 */
 	public function getJsCode() {
@@ -231,6 +264,14 @@ function pasteExampleRDFXMLData(textFieldId) {
 	var textfield = document.getElementById(textFieldId);
 	var exampledata = "' . $this->getExampleRDFXMLData() . '";
 	textfield.value = exampledata;
+	document.getElementById("dataformat").options[0].selected = true;
+	
+}	
+function pasteExampleTurtleData(textFieldId) {
+	var textfield = document.getElementById(textFieldId);
+	var exampledata = "' . $this->getExampleTurtleData() . '";
+	textfield.value = exampledata;
+	document.getElementById("dataformat").options[1].selected = true;
 }
 </script>
 						';
