@@ -140,11 +140,11 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	}	
 	
 	/**
-	 * @covers RDFIOURIToTitleConverter::removeInvalidChars
+	 * @covers RDFIOURIToTitleConverter::cleanWikiTitle
 	 */
 	public function testRemoveInvalidChars() {
 	    $uriToWikiTitleConverter = new RDFIOURIToTitleConverter(array(), array(), array());
-	    $cleanedTitle = $uriToWikiTitleConverter->removeInvalidChars( '[Some] words in the title' );
+	    $cleanedTitle = $uriToWikiTitleConverter->cleanWikiTitle( '[Some] words in the title' );
 	    $this->assertEquals('Some words in the title', $cleanedTitle);
 	}
 
