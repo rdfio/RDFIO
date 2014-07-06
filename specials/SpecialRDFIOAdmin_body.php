@@ -25,7 +25,6 @@ class RDFIOAdmin extends SpecialPage {
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
 			$wgServer, $wgScriptPath, $wgUser;
 		
-		$wgOut->setPageTitle("RDFIO Admin");
 		$this->setHeaders();
 		$output = "";
 
