@@ -19,6 +19,7 @@ $messages['en'] = array(
 	'sparqlendpoint' => 'SPARQL Endpoint',
 	'rdfioadmin' => 'RDFIO admin page',
 	'rdfio-unknown-error' => 'An unknown error happened!',
+	'action-editinterface' => 'edit RDFIO settings',
 );
 
 /** Message documentation (Message documentation)

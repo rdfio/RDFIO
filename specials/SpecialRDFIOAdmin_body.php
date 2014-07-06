@@ -25,6 +25,11 @@ class RDFIOAdmin extends SpecialPage {
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
 			$wgServer, $wgScriptPath, $wgUser;
 		
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			$this->displayRestrictionError();
+			return;
+		};
+	
 		$this->setHeaders();
 		$output = "";
 
