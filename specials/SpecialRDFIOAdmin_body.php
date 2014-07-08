@@ -70,10 +70,12 @@ class RDFIOAdmin extends SpecialPage {
 			</form>';
 
 		$wgOut->addHTML( $htmlOutput );
-		if( !$this->isSysop ) { 
-			$notSysop = "You do not have permission to set up the ARC2 store";
-			$wgOut = "<pre> " . $notSysop . "</pre>";
-		}
+
+		$wgOut->addWikiText("\n===Data Sources===\n'''To be added'''");
+		
+		$wgOut->addWikiText("\n===Pages and Templates===\n'''To be added'''");
+
+
 
 	}
 }
