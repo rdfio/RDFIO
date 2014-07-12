@@ -50,7 +50,12 @@ class RDFIOAdmin extends SpecialPage {
 					if ( $this->isSysop ) {
 						$output .= "* Setting up now ...\n";
 						$store->setUp();
-						$output .= "* Done!\n";
+						if ( $store->isSetUp() ) {
+							$output .= "* Done!\n";
+						} else {
+							$output .= "Setup failed:\n";
+							$store->getErrors();	
+						}
 					} else {
 						$errorMessage = "Only sysops can perform this operation!";
 						$wgOut->addHTML( "<pre>Permission Error: " . $errorMessage . "</pre>" );
@@ -71,11 +76,16 @@ class RDFIOAdmin extends SpecialPage {
 
 		$wgOut->addHTML( $htmlOutput );
 
-		$wgOut->addWikiText("\n===Data Sources===\n'''To be added'''");
+		$wgOut->addWikiText("\n===Data Sources===\n");
+		$wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Source URL</th><th>Type</th></tr>");
+		// get sources and populate rows
+		$wgOut->addHTML("</tbody></table>");
 		
-		$wgOut->addWikiText("\n===Pages and Templates===\n'''To be added'''");
-
-
+		$wgOut->addWikiText("\n===Pages and Templates===\n");
+		
+		$wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Page category</th><th>Template</th></tr>");
+		// get page-template relationships	
+		$wgOut->addHTML("</tbody></table>");
 
 	}
 }
