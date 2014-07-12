@@ -53,7 +53,8 @@ class RDFImport extends SpecialPage {
 	        case 'turtle':
 	            $rdfImporter->importTurtle( $rdfData );
 	            break;
-	    }
+	    };
+		$this->showSuccessMessage("Success!","Successfully imported the triples");
 
 		global $wgOut;
 		$wgOut->addHTML('Tried to import the data ...');

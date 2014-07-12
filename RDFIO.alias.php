@@ -11,7 +11,7 @@ $specialPageAliases = array();
 /** English (English) */
 $specialPageAliases['en'] = array(
 	'SPARQLEndpoint' => array( 'SPARQLEndpoint' ),
-	'ARC2Admin' => array( 'ARC2Admin' ),
+	'RDFIOAdmin' => array( 'RDFIOAdmin' ),
 	'RDFImport' => array( 'RDFImport' ),
 	'SPARQLImport' => array( 'SPARQLImport' ),
 );
@@ -19,41 +19,41 @@ $specialPageAliases['en'] = array(
 /** Arabic (العربية) */
 $specialPageAliases['ar'] = array(
 	'SPARQLEndpoint' => array( 'سباركل_إن_دي_بوينت' ),
-	'ARC2Admin' => array( 'أرك_تو_أدمن' ),
+	'RDFIOAdmin' => array( 'أرك_تو_أدمن' ),
 	'RDFImport' => array( 'استيراد_آر_دي_إف' ),
 );
 
 /** German (Deutsch) */
 $specialPageAliases['de'] = array(
 	'SPARQLEndpoint' => array( 'SPARQL-Endpoint' ),
-	'ARC2Admin' => array( 'ARC2-Administration' ),
+	'RDFIOAdmin' => array( 'RDFIO-Administration' ),
 	'RDFImport' => array( 'RDF_importieren' ),
 );
 
 /** Macedonian (Македонски) */
 $specialPageAliases['mk'] = array(
 	'SPARQLEndpoint' => array( 'SPARQLЗавршеток' ),
-	'ARC2Admin' => array( 'ARC2Админ' ),
+	'RDFIOAdmin' => array( 'RDFIOАдмин' ),
 	'RDFImport' => array( 'RDFУвоз' ),
 );
 
 /** Nedersaksisch (Nedersaksisch) */
 $specialPageAliases['nds-nl'] = array(
 	'SPARQLEndpoint' => array( 'SPARQL-eindpunt' ),
-	'ARC2Admin' => array( 'ARC2-beheer' ),
+	'RDFIOAdmin' => array( 'RDFIO-beheer' ),
 	'RDFImport' => array( 'RDF_invoeren' ),
 );
 
 /** Dutch (Nederlands) */
 $specialPageAliases['nl'] = array(
 	'SPARQLEndpoint' => array( 'SPARQLEindpunt' ),
-	'ARC2Admin' => array( 'ARC2Beheer' ),
+	'RDFIOAdmin' => array( 'RDFIOBeheer' ),
 	'RDFImport' => array( 'RDFImporteren' ),
 );
 
 /** Vietnamese (Tiếng Việt) */
 $specialPageAliases['vi'] = array(
-	'ARC2Admin' => array( 'Quản_lý_ARC2', 'Quản_lí_ARC2' ),
+	'RDFIOAdmin' => array( 'Quản_lý_RDFIO', 'Quản_lí_RDFIO' ),
 	'RDFImport' => array( 'Nhập_RDF' ),
 );
 
