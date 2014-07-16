@@ -86,9 +86,11 @@ class RDFIOAdmin extends SpecialPage {
 					}}\n");
 		$wgOut->addWikiText("\n===Pages and Templates===\n");
 		
-		$wgOut->addWikiText("{{#ask:  [[Category:Category]]
+		$wgOut->addWikiText("{{#ask:  [[:Category:+]]
+					|?Equivalent URI
+					|?Has template
 					|format=table
-					|mainlabel=Categories
+					|mainlabel=Category
 					|limit=10
 					}}");
 	}
