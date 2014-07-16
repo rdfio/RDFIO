@@ -77,15 +77,19 @@ class RDFIOAdmin extends SpecialPage {
 		$wgOut->addHTML( $htmlOutput );
 
 		$wgOut->addWikiText("\n===Data Sources===\n");
-		$wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Source URL</th><th>Type</th></tr>");
-		// get sources and populate rows
-		$wgOut->addHTML("</tbody></table>");
-		
+		$wgOut->addWikiText("\n{{#ask: [[Category:RDFIO Data Source]]
+					|?Equivalent URI
+					|?RDFIO Import Type
+					|format=table
+					|mainlabel=Data Source
+					|limit=10
+					}}\n");
 		$wgOut->addWikiText("\n===Pages and Templates===\n");
 		
-		$wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Page category</th><th>Template</th></tr>");
-		// get page-template relationships	
-		$wgOut->addHTML("</tbody></table>");
-
+		$wgOut->addWikiText("{{#ask:  [[Category:Category]]
+					|format=table
+					|mainlabel=Categories
+					|limit=10
+					}}");
 	}
 }
