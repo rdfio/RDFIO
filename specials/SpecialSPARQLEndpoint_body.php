@@ -598,29 +598,24 @@ class SPARQLEndpoint extends SpecialPage {
      * SPARQL endpoint
      */
     private function getSPARQLEndpointConfig() {
-        global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $smwgARC2StoreConfig;
-        $epconfig = array(
-            'db_host' => $wgDBserver, /* optional, default is localhost */
-            'db_name' => $wgDBname,
-            'db_user' => $wgDBuser,
-            'db_pwd' =>  $wgDBpassword,
-            'store_name' => $smwgARC2StoreConfig['store_name'],
-            'endpoint_features' =>
-        array(
-            'select',
-            'construct',
-            'ask',
-            'describe',
-        # 'load',
-        # 'insert', // This is not needed, since it is done via SMWWriter instead
-        # 'delete', // This is not needed, since it is done via SMWWriter instead
-        # 'dump' /* dump is a special command for streaming SPOG export */
-        ),
-            'endpoint_timeout' => 60, /* not implemented in ARC2 preview */
+        global $smwgARC2StoreConfig;
+        $epconfig = $smwgARC2StoreConfig;
+        $epconfig['endpoint_features'] =
+        	array(
+            		'select',
+            		'construct',
+            		'ask',
+            		'describe',
+       			# 'load',
+        		# 'insert', // This is not needed, since it is done via SMWWriter instead
+        		# 'delete', // This is not needed, since it is done via SMWWriter instead
+        		# 'dump' /* dump is a special command for streaming SPOG export */
+        		);
+        $epconfig['endpoint_timeout'] = 60; /* not implemented in ARC2 preview */
         # 'endpoint_read_key' => '', /* optional */
         # 'endpoint_write_key' => 'somekey', /* optional */
         # 'endpoint_max_limit' => 250, /* optional */
-        );
+        
         return $epconfig;
     }
 
