@@ -47,7 +47,7 @@ class SPARQLImport extends SpecialPage {
 	}
 	
 	protected function import( $limit = 10, $offset = 0 ) {
-	    global $wgOut, $wgRequest, $externalSparqlUrl;
+	    global $wgOut, $wgRequest;
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
 	        throw new RDFIOException('Empty SPARQL Url provided!');
@@ -140,7 +140,10 @@ EOD;
 		$dataSourcePage->addEquivalentURI($dataSourceUrl); 
 		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => 'SPARQL')); 
 		$dataSourcePage->addCategory('RDFIO Data Source');
+//		$smwPageWriter = new RDFIOSMWPageWriter();
+//		$smwPageWriter->import(array( $smwPageWriter ));
 		}
+
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
