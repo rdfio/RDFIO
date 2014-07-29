@@ -17,6 +17,8 @@ class RDFImport extends SpecialPage {
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
 				$this->importData( $requestData );
+				$dataSourceImport = new RDFIORDFImporter();
+				$dataSourceImport->addDataSource( $requestData->externalRdfUrl, 'RDF' );
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
 			} 
@@ -53,8 +55,8 @@ class RDFImport extends SpecialPage {
 	        case 'turtle':
 	            $rdfImporter->importTurtle( $rdfData );
 	            break;
-	    };
-		$this->showSuccessMessage("Success!","Successfully imported the triples");
+	    }
+	
 
 		global $wgOut;
 		$wgOut->addHTML('Tried to import the data ...');

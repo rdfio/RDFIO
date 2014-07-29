@@ -23,7 +23,8 @@ class SPARQLImport extends SpecialPage {
 		            $submitButtonText = "Import next $limit triples...";
 		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 		            $this->import( $limit, $offset );
-				$this->addDataSource( $externalSparqlUrl );
+			    $dataSourceImporter = new RDFIORDFImporter();
+				$dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
 		        } else {
 		            $errTitle = "No write access";
 		            $errMsg = "The current logged in user does not have write access";
@@ -47,7 +48,7 @@ class SPARQLImport extends SpecialPage {
 	}
 	
 	protected function import( $limit = 10, $offset = 0 ) {
-	    global $wgOut, $wgRequest, $externalSparqlUrl;
+	    global $wgOut, $wgRequest, $externalSparqlUrl, $rdfImporter;
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
 	        throw new RDFIOException('Empty SPARQL Url provided!');
@@ -133,17 +134,17 @@ EOD;
 	        $wgOut->addHTML(RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?"));
 	    }
     }
-
-	function addDataSource( $dataSourceUrl ) { 
+/*
+	function addDataSource( $dataSourceUrl, $importType ) { 
 		global $dataSourcePage; 
 		$dataSourcePage = new RDFIOWikiPage($dataSourceUrl); 
 		$dataSourcePage->addEquivalentURI($dataSourceUrl); 
-		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => 'SPARQL')); 
+		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => $importType)); 
 		$dataSourcePage->addCategory('RDFIO Data Source');
 		$smwPageWriter = new RDFIOSMWPageWriter();
 		$smwPageWriter->import(array( $dataSourceUrl => $dataSourcePage ));
 		}
-
+*/
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";

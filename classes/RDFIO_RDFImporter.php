@@ -85,5 +85,14 @@ class RDFIORDFImporter {
         $smwPageWriter = new RDFIOSMWPageWriter();
         $smwPageWriter->import( $wikiPages );
 	}
-
+	
+	function addDataSource( $dataSourceUrl, $importType ) { 
+		global $dataSourcePage; 
+		$dataSourcePage = new RDFIOWikiPage($dataSourceUrl); 
+		$dataSourcePage->addEquivalentURI($dataSourceUrl); 
+		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => $importType)); 
+		$dataSourcePage->addCategory('RDFIO Data Source');
+		$smwPageWriter = new RDFIOSMWPageWriter();
+		$smwPageWriter->import(array( $dataSourceUrl => $dataSourcePage ));
+		}
 }
