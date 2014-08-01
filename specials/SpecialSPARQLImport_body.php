@@ -10,14 +10,16 @@ class SPARQLImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		global $wgOut, $wgRequest, $externalSparqlUrl;
+		global $wgOut, $wgRequest, $externalSparqlUrl, $rdfioUtils;
+		
+		$rdfioUtils = new RDFIOUtils();
 		try {
 			$this->setHeaders();
 			$submitButtonText = "Import";
 			
 			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-		        if ( $this->currentUserHasWriteAccess() ) {
+		        if ( $rdfioUtils->currentUserHasWriteAccess() ) {
 		            $offset = $wgRequest->getVal( 'offset', 0 );
 		            $limit = $this->triplesPerBatch;
 		            $submitButtonText = "Import next $limit triples...";
@@ -28,13 +30,13 @@ class SPARQLImport extends SpecialPage {
 		        } else {
 		            $errTitle = "No write access";
 		            $errMsg = "The current logged in user does not have write access";
-		            $this->showErrorMessage($errTitle, $errMsg);
+		            $rdfioUtils->showErrorMessage($errTitle, $errMsg);
 		        }
 			} else {
 			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 			}
 		} catch (RDFIOException $e) {
-			$this->showErrorMessage('Error!', $e->getMessage());
+			$rdfioUtils->showErrorMessage('Error!', $e->getMessage());
 		}
 		
 	}
@@ -48,7 +50,8 @@ class SPARQLImport extends SpecialPage {
 	}
 	
 	protected function import( $limit = 10, $offset = 0 ) {
-	    global $wgOut, $wgRequest, $externalSparqlUrl, $rdfImporter;
+	    global $wgOut, $wgRequest, $externalSparqlUrl, $rdfImporter, $rdfioUtils;
+		//$rdfioUtils = new RDFIOUtils();
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
 	        throw new RDFIOException('Empty SPARQL Url provided!');
@@ -110,7 +113,7 @@ class SPARQLImport extends SpecialPage {
         	    }
 EOD;
 	        $wgOut->addInlineStyle($style_css);
-	        $this->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
+	        $rdfioUtils->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
 	        $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
 	        
 	        foreach( $importTriples as $triple ) {
@@ -131,20 +134,11 @@ EOD;
 	        
 	        $wgOut->addHTML("</tbody></table>");
 	    } else {
-	        $wgOut->addHTML(RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?"));
+	        $rdfioUtils->formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?");
 	    }
     }
-/*
-	function addDataSource( $dataSourceUrl, $importType ) { 
-		global $dataSourcePage; 
-		$dataSourcePage = new RDFIOWikiPage($dataSourceUrl); 
-		$dataSourcePage->addEquivalentURI($dataSourceUrl); 
-		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => $importType)); 
-		$dataSourcePage->addCategory('RDFIO Data Source');
-		$smwPageWriter = new RDFIOSMWPageWriter();
-		$smwPageWriter->import(array( $dataSourceUrl => $dataSourcePage ));
-		}
-*/
+	
+
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
@@ -162,27 +156,6 @@ EOD;
 		</form>
 EOD;
 		return $htmlForm;
-	}
-
-	/**
-	 * Check whether the current user has rights to edit or create pages
-	 */
-	protected function currentUserHasWriteAccess() {
-		global $wgUser;
-		$userRights = $wgUser->getRights();
-		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
-	}
-
-	function showErrorMessage( $title, $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorHtml );
-	}	
-	
-	function showSuccessMessage( $title, $message ) {
-	    global $wgOut;
-	    $sucessMsgHtml = RDFIOUtils::formatSuccessMessageHTML( $title, $message );
-	    $wgOut->addHTML( $sucessMsgHtml );
 	}
 
 }
