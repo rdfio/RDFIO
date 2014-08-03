@@ -95,4 +95,40 @@ class RDFIORDFImporter {
 		$smwPageWriter = new RDFIOSMWPageWriter();
 		$smwPageWriter->import(array( $dataSourceUrl => $dataSourcePage ));
 		}
+
+	function showImportedTriples( $importedTriples ) {
+		global $rdfioUtils, $wgOut;
+		
+	        $style_css = <<<EOD
+        	    table .rdfio- th {
+        	        font-weight: bold;
+        	        padding: 2px 4px;
+        	    }
+        	    table.rdfio-table td,
+        	    table.rdfio-table th {
+        	        font-size: 11px;
+        	    }
+EOD;
+	        $wgOut->addInlineStyle($style_css);
+	        $rdfioUtils->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
+	        $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+	        
+	        foreach( $importedTriples as $triple ) {
+	            $s = $triple['s'];
+	            $p = $triple['p'];
+	            $o = $triple['o'];
+	            if ( RDFIOUtils::isURI( $s )) {
+	                $s = "<a href=\"$s\">$s</a>";
+	            }
+	            if ( RDFIOUtils::isURI( $p )) {
+	                $p = "<a href=\"$p\">$p</a>";
+	            }
+	            if ( RDFIOUtils::isURI( $o )) {
+	                $o = "<a href=\"$o\">$o</a>";
+	            }
+	            $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
+	        }
+	        
+	        $wgOut->addHTML("</tbody></table>");
+		}
 }
