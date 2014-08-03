@@ -9,6 +9,9 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
+		global $rdfioUtils;
+
+		$rdfioUtils = new RDFIOUtils();
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -23,7 +26,7 @@ class RDFImport extends SpecialPage {
 				throw new RDFIOException("User does not have write access");
 			} 
 		} catch (MWException $e) {
-			$this->showErrorMessage('Error!', $e->getMessage());
+			$rdfioUtils->showErrorMessage('Error!', $e->getMessage());
 		}
 		$this->outputHTMLForm( $requestData );
 	}
@@ -32,6 +35,7 @@ class RDFImport extends SpecialPage {
 	 * Import data into wiki pages
 	 */
 	function importData( RDFIORequestData $requestData ) {
+		global $rdfioUtils;
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
@@ -66,7 +70,7 @@ class RDFImport extends SpecialPage {
 	 * Get data from the request object and store it in class variables
 	 */
 	function getRequestData() {
-		global $wgRequest, $wgArticlePath;
+		global $wgRequest, $wgArticlePath, $rdfioUtils;
 
 		$requestData = new RDFIORequestData();
 		$requestData->action = $wgRequest->getText( 'action' );
@@ -77,21 +81,13 @@ class RDFImport extends SpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = $this->userHasWriteAccess();
+		$requestData->hasWriteAccess = $rdfioUtils->currentUserHasWriteAccess();
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;
 	}
 
-	/**
-	 * Check whether the current user has rights to edit or create pages
-	 */
-	protected function userHasWriteAccess() {
-		global $wgUser;
-		$userRights = $wgUser->getRights();
-		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
-	}
-
+	
 	/**
 	 * Output the HTML for the form, to the user
 	 */
@@ -281,11 +277,6 @@ function pasteExampleTurtleData(textFieldId) {
 		return $jsCode;
 	}
 
-	function showErrorMessage( $title, $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorHtml );
-	}
 }
 
 class RDFIORequestData {

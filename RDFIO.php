@@ -27,7 +27,7 @@ $wgExtensionCredits['other'][] = array(
  ****************************/
 $dir = dirname( __FILE__ ) . '/';
 $wgExtensionMessagesFiles['RDFIO'] = $dir . 'RDFIO.i18n.php';
-$wgExtensionAliasesFiles['RDFIO'] = $dir . 'RDFIO.alias.php';
+$wgExtensionMessagesFiles['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 
 /****************************
  * ARC2 RDF library for PHP *
