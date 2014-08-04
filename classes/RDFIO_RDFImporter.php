@@ -13,6 +13,7 @@ class RDFIORDFImporter {
 	 * @param string $importData
 	 */
 	public function importRdfXml( $importData ) {
+		global $triples;
 		// Parse RDF/XML to triples
 		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
 		$arc2rdfxmlparser->parseData( $importData );
@@ -31,7 +32,7 @@ class RDFIORDFImporter {
 		echo( print_r( $namespaces, true ));
 		*/
 		
-		$this->importFromArc2Data( $triples, $wikiPages, $namespaces );
+		$this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
 	}
 	
 	/**
@@ -39,7 +40,8 @@ class RDFIORDFImporter {
 	 * @param string $importData
 	 */
 	public function importTurtle( $importData ) {
-	    // Parse RDF/XML to triples
+	    global $triples;
+	// Parse RDF/XML to triples
 	    $arc2turtleparser = ARC2::getTurtleParser($importData);
 	    $arc2turtleparser->parseData( $importData );
 	
@@ -57,7 +59,7 @@ class RDFIORDFImporter {
 	    echo( print_r( $namespaces, true ));
 	     */
 	     
-	    $this->importFromArc2Data( $triples, $wikiPages, $namespaces );
+	    $this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
 	}	
 
 	/**
@@ -75,7 +77,7 @@ class RDFIORDFImporter {
 	 * @param array $namespaces
 	 */
 	private function importFromArc2Data( $triples, $tripleIndex="", $namespaces="" ) {
-		global $wgOut;
+		global $wgOut, $triples;
 		
         // Parse data from ARC2 triples to custom data structure holding wiki pages
         $arc2towikiconverter = new RDFIOARC2ToWikiConverter();

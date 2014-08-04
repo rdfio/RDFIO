@@ -9,9 +9,9 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		global $rdfioUtils;
-
+		global $rdfioUtils, $triples, $rdfImporter;
 		$rdfioUtils = new RDFIOUtils();
+			
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -20,8 +20,14 @@ class RDFImport extends SpecialPage {
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
 				$this->importData( $requestData );
-				$dataSourceImport = new RDFIORDFImporter();
-				$dataSourceImport->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+				$this->outputHTMLForm( $requestData );
+				if ( $triples ) {
+					$rdfImporter->showImportedTriples( $triples );
+					$dataSourceImport = new RDFIORDFImporter();
+					$dataSourceImport->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+				} else if ( !$triples ) {
+					throw new RDFIOException ("No new triples to import");
+				}
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
 			} 
@@ -35,7 +41,7 @@ class RDFImport extends SpecialPage {
 	 * Import data into wiki pages
 	 */
 	function importData( RDFIORequestData $requestData ) {
-		global $rdfioUtils;
+		global $rdfioUtils, $rdfImporter;
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
@@ -62,8 +68,8 @@ class RDFImport extends SpecialPage {
 	    }
 	
 
-		global $wgOut;
-		$wgOut->addHTML('Tried to import the data ...');
+	//	global $wgOut;
+	//	$wgOut->addHTML('Tried to import the data ...');
 	}
 
 	/**
@@ -183,7 +189,9 @@ class RDFImport extends SpecialPage {
 		// Show (and pre-select) the URL field, as default
 		if ( !$urlChecked && !$textfieldChecked ) {
 			$urlChecked = true;
-			$textfieldHiddenContent = 'style="display: none"';
+		}
+		if ( !$textfieldChecked ) {
+			$textfieldHiddenContent= 'style="display: none"';
 		}
 
 		$urlCheckedContent = $urlChecked ? 'checked="true"' : '';
