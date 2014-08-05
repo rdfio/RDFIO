@@ -29,7 +29,7 @@ class RDFIOAdmin extends SpecialPage {
 			$this->displayRestrictionError();
 			return;
 		};
-	
+		
 		$this->setHeaders();
 		$output = "";
 

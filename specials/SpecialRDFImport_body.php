@@ -9,8 +9,6 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		global $rdfioUtils, $triples, $rdfImporter;
-		$rdfioUtils = new RDFIOUtils();
 			
 		try {
 			# Set HTML headers sent to the browser
@@ -19,12 +17,12 @@ class RDFImport extends SpecialPage {
 			# The main code
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
-				$this->importData( $requestData );
-				$this->outputHTMLForm( $requestData );
-				if ( $triples ) {
+				$importInfo = $this->importData( $requestData );
+				$triples = $importInfo['triples'];
+				if ( $triples ) { 
+					$rdfImporter = new RDFIORDFImporter();
 					$rdfImporter->showImportedTriples( $triples );
-					$dataSourceImport = new RDFIORDFImporter();
-					$dataSourceImport->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+					$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
 				} else if ( !$triples ) {
 					throw new RDFIOException ("No new triples to import");
 				}
@@ -32,7 +30,7 @@ class RDFImport extends SpecialPage {
 				throw new RDFIOException("User does not have write access");
 			} 
 		} catch (MWException $e) {
-			$rdfioUtils->showErrorMessage('Error!', $e->getMessage());
+			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
 		}
 		$this->outputHTMLForm( $requestData );
 	}
@@ -41,7 +39,6 @@ class RDFImport extends SpecialPage {
 	 * Import data into wiki pages
 	 */
 	function importData( RDFIORequestData $requestData ) {
-		global $rdfioUtils, $rdfImporter;
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
@@ -60,23 +57,23 @@ class RDFImport extends SpecialPage {
 
 	    switch ( $requestData->dataFormat ) {
 	        case 'rdfxml':
-	            $rdfImporter->importRdfXml( $rdfData );
+	            $importInfo = $rdfImporter->importRdfXml( $rdfData );
+		    $triples = $importInfo['triples'];
 	            break;
 	        case 'turtle':
-	            $rdfImporter->importTurtle( $rdfData );
+	            $importInfo = $rdfImporter->importTurtle( $rdfData );
+		    $triples = $importInfo['triples'];
 	            break;
 	    }
 	
-
-	//	global $wgOut;
-	//	$wgOut->addHTML('Tried to import the data ...');
+	return $output = array( 'triples' => $triples);
 	}
 
 	/**
 	 * Get data from the request object and store it in class variables
 	 */
 	function getRequestData() {
-		global $wgRequest, $wgArticlePath, $rdfioUtils;
+		global $wgRequest, $wgArticlePath;
 
 		$requestData = new RDFIORequestData();
 		$requestData->action = $wgRequest->getText( 'action' );
@@ -87,7 +84,7 @@ class RDFImport extends SpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = $rdfioUtils->currentUserHasWriteAccess();
+		$requestData->hasWriteAccess = RDFIOUtils::currentUserHasWriteAccess();
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;

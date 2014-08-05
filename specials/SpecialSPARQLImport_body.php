@@ -10,33 +10,33 @@ class SPARQLImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-		global $wgOut, $wgRequest, $externalSparqlUrl, $rdfioUtils;
-		
-		$rdfioUtils = new RDFIOUtils();
+		global $wgOut, $wgRequest;
+			
 		try {
 			$this->setHeaders();
 			$submitButtonText = "Import";
 			
 			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-		        if ( $rdfioUtils->currentUserHasWriteAccess() ) {
+		        if ( RDFIOUtils::currentUserHasWriteAccess() ) {
 		            $offset = $wgRequest->getVal( 'offset', 0 );
 		            $limit = $this->triplesPerBatch;
 		            $submitButtonText = "Import next $limit triples...";
 		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-		            $this->import( $limit, $offset );
+		            $importInfo = $this->import( $limit, $offset ); 
+			    $externalSparqlUrl = $importInfo['externalSparqlUrl'];
 			    $dataSourceImporter = new RDFIORDFImporter();
-				$dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
+			    $dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
 		        } else {
 		            $errTitle = "No write access";
 		            $errMsg = "The current logged in user does not have write access";
-		            $rdfioUtils->showErrorMessage($errTitle, $errMsg);
+		            RDFIOUtils::showErrorMessage($errTitle, $errMsg);
 		        }
 			} else {
 			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 			}
 		} catch (RDFIOException $e) {
-			$rdfioUtils->showErrorMessage('Error!', $e->getMessage());
+			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
 		}
 		
 	}
@@ -50,7 +50,7 @@ class SPARQLImport extends SpecialPage {
 	}
 	
 	protected function import( $limit = 10, $offset = 0 ) {
-	    global $wgOut, $wgRequest, $externalSparqlUrl, $rdfImporter, $rdfioUtils;
+	    global $wgOut, $wgRequest;
 		//$rdfioUtils = new RDFIOUtils();
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
@@ -99,10 +99,11 @@ class SPARQLImport extends SpecialPage {
 	        }
 	        $rdfImporter = new RDFIORDFImporter();
 	        $rdfImporter->importTriples($importTriples);
-	        $rdfImporter->showImportedTriples($importTriples); 
+	        $wgOut->addHTML($rdfImporter->showImportedTriples($importTriples)); 
 	    } else {
-	        $rdfioUtils->formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?");
+	        RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?");
 	    }
+	return $output = array( 'externalSparqlUrl' => $externalSparqlUrl );
     }
 	
 
