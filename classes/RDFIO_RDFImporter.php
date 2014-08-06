@@ -13,7 +13,6 @@ class RDFIORDFImporter {
 	 * @param string $importData
 	 */
 	public function importRdfXml( $importData ) {
-		global $triples;
 		// Parse RDF/XML to triples
 		$arc2rdfxmlparser = ARC2::getRDFXMLParser();
 		$arc2rdfxmlparser->parseData( $importData );
@@ -33,6 +32,9 @@ class RDFIORDFImporter {
 		*/
 		
 		$this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
+		return $output = array( 'triples' => $triples,
+					'tripleIndex' => $tripleIndex,
+					'namespaces' => $namespaces);
 	}
 	
 	/**
@@ -40,7 +42,6 @@ class RDFIORDFImporter {
 	 * @param string $importData
 	 */
 	public function importTurtle( $importData ) {
-	    global $triples;
 	// Parse RDF/XML to triples
 	    $arc2turtleparser = ARC2::getTurtleParser($importData);
 	    $arc2turtleparser->parseData( $importData );
@@ -60,6 +61,9 @@ class RDFIORDFImporter {
 	     */
 	     
 	    $this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
+		return $output = array( 'triples' => $triples,
+					'tripleIndex' => $tripleIndex,
+					'namespaces' => $namespaces);
 	}	
 
 	/**
@@ -68,6 +72,7 @@ class RDFIORDFImporter {
 	 */
 	public function importTriples( $triples ) {
 		$this->importFromArc2Data( $triples );
+		return $output = array( 'triples' => $triples);
 	}
 
 	/**
@@ -77,7 +82,7 @@ class RDFIORDFImporter {
 	 * @param array $namespaces
 	 */
 	private function importFromArc2Data( $triples, $tripleIndex="", $namespaces="" ) {
-		global $wgOut, $triples;
+		global $wgOut;
 		
         // Parse data from ARC2 triples to custom data structure holding wiki pages
         $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
@@ -86,21 +91,20 @@ class RDFIORDFImporter {
         // Import pages into wiki
         $smwPageWriter = new RDFIOSMWPageWriter();
         $smwPageWriter->import( $wikiPages );
+	return $output = array( 'triples' => $triples );
 	}
 	
 	function addDataSource( $dataSourceUrl, $importType ) { 
-		global $dataSourcePage; 
 		$dataSourcePage = new RDFIOWikiPage($dataSourceUrl); 
 		$dataSourcePage->addEquivalentURI($dataSourceUrl); 
 		$dataSourcePage->addFact(array('p' => 'RDFIO Import Type', 'o' => $importType)); 
 		$dataSourcePage->addCategory('RDFIO Data Source');
 		$smwPageWriter = new RDFIOSMWPageWriter();
 		$smwPageWriter->import(array( $dataSourceUrl => $dataSourcePage ));
-		}
+	}
 
 	function showImportedTriples( $importedTriples ) {
-		global $rdfioUtils, $wgOut;
-		
+		$output = "";	
 	        $style_css = <<<EOD
         	    table .rdfio- th {
         	        font-weight: bold;
@@ -111,9 +115,10 @@ class RDFIORDFImporter {
         	        font-size: 11px;
         	    }
 EOD;
-	        $wgOut->addInlineStyle($style_css);
-	        $rdfioUtils->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
-	        $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
+		$output .= "<style>$style_css</style>";
+	        //$wgOut->addInlineStyle($style_css);
+	        $output .= RDFIOUtils::formatSuccessMessageHTML("Success!", "Successfully imported the triples shown below!");
+	        $output .= "<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>";
 	        
 	        foreach( $importedTriples as $triple ) {
 	            $s = $triple['s'];
@@ -128,9 +133,10 @@ EOD;
 	            if ( RDFIOUtils::isURI( $o )) {
 	                $o = "<a href=\"$o\">$o</a>";
 	            }
-	            $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
+	            $output .= "<tr><td>$s</td><td>$p</td><td>$o</td></tr>";
 	        }
 	        
-	        $wgOut->addHTML("</tbody></table>");
+	        $output .= "</tbody></table>";
+		return $output;
 		}
 }

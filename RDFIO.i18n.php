@@ -17,9 +17,9 @@ $messages['en'] = array(
 	'rdfio-sparqlimport-desc' => 'A Special page to import semantic data from external SPARQL endpoints',
 	'rdfio-sparqlendpoint-desc' => 'A SPARQL Endpoint provided by the RDFIO extension',
 	'sparqlendpoint' => 'SPARQL Endpoint',
-	'rdfioadmin' => 'RDFIO admin page',
+	'rdfioadmin' => 'RDFIO Admin Page',
 	'rdfio-unknown-error' => 'An unknown error happened!',
-	'action-editinterface' => 'edit RDFIO settings',
+	'action-editinterface' => 'Edit RDFIO Settings',
 );
 
 /** Message documentation (Message documentation)
