@@ -9,7 +9,7 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
-			
+		global $wgOut;			
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -20,19 +20,23 @@ class RDFImport extends SpecialPage {
 				$importInfo = $this->importData( $requestData );
 				$triples = $importInfo['triples'];
 				if ( $triples ) { 
-					$rdfImporter = new RDFIORDFImporter();
-					$rdfImporter->showImportedTriples( $triples );
-					$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+					$rdfImporter = new RDFIORDFImporter();	
+					$this->outputHTMLForm( $requestData );
+					$wgOut->addHTML($rdfImporter->showImportedTriples( $triples ));
+					if ( $requestData->externalRdfUrl ) {
+						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+					}
 				} else if ( !$triples ) {
 					throw new RDFIOException ("No new triples to import");
 				}
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
-			} 
+			} else {  
+				$this->outputHTMLForm( $requestData );
+			}
 		} catch (MWException $e) {
 			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
-		}
-		$this->outputHTMLForm( $requestData );
+		} 
 	}
 
 	/**
