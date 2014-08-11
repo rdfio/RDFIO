@@ -54,7 +54,72 @@ class RDFIOSMWPageWriter {
 					// WOM is sending unspecific exceptions that are not really errors ...
 					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 				}
-				
+			
+	/*
+	** Below here is experimental stuff 
+	*/	
+				// Get templates
+				try {
+					$templateObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//template' );
+					foreach ( $templateObjIds as $templateObjId ) {
+						$womTemplateObj = $womWikiPage->getObject( $templateObjId );
+						$womTemplateName = $womTemplateObj->getName();
+						$womTemplateObjs[$womTemplateName] = $womTemplateObj; 
+					}
+				} catch( MWException $e ) {
+					// WOM is sending unspecific exceptions that are not really errors ...
+					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+				}
+
+			$mwPageObj = WikiPage::factory( $mwTitleObj );			
+			$mwWikiContent = $mwPageObj->getText();
+			$mwProperties = array();
+			$mwCategories= array();
+					// Find all the properties stored in the conventional way within the page	
+			preg_match_all('/\[\[(.*)::(.*)\]\]/', $mwWikiContent, $propertyMatches);
+			foreach ( $propertyMatches[1] as $index => $propertyName ) {
+				$mwProperties[$propertyName] = $propertyMatches[2][$index];
+			}
+
+					// Find all the categories, in the same way	
+			preg_match_all('/\[\[Category:(.*)\]\]/', $mwWikiContent, $categoryMatches);
+			foreach ( $categoryMatches[1] as $categoryName ) {
+				$mwCategories[] = $categoryName;
+			}
+
+
+					// Find all the templates
+			preg_match_all('/\{\{\s?(.*)\s?\|.*\}\}/', $mwWikiContent, $templateMatches);
+			foreach ( $templateMatches[1] as $templateName ) {
+				$mwTemplates[] = $templateName ;  // this will contain the template's properties later
+			}
+
+					// Extract the wikitext from each template
+			foreach ( $mwTemplates as $templatePageName ) {
+				$mwTemplatePageTitle = Title::newFromText( $templatePageName, $defaultNamespace=NS_TEMPLATE );
+				$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
+				$mwTemplateText = $mwTemplateObj->getText();
+				$templateWikiText[$templatePageName] = $mwTemplateText;
+			}
+					// Get the properties and parameter names used in the templates	
+			foreach ( $templateWikiText as $templateName => $mwTemplateText ) {
+				preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
+				foreach( $templateParameterMatches[2] as $index => $templateParameter ) {
+					$templateProperties[$templateName][$templateParameter] = $templateParameterMatches[1][$index];
+				}
+			}
+
+					// Get the parameter values used in the templates
+			foreach ( $templateMatches[0] as $index => $templateContents ) {
+				preg_match_all('/\{\{\s?.*\s?\|(.*)\|?.*\}\}/', $templateContents, $internalText);
+				$templateParameterValues = explode("|", $internalText[1][0]);
+				foreach ( $templateParameterValues as $paramPair ) {
+					$paramValueArray = explode("=", $paramPair);
+					$templateParamValuePairs[$templateMatches[1][$index]][] = array( $paramValueArray[0] => $paramValueArray[1] );
+				}
+			}
+			
+
 			}
 
 			// Add facts (properties) to the wiki text
