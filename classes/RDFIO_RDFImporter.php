@@ -43,24 +43,24 @@ class RDFIORDFImporter {
 	 */
 	public function importTurtle( $importData ) {
 	// Parse RDF/XML to triples
-	    $arc2turtleparser = ARC2::getTurtleParser($importData);
-	    $arc2turtleparser->parseData( $importData );
+		$arc2turtleparser = ARC2::getTurtleParser($importData);
+		$arc2turtleparser->parseData( $importData );
 	
-	    // Receive the data
-	    $triples = $arc2turtleparser->triples;
-	    $tripleIndex = $arc2turtleparser->getSimpleIndex();
-	    $namespaces = $arc2turtleparser->nsp;
-	    
-	    /* DEBUGGING
-	    echo "*** Triples ***";
-	    echo( print_r( $triples, true ));
-	    echo "*** Triple index ***";
-	    echo( print_r( $tripleIndex, true ));
-	    echo "*** Namespaces ***";
-	    echo( print_r( $namespaces, true ));
-	     */
-	     
-	    $this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
+		// Receive the data
+		$triples = $arc2turtleparser->triples;
+		$tripleIndex = $arc2turtleparser->getSimpleIndex();
+		$namespaces = $arc2turtleparser->nsp;
+		
+		/* DEBUGGING
+		echo "*** Triples ***";
+		echo( print_r( $triples, true ));
+		echo "*** Triple index ***";
+		echo( print_r( $tripleIndex, true ));
+		echo "*** Namespaces ***";
+		echo( print_r( $namespaces, true ));
+		 */
+		 
+		$this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
 		return $output = array( 'triples' => $triples,
 					'tripleIndex' => $tripleIndex,
 					'namespaces' => $namespaces);
@@ -84,13 +84,13 @@ class RDFIORDFImporter {
 	private function importFromArc2Data( $triples, $tripleIndex="", $namespaces="" ) {
 		global $wgOut;
 		
-        // Parse data from ARC2 triples to custom data structure holding wiki pages
-        $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
-        $wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
-        
-        // Import pages into wiki
-        $smwPageWriter = new RDFIOSMWPageWriter();
-        $smwPageWriter->import( $wikiPages );
+	    // Parse data from ARC2 triples to custom data structure holding wiki pages
+	    $arc2towikiconverter = new RDFIOARC2ToWikiConverter();
+	    $wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
+	    
+	    // Import pages into wiki
+	    $smwPageWriter = new RDFIOSMWPageWriter();
+	    $smwPageWriter->import( $wikiPages );
 	return $output = array( 'triples' => $triples );
 	}
 	
@@ -105,38 +105,38 @@ class RDFIORDFImporter {
 
 	function showImportedTriples( $importedTriples ) {
 		$output = "";	
-	        $style_css = <<<EOD
-        	    table .rdfio- th {
-        	        font-weight: bold;
-        	        padding: 2px 4px;
-        	    }
-        	    table.rdfio-table td,
-        	    table.rdfio-table th {
-        	        font-size: 11px;
-        	    }
+		    $style_css = <<<EOD
+	    	    table .rdfio- th {
+	    	        font-weight: bold;
+	    	        padding: 2px 4px;
+	    	    }
+	    	    table.rdfio-table td,
+	    	    table.rdfio-table th {
+	    	        font-size: 11px;
+	    	    }
 EOD;
 		$output .= "<style>$style_css</style>";
-	        //$wgOut->addInlineStyle($style_css);
-	        $output .= RDFIOUtils::formatSuccessMessageHTML("Success!", "Successfully imported the triples shown below!");
-	        $output .= "<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>";
-	        
-	        foreach( $importedTriples as $triple ) {
-	            $s = $triple['s'];
-	            $p = $triple['p'];
-	            $o = $triple['o'];
-	            if ( RDFIOUtils::isURI( $s )) {
-	                $s = "<a href=\"$s\">$s</a>";
-	            }
-	            if ( RDFIOUtils::isURI( $p )) {
-	                $p = "<a href=\"$p\">$p</a>";
-	            }
-	            if ( RDFIOUtils::isURI( $o )) {
-	                $o = "<a href=\"$o\">$o</a>";
-	            }
-	            $output .= "<tr><td>$s</td><td>$p</td><td>$o</td></tr>";
-	        }
-	        
-	        $output .= "</tbody></table>";
+		    //$wgOut->addInlineStyle($style_css);
+		    $output .= RDFIOUtils::formatSuccessMessageHTML("Success!", "Successfully imported the triples shown below!");
+		    $output .= "<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>";
+		    
+		    foreach( $importedTriples as $triple ) {
+		        $s = $triple['s'];
+		        $p = $triple['p'];
+		        $o = $triple['o'];
+		        if ( RDFIOUtils::isURI( $s )) {
+		            $s = "<a href=\"$s\">$s</a>";
+		        }
+		        if ( RDFIOUtils::isURI( $p )) {
+		            $p = "<a href=\"$p\">$p</a>";
+		        }
+		        if ( RDFIOUtils::isURI( $o )) {
+		            $o = "<a href=\"$o\">$o</a>";
+		        }
+		        $output .= "<tr><td>$s</td><td>$p</td><td>$o</td></tr>";
+		    }
+		    
+		    $output .= "</tbody></table>";
 		return $output;
 		}
 }

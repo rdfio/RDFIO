@@ -46,9 +46,9 @@ class RDFImport extends SpecialPage {
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
-			    throw new RDFIOException('URL field is empty!');
+				throw new RDFIOException('URL field is empty!');
 			} else if ( !RDFIOUtils::isURI( $requestData->externalRdfUrl ) ) {
-			    throw new RDFIOException('Invalid URL provided!');
+				throw new RDFIOException('Invalid URL provided!');
 			}
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
@@ -59,16 +59,16 @@ class RDFImport extends SpecialPage {
 			throw new RDFIOException('Import source is not selected!');
 		}
 
-	    switch ( $requestData->dataFormat ) {
-	        case 'rdfxml':
-	            $importInfo = $rdfImporter->importRdfXml( $rdfData );
-		    $triples = $importInfo['triples'];
-	            break;
-	        case 'turtle':
-	            $importInfo = $rdfImporter->importTurtle( $rdfData );
-		    $triples = $importInfo['triples'];
-	            break;
-	    }
+		switch ( $requestData->dataFormat ) {
+		    case 'rdfxml':
+		        $importInfo = $rdfImporter->importRdfXml( $rdfData );
+			$triples = $importInfo['triples'];
+		        break;
+		    case 'turtle':
+		        $importInfo = $rdfImporter->importTurtle( $rdfData );
+			$triples = $importInfo['triples'];
+		        break;
+		}
 	
 	return $output = array( 'triples' => $triples);
 	}
@@ -241,8 +241,8 @@ class RDFImport extends SpecialPage {
 								<td style="width: 100px;">Data format:</td>
 								<td>
 									<select id="dataformat" name="dataformat">
-    									<option value="rdfxml" selected="selected">RDF/XML</option>
-    									<option value="turtle">Turtle</option>
+										<option value="rdfxml" selected="selected">RDF/XML</option>
+										<option value="turtle">Turtle</option>
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
