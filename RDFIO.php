@@ -27,7 +27,7 @@ $wgExtensionCredits['other'][] = array(
  ****************************/
 $dir = dirname( __FILE__ ) . '/';
 $wgExtensionMessagesFiles['RDFIO'] = $dir . 'RDFIO.i18n.php';
-$wgExtensionAliasesFiles['RDFIO'] = $dir . 'RDFIO.alias.php';
+$wgExtensionMessagesFiles['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 
 /****************************
  * ARC2 RDF library for PHP *
@@ -58,7 +58,7 @@ $smwgARC2StoreConfig = array(
 $smwgDefaultStore = 'SMWARC2Store'; 
 
 require_once( "$IP/extensions/RDFIO/stores/SMW_ARC2Store.php" );
-require_once( "$IP/extensions/RDFIO/specials/SpecialARC2Admin.php" );
+require_once( "$IP/extensions/RDFIO/specials/SpecialRDFIOAdmin.php" );
 
 /**************************
  *    RDFIO Components    *

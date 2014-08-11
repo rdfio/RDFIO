@@ -58,5 +58,23 @@ class RDFIOUtils {
     static function arrayEmpty( $array ) {
         return ( count( $array ) < 1 );
     }
-    
+ 
+    static function currentUserHasWriteAccess() {
+		global $wgUser;
+		$userRights = $wgUser->getRights();
+		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
+	}
+
+    static function showErrorMessage( $title, $message ) {
+		global $wgOut;
+		$errorHtml = self::formatErrorHTML( $title, $message );
+		$wgOut->addHTML( $errorHtml );
+	}	
+	
+    static function showSuccessMessage( $title, $message ) {
+	    global $wgOut;
+	    $successMsgHtml = self::formatSuccessMessageHTML( $title, $message );
+	    $wgOut->addHTML( $successMsgHtml );
+	}
+
 }

@@ -9,6 +9,7 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
+		global $wgOut;			
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -16,14 +17,26 @@ class RDFImport extends SpecialPage {
 			# The main code
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
-				$this->importData( $requestData );
+				$importInfo = $this->importData( $requestData );
+				$triples = $importInfo['triples'];
+				if ( $triples ) { 
+					$rdfImporter = new RDFIORDFImporter();	
+					$this->outputHTMLForm( $requestData );
+					$wgOut->addHTML($rdfImporter->showImportedTriples( $triples ));
+					if ( $requestData->externalRdfUrl ) {
+						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+					}
+				} else if ( !$triples ) {
+					throw new RDFIOException ("No new triples to import");
+				}
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
-			} 
+			} else {  
+				$this->outputHTMLForm( $requestData );
+			}
 		} catch (MWException $e) {
-			$this->showErrorMessage('Error!', $e->getMessage());
-		}
-		$this->outputHTMLForm( $requestData );
+			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
+		} 
 	}
 
 	/**
@@ -48,15 +61,16 @@ class RDFImport extends SpecialPage {
 
 	    switch ( $requestData->dataFormat ) {
 	        case 'rdfxml':
-	            $rdfImporter->importRdfXml( $rdfData );
+	            $importInfo = $rdfImporter->importRdfXml( $rdfData );
+		    $triples = $importInfo['triples'];
 	            break;
 	        case 'turtle':
-	            $rdfImporter->importTurtle( $rdfData );
+	            $importInfo = $rdfImporter->importTurtle( $rdfData );
+		    $triples = $importInfo['triples'];
 	            break;
 	    }
-
-		global $wgOut;
-		$wgOut->addHTML('Tried to import the data ...');
+	
+	return $output = array( 'triples' => $triples);
 	}
 
 	/**
@@ -74,21 +88,13 @@ class RDFImport extends SpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = $this->userHasWriteAccess();
+		$requestData->hasWriteAccess = RDFIOUtils::currentUserHasWriteAccess();
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;
 	}
 
-	/**
-	 * Check whether the current user has rights to edit or create pages
-	 */
-	protected function userHasWriteAccess() {
-		global $wgUser;
-		$userRights = $wgUser->getRights();
-		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
-	}
-
+	
 	/**
 	 * Output the HTML for the form, to the user
 	 */
@@ -184,7 +190,9 @@ class RDFImport extends SpecialPage {
 		// Show (and pre-select) the URL field, as default
 		if ( !$urlChecked && !$textfieldChecked ) {
 			$urlChecked = true;
-			$textfieldHiddenContent = 'style="display: none"';
+		}
+		if ( !$textfieldChecked ) {
+			$textfieldHiddenContent= 'style="display: none"';
 		}
 
 		$urlCheckedContent = $urlChecked ? 'checked="true"' : '';
@@ -278,11 +286,6 @@ function pasteExampleTurtleData(textFieldId) {
 		return $jsCode;
 	}
 
-	function showErrorMessage( $title, $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorHtml );
-	}
 }
 
 class RDFIORequestData {

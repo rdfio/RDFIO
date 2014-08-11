@@ -11,28 +11,32 @@ class SPARQLImport extends SpecialPage {
 	 */
 	function execute( $par ) {
 		global $wgOut, $wgRequest;
+			
 		try {
 			$this->setHeaders();
 			$submitButtonText = "Import";
 			
 			// For now, print the result XML from the SPARQL query
 			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-		        if ( $this->currentUserHasWriteAccess() ) {
+		        if ( RDFIOUtils::currentUserHasWriteAccess() ) {
 		            $offset = $wgRequest->getVal( 'offset', 0 );
 		            $limit = $this->triplesPerBatch;
 		            $submitButtonText = "Import next $limit triples...";
 		            $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-		            $this->import( $limit, $offset );
+		            $importInfo = $this->import( $limit, $offset ); 
+			    $externalSparqlUrl = $importInfo['externalSparqlUrl'];
+			    $dataSourceImporter = new RDFIORDFImporter();
+			    $dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
 		        } else {
 		            $errTitle = "No write access";
 		            $errMsg = "The current logged in user does not have write access";
-		            $this->showErrorMessage($errTitle, $errMsg);
+		            RDFIOUtils::showErrorMessage($errTitle, $errMsg);
 		        }
 			} else {
 			    $wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 			}
 		} catch (RDFIOException $e) {
-			$this->showErrorMessage('Error!', $e->getMessage());
+			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
 		}
 		
 	}
@@ -47,6 +51,7 @@ class SPARQLImport extends SpecialPage {
 	
 	protected function import( $limit = 10, $offset = 0 ) {
 	    global $wgOut, $wgRequest;
+		//$rdfioUtils = new RDFIOUtils();
 	    $externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
 	    if ( $externalSparqlUrl === '' ) {
 	        throw new RDFIOException('Empty SPARQL Url provided!');
@@ -94,46 +99,14 @@ class SPARQLImport extends SpecialPage {
 	        }
 	        $rdfImporter = new RDFIORDFImporter();
 	        $rdfImporter->importTriples($importTriples);
-	         
-	        // Provide some user feedback if we were successful so far ...
-	        
-	        $style_css = <<<EOD
-        	    table .rdfio- th {
-        	        font-weight: bold;
-        	        padding: 2px 4px;
-        	    }
-        	    table.rdfio-table td,
-        	    table.rdfio-table th {
-        	        font-size: 11px;
-        	    }
-EOD;
-	        $wgOut->addInlineStyle($style_css);
-	        $this->showSuccessMessage("Success!", "Successfully imported the triples shown below!");
-	        $wgOut->addHTML("<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>");
-	        
-	        foreach( $importTriples as $triple ) {
-	            $s = $triple['s'];
-	            $p = $triple['p'];
-	            $o = $triple['o'];
-	            if ( RDFIOUtils::isURI( $s )) {
-	                $s = "<a href=\"$s\">$s</a>";
-	            }
-	            if ( RDFIOUtils::isURI( $p )) {
-	                $p = "<a href=\"$p\">$p</a>";
-	            }
-	            if ( RDFIOUtils::isURI( $o )) {
-	                $o = "<a href=\"$o\">$o</a>";
-	            }
-	            $wgOut->addHTML("<tr><td>$s</td><td>$p</td><td>$o</td></tr>");
-	        }
-	        
-	        $wgOut->addHTML("</tbody></table>");
+	        $wgOut->addHTML($rdfImporter->showImportedTriples($importTriples)); 
 	    } else {
-	        $wgOut->addHTML(RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?"));
+	        RDFIOUtils::formatErrorHTML("Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?");
 	    }
+	return $output = array( 'externalSparqlUrl' => $externalSparqlUrl );
     }
-
 	
+
 	protected function getHTMLForm( $buttonText ) {
 		global $wgArticlePath, $wgRequest;
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
@@ -151,27 +124,6 @@ EOD;
 		</form>
 EOD;
 		return $htmlForm;
-	}
-
-	/**
-	 * Check whether the current user has rights to edit or create pages
-	 */
-	protected function currentUserHasWriteAccess() {
-		global $wgUser;
-		$userRights = $wgUser->getRights();
-		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
-	}
-
-	function showErrorMessage( $title, $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorHtml );
-	}	
-	
-	function showSuccessMessage( $title, $message ) {
-	    global $wgOut;
-	    $sucessMsgHtml = RDFIOUtils::formatSuccessMessageHTML( $title, $message );
-	    $wgOut->addHTML( $sucessMsgHtml );
 	}
 
 }
