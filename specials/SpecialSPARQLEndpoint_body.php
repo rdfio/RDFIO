@@ -24,7 +24,7 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * The main function
 	 */
-	function execute() {
+	function execute( $par ) {
 	    global $wgOut;
 
 	    $this->setHeaders();
@@ -778,7 +778,7 @@ Output Equivalent
 	        </table>
 			</div>
 
-	        <input type="submit" value="Submit">' . Html::Hidden( 'token', $wgUser->editToken() ) . '
+	        <input type="submit" value="Submit">' . Html::Hidden( 'token', $wgUser->getEditToken() ) . '
 	        </form>';
 	    return $htmlForm;
 	}

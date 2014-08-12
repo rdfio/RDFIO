@@ -11,7 +11,7 @@ EOT;
 $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'SPARQLEndpoint',
-	'author' => array('Samuel Lampa' 'Ali King'),
+	'author' => array('Samuel Lampa', 'Ali King'),
 	'url' => 'http://www.mediawiki.org/wiki/Extension:SMWRDFConnector',
 	'descriptionmsg' => 'rdfio-sparqlendpoint-desc',
 	'version' => '0.0.0',
