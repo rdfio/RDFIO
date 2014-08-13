@@ -58,18 +58,6 @@ class RDFIOSMWPageWriter {
 	/*
 	** Below here is experimental stuff 
 	*/	
-				// Get templates
-				try {
-					$templateObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//template' );
-					foreach ( $templateObjIds as $templateObjId ) {
-						$womTemplateObj = $womWikiPage->getObject( $templateObjId );
-						$womTemplateName = $womTemplateObj->getName();
-						$womTemplateObjs[$womTemplateName] = $womTemplateObj; 
-					}
-				} catch( MWException $e ) {
-					// WOM is sending unspecific exceptions that are not really errors ...
-					//$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
-				}
 
 			$mwPageObj = WikiPage::factory( $mwTitleObj );			
 			$mwWikiContent = $mwPageObj->getText();
@@ -83,8 +71,8 @@ class RDFIOSMWPageWriter {
 
 					// Find all the categories, in the same way	
 			preg_match_all('/\[\[Category:(.*)\]\]/', $mwWikiContent, $categoryMatches);
-			foreach ( $categoryMatches[1] as $categoryName ) {
-				$mwCategories[] = $categoryName;
+			foreach ( $categoryMatches[1] as $index => $categoryName ) {
+				$mwCategories[$categoryName] = $categoryMatches[0][$index];
 			}
 
 
@@ -172,12 +160,18 @@ class RDFIOSMWPageWriter {
 
 				$categoryTitle = Title::newFromText( $category );
 				$categoryTitleWikified = $categoryTitle->getText();
-				
+			/* Old WOM method - temporariy disabled
+	
 				if ( !array_key_exists( $categoryTitleWikified, $womCategoryObjs ) ) { // If property already exists ...
 					$newWomCategoryObj = new WOMCategoryModel( $categoryTitleWikified );
 					$newCategoryAsWikiText = $newWomCategoryObj->getWikiText();
 					$newCategoriesAsWikiText .= $newCategoryAsWikiText . "\n";
-				} 
+				}  */
+
+			// New non-WOM version!
+				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
+					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
+				}
 			}
 			$wikiContent .= $newCategoriesAsWikiText;
 				
