@@ -10,6 +10,7 @@ class RDFImport extends SpecialPage {
 	 */
 	function execute( $par ) {
 		global $wgOut;			
+
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -183,7 +184,8 @@ class RDFImport extends SpecialPage {
 	 * @param string $extraFormContent
 	 * @return string $htmlFormContent
 	 */
-	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
+	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {	
+		$textfieldHiddenContent = "";
 		$urlChecked = ( $requestData->importSource === 'url' );
 		$textfieldChecked = ( $requestData->importSource === 'textfield' );
 		
