@@ -91,42 +91,52 @@ class RDFIOSMWPageWriter {
 
 				$templatesWithProperty = array();
 
-				foreach( $mwTemplates as $templateName => $array ) {
-					$isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
-					if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
-						$templatesWithProperty[] = $templateName;
+					// Find whether the property is in any template(s) on the page
+				if ( !empty( $mwTemplates ) ) {
+					foreach( $mwTemplates as $templateName => $array ) {
+						$isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
+						if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
+							$templatesWithProperty[] = $templateName;
+						}
 					}
 				}
 				$isInPage = array_key_exists( $predTitleWikified, $mwProperties );
-				
+			
+					// Set new value - this will be used in different ways depending on whether property is inside or outside template	
+				if ( $isEquivURI ) {
+					// FIXME: Should be done for all "URL type" facts, not just
+					//        Equivalent URI:s
+					// Since this is a URL, it should not be made into a WikiTitle
+					$newSMWValue = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
+				} else {
+					// Create an updated property
+					$objTitle = Title::newFromText( $obj );					    	
+					$newSMWValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
+				}
+				$newValueText = $newSMWValue->getWikiValue();	
+
+					// Handle updating differently depending on whether property exists in/outside template
+
 				if ( $hasLocalUrl && $isEquivURI ) { 
 					// Don't update Equivalent URI if the URL is a local URL (thus containing
 					// "Special:URIResolver").
-				} else if ( !$isInPage ) { // If property isn't in the page (outside of templates) ...
-					$newPropertyAsWikiText = '[[' . $predTitleWikified . '::' . $obj . ']]';
-					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
-				} else { 
-				
+				} else if ( $isInTemplate ) {
+					// Code to update/add property to template call(s)
+				} else if ( $isInPage  ) {
+					// replace value with new one if different
+					
 					$oldPropertyText = $mwProperties[$predTitleWikified]['wikitext'];	
 					// Store the old wiki text for the fact, in order to replace later
 					
-					if ( $isEquivURI ) {
-					    // FIXME: Should be done for all "URL type" facts, not just
-					    //        Equivalent URI:s
-					    // Since this is a URL, it should not be made into a WikiTitle
-					    $newSMWValue = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
-					} else {
-					    // Create an updated property
-					    $objTitle = Title::newFromText( $obj );					    	
-					    $newSMWValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
-					}
-					$newValueText = $newSMWValue->getWikiValue();	
 					$newPropertyText = '[[' . $predTitleWikified . '::' . $newValueText . ']]';
 						
 					// Replace the existing property with new value
 					if ( $newPropertyText != $oldPropertyText ) {
 						$newWikiContent = str_replace( $oldPropertyText, $newPropertyText, $newWikiContent );
 					}
+				} else if ( !$isInPage ) { // If property isn't in the page (outside of templates) ...
+					$newPropertyAsWikiText = '[[' . $predTitleWikified . '::' . $obj . ']]';
+					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 				}
 			}			
 			$newWikiContent .= $newPropertiesAsWikiText;
