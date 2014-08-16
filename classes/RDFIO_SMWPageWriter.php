@@ -122,6 +122,17 @@ class RDFIOSMWPageWriter {
 					// "Special:URIResolver").
 				} else if ( $isInTemplate ) {
 					// Code to update/add property to template call(s)
+					foreach( $templatesWithProperty as $index => $templateName ) {
+						$oldTemplateCall = $mwTemplates[$templateName]['templateCallText'];
+						$parameter = $mwTemplates[$templateName]['properties'][$predTitleWikified];
+						$oldValue = $mwTemplates[$templateName]['parameters'][$parameter]['value'];
+						if ( $newValueText != $oldValue ) {
+							$oldParamValueText = $parameter . '=' . $oldValue;
+							$newParamValueText = $parameter . '=' . $newValueText;
+							$newTemplateCall = str_replace( $oldParamValueText, $newParamValueText, $oldTemplateCall );
+							$newWikiContent = str_replace( $oldTemplateCall, $newTemplateCall, $newWikiContent );	
+						}
+					} 
 				} else if ( $isInPage  ) {
 					// replace value with new one if different
 					
