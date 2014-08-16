@@ -57,7 +57,9 @@ class RDFIOSMWPageWriter {
 						// Get the properties and parameter names used in the templates	
 					preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
 					foreach( $templateParameterMatches[2] as $index => $templateParameter ) {
+							// Store parameter-property pairings both ways round for easy lookup
 						$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $templateParameterMatches[1][$index];
+						$mwTemplates[$templateName]['properties'][$templateParameterMatches[1][$index]] = $templateParameterMatches[2][$index];
 					}
 				
 
@@ -86,11 +88,21 @@ class RDFIOSMWPageWriter {
 				
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
+
+				$templatesWithProperty = array();
+
+				foreach( $mwTemplates as $templateName => $array ) {
+					$isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
+					if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
+						$templatesWithProperty[] = $templateName;
+					}
+				}
+				$isInPage = array_key_exists( $predTitleWikified, $mwProperties );
 				
 				if ( $hasLocalUrl && $isEquivURI ) { 
 					// Don't update Equivalent URI if the URL is a local URL (thus containing
 					// "Special:URIResolver").
-				} else if ( !array_key_exists( $predTitleWikified, $mwProperties ) ) { // If property already exists ...
+				} else if ( !$isInPage ) { // If property isn't in the page (outside of templates) ...
 					$newPropertyAsWikiText = '[[' . $predTitleWikified . '::' . $obj . ']]';
 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 				} else { 
