@@ -125,14 +125,31 @@ class RDFIOSMWPageWriter {
 					foreach( $templatesWithProperty as $index => $templateName ) {
 						$oldTemplateCall = $mwTemplates[$templateName]['templateCallText'];
 						$parameter = $mwTemplates[$templateName]['properties'][$predTitleWikified];
-						$oldValue = $mwTemplates[$templateName]['parameters'][$parameter]['value'];
-						if ( $newValueText != $oldValue ) {
-							$oldParamValueText = $parameter . '=' . $oldValue;
-							$newParamValueText = $parameter . '=' . $newValueText;
-							$newTemplateCall = str_replace( $oldParamValueText, $newParamValueText, $oldTemplateCall );
+						$oldValue = null;
+						if ( array_key_exists( 'value', $mwTemplates[$templateName]['parameters'][$parameter] ) ) {
+							$oldValue = $mwTemplates[$templateName]['parameters'][$parameter]['value'];
+						}	
+						$newParamValueText = $parameter . '=' . $newValueText;
+						$newTemplateCall = $oldTemplateCall;
+
+						if ( !is_null($oldValue) ) {
+							if ( $newValueText != $oldValue ) {
+								$oldParamValueText = $parameter . '=' . $oldValue;
+								$newTemplateCall = str_replace( $oldParamValueText, $newParamValueText, $oldTemplateCall );
+							} 
+						} else {
+								preg_match( '/(\{\{\s?.*\s?\|.*)(\}\})/', $oldTemplateCall, $templateCallMatch );
+								if (!empty( $templateCallMatch ) ) {
+									$newTemplateCall = $templateCallMatch[1] . '|' .  $newParamValueText . $templateCallMatch[2];
+								}
+								// insert property at end of template call
+						}
+						
+					}
+						if ( $newTemplateCall != $oldTemplateCall ) {	
 							$newWikiContent = str_replace( $oldTemplateCall, $newTemplateCall, $newWikiContent );	
 						}
-					} 
+					 
 				} else if ( $isInPage  ) {
 					// replace value with new one if different
 					
