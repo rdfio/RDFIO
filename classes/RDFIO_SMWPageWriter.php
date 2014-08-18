@@ -22,60 +22,79 @@ class RDFIOSMWPageWriter {
 			$titleExists = $mwTitleObj->exists();
 			if ( $titleIsObj && $titleExists ) {
 
-			$mwPageObj = WikiPage::factory( $mwTitleObj );			
-			$oldWikiContent = $mwPageObj->getText();
-			$mwProperties = array();
-			$mwCategories= array();
-					// Find all the properties stored in the conventional way within the page	
-			preg_match_all('/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $propertyMatches);
-			foreach ( $propertyMatches[1] as $index => $propertyName ) {
-				$mwProperties[$propertyName] = array( 'value' => $propertyMatches[2][$index], 'wikitext' => $propertyMatches[0][$index] );
-			}
+				$mwPageObj = WikiPage::factory( $mwTitleObj );			
+				$oldWikiContent = $mwPageObj->getText();
+				$mwProperties = array();
+				$mwCategories= array();
+						// Find all the properties stored in the conventional way within the page	
+				preg_match_all('/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $propertyMatches);
+				foreach ( $propertyMatches[1] as $index => $propertyName ) {
+					$mwProperties[$propertyName] = array( 'value' => $propertyMatches[2][$index], 'wikitext' => $propertyMatches[0][$index] );
+				}
 
-					// Find all the categories, in the same way	
-			preg_match_all('/\[\[Category:(.*)\]\]/', $oldWikiContent, $categoryMatches);
-			foreach ( $categoryMatches[1] as $index => $categoryName ) {
-				$mwCategories[$categoryName] = array( 'wikitext' => $categoryMatches[0][$index] );
-			}
+						// Find all the categories, in the same way	
+				preg_match_all('/\[\[Category:(.*)\]\]/', $oldWikiContent, $categoryMatches);
+				foreach ( $categoryMatches[1] as $index => $categoryName ) {
+					$mwCategories[$categoryName] = array( 'wikitext' => $categoryMatches[0][$index] );
+				}
 
 
-					// Find all the templates
-			preg_match_all('/\{\{\s?(.*)\s?\|.*\}\}/', $oldWikiContent, $templateMatches);
-			foreach ( $templateMatches[1] as $index => $templateName ) {
-				$mwTemplates[$templateName] = array();  // this will contain the template's properties later
-				$mwTemplates[$templateName]['templateCallText'] = $templateMatches[0][$index];
-			}
+						// Find all the templates
+				preg_match_all('/\{\{\s?(.*)\s?\|.*\}\}/', $oldWikiContent, $templateMatches);
+				foreach ( $templateMatches[1] as $index => $templateName ) {
+					$mwTemplates[$templateName] = array();  // this will contain the template's properties later
+					$mwTemplates[$templateName]['templateCallText'] = $templateMatches[0][$index];
+				}
 
-			if ( !empty($mwTemplates) ) {
-						// Extract the wikitext from each template
-				foreach ( $mwTemplates as $templatePageName => $array ) {
-					$mwTemplatePageTitle = Title::newFromText( $templatePageName, $defaultNamespace=NS_TEMPLATE );
-					$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
-					$mwTemplateText = $mwTemplateObj->getText();
-					$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
-				
-						// Get the properties and parameter names used in the templates	
-					preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
-					foreach( $templateParameterMatches[2] as $index => $templateParameter ) {
-							// Store parameter-property pairings both ways round for easy lookup
-						$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $templateParameterMatches[1][$index];
-						$mwTemplates[$templateName]['properties'][$templateParameterMatches[1][$index]] = $templateParameterMatches[2][$index];
-					}
-				
+				if ( !empty($mwTemplates) ) {
+							// Extract the wikitext from each template
+					foreach ( $mwTemplates as $templatePageName => $array ) {
+						$mwTemplatePageTitle = Title::newFromText( $templatePageName, $defaultNamespace=NS_TEMPLATE );
+						$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
+						$mwTemplateText = $mwTemplateObj->getText();
+						$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
+					
+							// Get the properties and parameter names used in the templates	
+						preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
+						foreach( $templateParameterMatches[2] as $index => $templateParameter ) {
+								// Store parameter-property pairings both ways round for easy lookup
+							$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $templateParameterMatches[1][$index];
+							$mwTemplates[$templateName]['properties'][$templateParameterMatches[1][$index]] = $templateParameterMatches[2][$index];
+						}
+					
 
-						// Get the parameter values used in the templates
-					preg_match_all('/\{\{\s?.*\s?\|(.*)\|?.*\}\}/', $mwTemplates[$templateName]['templateCallText'], $internalText);
-					$templateParameterValues = explode("|", $internalText[1][0]);
-					foreach ( $templateParameterValues as $paramPair ) {
-						$paramValueArray = explode("=", $paramPair);
-						$mwTemplates[$templateName]['parameters'][$paramValueArray[0]]['value'] = $paramValueArray[1];
+							// Get the parameter values used in the templates
+						preg_match_all('/\{\{\s?.*\s?\|(.*)\|?.*\}\}/', $mwTemplates[$templateName]['templateCallText'], $internalText);
+						$templateParameterValues = explode("|", $internalText[1][0]);
+						foreach ( $templateParameterValues as $paramPair ) {
+							$paramValueArray = explode("=", $paramPair);
+							$mwTemplates[$templateName]['parameters'][$paramValueArray[0]]['value'] = $paramValueArray[1];
+						}
 					}
 				}
+				
 			}
-			
 
-			}
 			$newWikiContent = $oldWikiContent; // using new variable to separate extraction from editing
+			
+			
+			// Add categories to the wiki text 
+			// The new wikitext is actually added to the page at the end.
+			// This allows us to add a template call associated with the category and then populate it with parameters in the facts section
+			$newCategoriesAsWikiText = "\n";
+			foreach( $wikiPage->getCategories() as $category ) {
+
+				$categoryTitle = Title::newFromText( $category );
+				$categoryTitleWikified = $categoryTitle->getText();
+				
+				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
+					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
+				}
+				// get Category page, if exists
+				// get Has template property, if exists
+				// Add template call to page wikitext - {{templatename}}
+				// This will then be populated with included paramters in the next section
+			}
 
 			// Add facts (properties) to the wiki text
 			$newPropertiesAsWikiText = "\n";
@@ -169,17 +188,6 @@ class RDFIOSMWPageWriter {
 			}			
 			$newWikiContent .= $newPropertiesAsWikiText;
 			
-			// Add categories to the wiki text
-			$newCategoriesAsWikiText = "\n";
-			foreach( $wikiPage->getCategories() as $category ) {
-
-				$categoryTitle = Title::newFromText( $category );
-				$categoryTitleWikified = $categoryTitle->getText();
-				
-				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
-					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
-				}
-			}
 			$newWikiContent .= $newCategoriesAsWikiText;
 				
 			// Write to wiki
