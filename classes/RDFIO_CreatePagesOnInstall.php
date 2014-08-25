@@ -8,7 +8,7 @@ class RDFIOCreatePagesOnInstall {
 	 * Creates pages from an array on install if thishas not been done already
 	 */
 
-	public function create() {
+	public static function create() {
 
 		$wikiPageData = array(
 							'Category:RDFIO Data Source' => array( 'title' => 'RDFIO Data Source',

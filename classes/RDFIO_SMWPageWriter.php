@@ -36,22 +36,31 @@ class RDFIOSMWPageWriter {
 
 						// Find all the properties stored in the conventional way within the page	
 				preg_match_all('/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $propertyMatches);
-				foreach ( $propertyMatches[1] as $index => $propertyName ) {
-					$mwProperties[$propertyName] = array( 'value' => $propertyMatches[2][$index], 'wikitext' => $propertyMatches[0][$index] );
+				$propertyWikitextInPage = $propertyMatches[0];
+				$propertyNameInPage = $propertyMatches[1];
+				$propertyValueInPage = $propertyMatches[2];
+				foreach ( $propertyNameInPage as $index => $propertyName ) {
+					$mwProperties[$propertyName] = array( 'value' => $propertyValueInPage[$index], 'wikitext' => $propertyWikitextInPage[$index] );
 				}
 
 						// Find all the categories, in the same way	
 				preg_match_all('/\[\[Category:(.*)\]\]/', $oldWikiContent, $categoryMatches);
-				foreach ( $categoryMatches[1] as $index => $categoryName ) {
-					$mwCategories[$categoryName] = array( 'wikitext' => $categoryMatches[0][$index] );
+				$categoryWikitextInPage = $categoryMatches[0];
+				$categoryNameInPage = $categoryMatches[1];
+				foreach ( $categoryNameInPage as $index => $categoryName ) {
+					$mwCategories[$categoryName] = array( 'wikitext' => $categoryWikitextInPage[$index] );
 				}
 
 
 						// Find all the templates
-				preg_match_all('/\{\{\s?([a-zA-Z0-9]+)\s?(\|.*\}\}|\}\})/U', $oldWikiContent, $templateMatches);
-				foreach ( $templateMatches[1] as $index => $templateName ) {
-					$mwTemplates[$templateName] = array();  // this will contain the template's properties later
-					$mwTemplates[$templateName]['templateCallText'] = $templateMatches[0][$index];
+				preg_match_all('/\{\{\s?([a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $templateMatches);
+				$templateCallInPage = $templateMatches[0];
+				$templateNameInPage = $templateMatches[1];
+				$templateParamsInPage = $templateMatches[2];
+				foreach ( $templateNameInPage as $index => $templateName ) {
+					
+					$mwTemplates[$templateName]['templateCallText'] = $templateCallInPage[$index];
+					$mwTemplates[$templateName]['templateParamsValues'] = $templateParamsInPage[$index];
 				}
 
 				if ( !empty($isBlank) ) {
@@ -72,19 +81,24 @@ class RDFIOSMWPageWriter {
 					
 							// Get the properties and parameter names used in the templates	
 						preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
-						foreach( $templateParameterMatches[2] as $index => $templateParameter ) {
+						$propertyNameInTemplate = $templateParameterMatches[1];
+						$parameterNameInTemplate = $templateParameterMatches[2];
+						foreach( $parameterNameInTemplate as $index => $templateParameter ) {
 								// Store parameter-property pairings both ways round for easy lookup
-							$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $templateParameterMatches[1][$index];
-							$mwTemplates[$templateName]['properties'][$templateParameterMatches[1][$index]] = $templateParameterMatches[2][$index];
+							$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $propertyNameInTemplate[$index];
+							$mwTemplates[$templateName]['properties'][$propertyNameInTemplate[$index]] = $parameterNameInTemplate[$index];
 						}
 					
 
 							// Get the parameter values used in the templates
-						preg_match('/\{\{\s?[a-zA-Z-0-9]*\s?\|(.*)\}\}/', $mwTemplates[$templateName]['templateCallText'], $internalText);
-						$templateParameterValues = explode("|", $internalText[1]);
-						foreach ( $templateParameterValues as $paramPair ) {
-							$paramValueArray = explode("=", $paramPair);
-							$mwTemplates[$templateName]['parameters'][$paramValueArray[0]]['value'] = $paramValueArray[1];
+						if (!is_null($mwTemplates[$templateName]['templateParamsValues'])) {	
+							$templateParameterValues = explode("|", $mwTemplates[$templateName]['templateParamsValues']);
+							foreach ( $templateParameterValues as $paramPair ) {
+								$paramValueArray = explode("=", $paramPair);
+								$paramName = $paramValueArray[0];
+								$paramValue = $paramValueArray[1];
+								$mwTemplates[$templateName]['parameters'][$paramName]['value'] = $paramValue;
+							}
 						}
 					}
 				}
