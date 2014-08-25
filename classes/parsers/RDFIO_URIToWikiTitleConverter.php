@@ -42,8 +42,8 @@ class RDFIOURIToTitleConverter {
 		// You'll find them defined further below in this file.
 		$uriToWikiTitleConversionStrategies = array(
 			'getExistingTitleForURI',
-			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
 			'shortenURINamespaceToAliasInSourceRDF',
+			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
 			'extractLocalPartFromURI'
 		);
 
