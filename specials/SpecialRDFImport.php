@@ -14,7 +14,7 @@ $wgExtensionCredits['specialpage'][] = array(
 	'author' => array('Samuel Lampa', 'Ali King'),
 	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-rdfimport-desc',
-	'version' => '0.0.0',
+	'version' => '0.0.0', 
 );
 
 $dir = dirname( __FILE__ ) . '/';

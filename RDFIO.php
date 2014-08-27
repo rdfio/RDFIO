@@ -9,7 +9,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'Not an entry point.' );
 }
 
-define( 'RDFIO_VERSION', '1.9.5 beta' ); // TODO: UPdate
+define( 'RDFIO_VERSION', '1.9.6 beta' ); // TODO: UPdate
 
 global $wgExtensionCredits;
 
@@ -76,6 +76,7 @@ $wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php';
 $wgAutoloadClasses['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
 $wgAutoloadClasses['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
+$wgAutoloadClasses['RDFIOCreatePages'] = $rdfioDir . '/classes/RDFIO_CreatePagesOnInstall.php';
 
 # Parsers
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
@@ -93,3 +94,14 @@ $wgAutoloadClasses['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Exception.php
 
 include_once $rdfioDir . '/RDFIO.hooks.php';
 $wgHooks['UnitTestsList'][] = 'RDFIOHooks::onUnitTestsList';
+
+/**************************
+ *	Create metadata pages *
+ *************************/
+
+$wgExtensionFunctions[] = 'efRDFIOSetup';
+
+function efRDFIOSetup() {
+// run checks & page setup
+//	RDFIOCreatePagesOnInstall::create();
+}

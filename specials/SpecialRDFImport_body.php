@@ -22,7 +22,7 @@ class RDFImport extends SpecialPage {
 				$triples = $importInfo['triples'];
 				if ( $triples ) { 
 					$rdfImporter = new RDFIORDFImporter();	
-					$this->outputHTMLForm( $requestData );
+					$wgOut->addHTML($this->getHTMLForm( $requestData ));
 					$wgOut->addHTML($rdfImporter->showImportedTriples( $triples ));
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
@@ -33,7 +33,7 @@ class RDFImport extends SpecialPage {
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
 			} else {  
-				$this->outputHTMLForm( $requestData );
+				$wgOut->addHTML($this->getHTMLForm( $requestData ));
 			}
 		} catch (MWException $e) {
 			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
@@ -99,10 +99,11 @@ class RDFImport extends SpecialPage {
 	/**
 	 * Output the HTML for the form, to the user
 	 */
-	function outputHTMLForm( $requestData ) {
-		global $wgOut;
-		$wgOut->addScript( $this->getJsCode() );
-		$wgOut->addHTML( $this->getHTMLFormContent( $requestData ) );
+	function getHTMLForm( $requestData ) {
+		$formText = "";
+		$formText .= $this->getJsCode();
+		$formText .= $this->getHTMLFormContent( $requestData );
+		return $formText;
 	}
 
 	/**
