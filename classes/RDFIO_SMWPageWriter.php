@@ -92,9 +92,9 @@ class RDFIOSMWPageWriter {
 
 							// Get the parameter values used in the templates
 						if (!is_null($mwTemplates[$templateName]['templateParamsValues'])) {	
-							$templateParameterValues = explode("|", $mwTemplates[$templateName]['templateParamsValues']);
+							$templateParameterValues = explode('|', $mwTemplates[$templateName]['templateParamsValues']);
 							foreach ( $templateParameterValues as $paramPair ) {
-								$paramValueArray = explode("=", $paramPair);
+								$paramValueArray = explode('=', $paramPair);
 								$paramName = $paramValueArray[0];
 								$paramValue = $paramValueArray[1];
 								$mwTemplates[$templateName]['parameters'][$paramName]['value'] = $paramValue;
