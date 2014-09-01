@@ -89,9 +89,9 @@ class RDFIOSMWPageWriter {
 							$mwTemplates[$templateName]['properties'][$propertyNameInTemplate[$index]] = $parameterNameInTemplate[$index];
 						}
 					
-
+						$hasTemplateParams = array_key_exists( 'templateParamsValues', $mwTemplates[$templateName] );
 							// Get the parameter values used in the templates
-						if (!is_null($mwTemplates[$templateName]['templateParamsValues'])) {	
+						if ( $hasTemplateParams ) {	
 							$templateParameterValues = explode('|', $mwTemplates[$templateName]['templateParamsValues']);
 							foreach ( $templateParameterValues as $paramPair ) {
 								$paramValueArray = explode('=', $paramPair);
@@ -193,33 +193,38 @@ class RDFIOSMWPageWriter {
 						$oldTemplateCall = $updatedTemplateCalls[$templateName];  // use temp value as may be updated more than once
 						$parameter = $mwTemplates[$templateName]['properties'][$predTitleWikified];
 						$oldValue = null;
-						if ( array_key_exists( 'value', $mwTemplates[$templateName]['parameters'][$parameter] ) ) {
+						$hasOldValue = array_key_exists( 'value', $mwTemplates[$templateName]['parameters'][$parameter] );
+						if ( $hasOldValue ) {
 							$oldValue = $mwTemplates[$templateName]['parameters'][$parameter]['value'];
 						}	
 						$newParamValueText = $parameter . '=' . $newValueText;
 						$newTemplateCall = $oldTemplateCall;
-
-						if ( !is_null($oldValue) ) {
+							
+						if ( $hasOldValue ) {
+								// if the parameter already had a value and there's a new value, replace this value in the template call
 							if ( $newValueText != $oldValue ) {
 								$oldParamValueText = $parameter . '=' . $oldValue;
 								$newTemplateCall = str_replace( $oldParamValueText, $newParamValueText, $oldTemplateCall );
 							} 
 						} else {
+								// if the parameter wasn't previously populated, add it to the parameter list in the template call
 								preg_match( '/(\{\{\s?.*\s?\|?.?)(\}\})/', $oldTemplateCall, $templateCallMatch );
 								if (!empty( $templateCallMatch ) ) {
-									$newTemplateCall = $templateCallMatch[1] . '|' .  $newParamValueText . $templateCallMatch[2];
+									$templateCallBeginning = $templateCallMatch[1];
+									$templateCallEnd = $templateCallMatch[2];
+									$newTemplateCall = $templateCallBeginning . '|' .  $newParamValueText . $templateCallEnd;
 								}
-								// insert property at end of template call
 						}
 						
 					}
-						if ( $newTemplateCall != $oldTemplateCall ) {	
+						if ( $newTemplateCall != $oldTemplateCall ) {
+								//  if the template call has been updated, change it in the page wikitext and update the placeholder variable	
 							$newWikiContent = str_replace( $oldTemplateCall, $newTemplateCall, $newWikiContent );	
 							$updatedTemplateCalls[$templateName] = $newTemplateCall;
 						}
 					 
 				} else if ( $isInPage  ) {
-					// replace value with new one if different
+					// if it's a standard property in the page, replace value with new one if different
 					
 					$oldPropertyText = $mwProperties[$predTitleWikified]['wikitext'];	
 					// Store the old wiki text for the fact, in order to replace later
@@ -259,6 +264,7 @@ class RDFIOSMWPageWriter {
 
 	function getTemplatesForCategories ( $wikiPage ) {
 			// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
+			$output = array();
 			foreach( $wikiPage->getCategories() as $cat ) {
 
 				$categoryTitle = Title::newFromText( $cat, $defaultNamespace=NS_CATEGORY );	

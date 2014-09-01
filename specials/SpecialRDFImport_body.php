@@ -186,7 +186,7 @@ class RDFImport extends SpecialPage {
 	 * @return string $htmlFormContent
 	 */
 	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {	
-		$textfieldHiddenContent = "";
+		$textfieldHiddenContent = '';
 		$urlChecked = ( $requestData->importSource === 'url' );
 		$textfieldChecked = ( $requestData->importSource === 'textfield' );
 		
