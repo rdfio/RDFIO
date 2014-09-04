@@ -116,6 +116,7 @@ class RDFImport extends SpecialPage {
 				xmlns:cd=\\"http://www.recshop.fake/cd#\\"\\n\
 				xmlns:countries=\\"http://www.countries.org/onto/\\"\\n\
 				xmlns:rdfs=\\"http://www.w3.org/2000/01/rdf-schema#\\"\\n\
+				xmlns:cat=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
 				>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -125,6 +126,7 @@ class RDFImport extends SpecialPage {
 				<cd:company>Columbia</cd:company>\\n\
 				<cd:price>10.90</cd:price>\\n\
 				<cd:year>1985</cd:year>\\n\
+				<cat:type>Album</cat:type>\\n\
 				</rdf:Description>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -134,6 +136,7 @@ class RDFImport extends SpecialPage {
 				<cd:company>CBS Records</cd:company>\\n\
 				<cd:price>9.90</cd:price>\\n\
 				<cd:year>1988</cd:year>\\n\
+				<cat:type>Album</cat:type>\\n\
 				</rdf:Description>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -156,20 +159,23 @@ class RDFImport extends SpecialPage {
 				@prefix cd: <http://www.recshop.fake/cd#> .\\n\
 				@prefix countries: <http://www.countries.org/onto/> .\\n\
 				@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\\n\
+				@prefix cat: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
 				\\n\
 				<http://www.recshop.fake/cd/Empire Burlesque>\\n\
 					cd:artist \\"Bob Dylan\\" ;\\n\
 					cd:country countries:USA ;\\n\
 					cd:company \\"Columbia\\" ;\\n\
 					cd:price \\"10.90\\" ;\\n\
-					cd:year \\"1985\\" .\\n\
+					cd:year \\"1985\\" ;\\n\
+					cat:type \\"Album\\" .\\n\
 				\\n\
 				<http://www.recshop.fake/cd/Hide your heart>\\n\
 					cd:artist \\"Bonnie Tyler\\" ;\\n\
 					cd:country \\"UK\\" ;\\n\
 					cd:company \\"CBS Records\\" ;\\n\
 					cd:price \\"9.90\\" ;\\n\
-					cd:year \\"1988\\" .\\n\
+					cd:year \\"1988\\" ;\\n\
+					cat:type \\"Album\\" .\\n\
 				\\n\
 				countries:USA\\n\
 					rdfs:label \\"USA\\" .\\n\
