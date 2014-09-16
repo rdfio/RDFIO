@@ -53,7 +53,7 @@ class RDFIOSMWPageWriter {
 
 
 						// Find all the templates
-				preg_match_all('/\{\{\s?([a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $templateMatches);
+				preg_match_all('/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $templateMatches);
 				$templateCallInPage = $templateMatches[0];
 				$templateNameInPage = $templateMatches[1];
 				$templateParamsInPage = $templateMatches[2];
