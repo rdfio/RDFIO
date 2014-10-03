@@ -93,5 +93,6 @@ class RDFIOAdmin extends SpecialPage {
 					|mainlabel=Category
 					|limit=10
 					}}");
+
 	}
 }

@@ -12,18 +12,15 @@ class RDFIOCreatePagesOnInstall {
 
 		$wikiPageData = array(
 							'Category:RDFIO Data Source' => array( 'title' => 'RDFIO Data Source',
-												 'content' => 'URL containing RDF data or a SPARQL endpoint which has been used to import triples into the wiki through the RDFIO extension
-																\n [[Has type::URL]]',
+												 'content' => 'URL containing RDF data or a SPARQL endpoint which has been used to import triples into the wiki through the RDFIO extension<br />[[Has type::URL]]',
 												 'summary' => 'Created by RDFIO',
 												 'namespace' => 'NS_CATEGORY' ),	
 							'Property:RDFIO Import Type' => array( 'title' => 'RDFIO Import Type',
-												 'content' => 'RDF or SPARQL import
-																\n [[Allows value::RDF]] \n [[Allows value::SPARQL]]',
+												 'content' => 'RDF or SPARQL import<br />[[Allows value::RDF]]<br />[[Allows value::SPARQL]]',
 												 'summary' => 'Created by RDFIO',
 												 'namespace' => 'NS_PROPERTY' ),	
 							'Property:Has template' => array( 'title' => 'Has template',
-												 'content' => 'Template used for pages in this category on creation
-																/n [[Has type::Page]]',
+												 'content' => 'Template used for pages in this category on creation<br />[[Has type::Page]]',
 												 'summary' => 'Created by RDFIO',
 												 'namespace' => 'NS_PROPERTY' ),	
 							'RDF' => array( 'title' => 'RDF',
@@ -37,9 +34,11 @@ class RDFIOCreatePagesOnInstall {
 						);
 
 		foreach ( $wikiPageData as $pageTitle => $page ) {
-			$pageTitleObj => Title::newFromText ($page['title'], $namespace=$page['namespace']);
-			$pageObj = new Article( $pageTitleObj );
-			$pageObj->doEdit( $page['content'], $page['summary'] );
+			$pageTitleObj = Title::newFromText( $pageTitle);
+			$pageObj = WikiPage::factory( $pageTitleObj );
+			$content = $page['content'];
+			$summary = $page['summary'];
+			$pageObj->doEdit( $content, $summary );
 		}
-
+	}
 }

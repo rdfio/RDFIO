@@ -76,7 +76,7 @@ $wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php';
 $wgAutoloadClasses['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
 $wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
 $wgAutoloadClasses['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
-$wgAutoloadClasses['RDFIOCreatePages'] = $rdfioDir . '/classes/RDFIO_CreatePagesOnInstall.php';
+$wgAutoloadClasses['RDFIOCreatePagesOnInstall'] = $rdfioDir . '/classes/RDFIO_CreatePagesOnInstall.php';
 
 # Parsers
 $wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
@@ -99,9 +99,5 @@ $wgHooks['UnitTestsList'][] = 'RDFIOHooks::onUnitTestsList';
  *	Create metadata pages *
  *************************/
 
-$wgExtensionFunctions[] = 'efRDFIOSetup';
+$wgHooks['loadExtensionSchemaUpdate'][] = 'RDFIOCreatePagesOnInstall::create';
 
-function efRDFIOSetup() {
-// run checks & page setup
-//	RDFIOCreatePagesOnInstall::create();
-}
