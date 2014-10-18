@@ -71,7 +71,7 @@ class RDFIOAdmin extends SpecialPage {
 		$htmlOutput = '<form method="get" action="' . $wgServer . $wgScriptPath . '/index.php/Special:RDFIOAdmin"
 			name="createEditQuery">
 			<input type="submit" name="rdfio_action" value="setup">' .
-			Html::Hidden( 'token', $wgUser->editToken() ) . '
+			Html::Hidden( 'token', $wgUser->getEditToken() ) . '
 			</form>';
 
 		$wgOut->addHTML( $htmlOutput );

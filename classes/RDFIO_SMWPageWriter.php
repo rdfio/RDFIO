@@ -80,7 +80,7 @@ class RDFIOSMWPageWriter {
 						$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
 					
 							// Get the properties and parameter names used in the templates	
-						preg_match_all('/\[\[(.*)::\{\{\{(.*)\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
+						preg_match_all('/\[\[(.*)::\{\{\{(.*)\|?\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches);
 						$propertyNameInTemplate = $templateParameterMatches[1];
 						$parameterNameInTemplate = $templateParameterMatches[2];
 						foreach( $parameterNameInTemplate as $index => $templateParameter ) {
