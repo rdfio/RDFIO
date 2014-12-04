@@ -85,6 +85,7 @@ class RDFIOAdmin extends SpecialPage {
 					|limit=10
 					}}\n");
 		$wgOut->addWikiText("\n===Pages and Templates===\n");
+		$wgOut->addWikiText("To associate a template with a category, add <nowiki>[[Has template::Template:Name]]</nowiki> to the Category page");
 		
 		$wgOut->addWikiText("{{#ask:  [[:Category:+]]
 					|?Equivalent URI
