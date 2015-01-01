@@ -34,6 +34,7 @@ class RDFImport extends SpecialPage {
 				throw new RDFIOException("User does not have write access");
 			} else {  
 				$wgOut->addHTML($this->getHTMLForm( $requestData ));
+				$wgOut->addWikiText('{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}');
 			}
 		} catch (MWException $e) {
 			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
