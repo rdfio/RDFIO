@@ -34,7 +34,7 @@ class RDFImport extends SpecialPage {
 				throw new RDFIOException("User does not have write access");
 			} else {  
 				$wgOut->addHTML($this->getHTMLForm( $requestData ));
-				$wgOut->addHTML('<div id=sources>');
+				$wgOut->addHTML('<div id=sources display=none>');
 				$wgOut->addWikiText('{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}');
 				$wgOut->addHTML('</div>');
 			}
@@ -295,7 +295,9 @@ function pasteExampleTurtleData(textFieldId) {
 }
 
 function addSourcesToMenu() {
-	var sourceList = document.getElementById('sources');
+	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
+	var sources = sourceList.getElementsByTagName("a");
+	var dropdown = document.getElementById("extrdfurl");
 }
 </script>
 						';
