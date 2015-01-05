@@ -239,6 +239,7 @@ class RDFImport extends SpecialPage {
 					<div id="urlfields">
 						External URL:
 						<input type="text" size="100" name="extrdfurl">
+						<a href="#" onClick="addSourcesToMenu();">Use previous source</a>
 					</div>
 						
 					<div id="datafields" ' . $textfieldHiddenContent . '>
@@ -297,7 +298,16 @@ function pasteExampleTurtleData(textFieldId) {
 function addSourcesToMenu() {
 	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
 	var sources = sourceList.getElementsByTagName("a");
-	var dropdown = document.getElementById("extrdfurl");
+	var urlForm = document.getElementById("urlfields");
+	var selectList = document.creatElement("select");
+	selectList.id = "sourceSelect";
+	urlForm.appendChild(selectList);
+	for (var i = 0; i < array.length; i++) {
+		var option = document.createElement("option");
+		option.value = sources[i];
+		option.text = sources[i];
+		selectList.appendChild(option);
+	}
 }
 </script>
 						';
