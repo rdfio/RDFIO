@@ -299,10 +299,10 @@ function addSourcesToMenu() {
 	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
 	var sources = sourceList.getElementsByTagName("a");
 	var urlForm = document.getElementById("urlfields");
-	var selectList = document.creatElement("select");
+	var selectList = document.createElement("select");
 	selectList.id = "sourceSelect";
 	urlForm.appendChild(selectList);
-	for (var i = 0; i < array.length; i++) {
+	for (var i = 0; i < sources.length; i++) {
 		var option = document.createElement("option");
 		option.value = sources[i];
 		option.text = sources[i];
