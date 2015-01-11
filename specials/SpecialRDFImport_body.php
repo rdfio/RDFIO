@@ -34,7 +34,7 @@ class RDFImport extends SpecialPage {
 				throw new RDFIOException("User does not have write access");
 			} else {  
 				$wgOut->addHTML($this->getHTMLForm( $requestData ));
-				$wgOut->addHTML('<div id=sources display=none>');
+				$wgOut->addHTML('<div id=sources style="display:none">');
 				$wgOut->addWikiText('{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}');
 				$wgOut->addHTML('</div>');
 			}
@@ -238,7 +238,7 @@ class RDFImport extends SpecialPage {
 						
 					<div id="urlfields">
 						External URL:
-						<input type="text" size="100" name="extrdfurl">
+						<input type="text" size="100" name="extrdfurl" id="extrdfurl">
 						<a href="#" onClick="addSourcesToMenu();">Use previous source</a>
 					</div>
 						
@@ -299,15 +299,17 @@ function addSourcesToMenu() {
 	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
 	var sources = sourceList.getElementsByTagName("a");
 	var urlForm = document.getElementById("urlfields");
+	var urlTextField = document.getElementById("extrdfurl");
 	var selectList = document.createElement("select");
 	selectList.id = "sourceSelect";
 	urlForm.appendChild(selectList);
 	for (var i = 0; i < sources.length; i++) {
 		var option = document.createElement("option");
-		option.value = sources[i];
-		option.text = sources[i];
+		option.value = sources[i].innerHTML;
+		option.text = sources[i].innerHTML;
 		selectList.appendChild(option);
 	}
+	selectList.onchange = function() {urlTextField.value = selectList.options[selectList.selectedIndex].value};
 }
 </script>
 						';
