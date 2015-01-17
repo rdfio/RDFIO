@@ -309,7 +309,7 @@ function addSourcesToMenu() {
 		option.text = sources[i].innerHTML;
 		selectList.appendChild(option);
 	}
-	selectList.onchange = function() {urlTextField.value = selectList.options[selectList.selectedIndex].value};
+	selectList.onchange = function() {selectedUrl = selectList.options[selectList.selectedIndex].value; selectedUrl1 = selectedUrl.substring(0,1).toLowerCase(); selectedUrl2 = selectedUrl.substring(1); selectedUrl = selectedUrl1.concat(selectedUrl2); urlTextField.value = selectedUrl};
 }
 </script>
 						';
