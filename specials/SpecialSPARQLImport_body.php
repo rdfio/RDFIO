@@ -34,6 +34,9 @@ class SPARQLImport extends SpecialPage {
 			    }
 			} else {
 				$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+				$wgOut->addHTML('<div id=sources style="display:none">');
+				$wgOut->addWikiText('{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}');
+				$wgOut->addHTML('</div>');
 			}
 		} catch (RDFIOException $e) {
 			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
@@ -118,12 +121,24 @@ class SPARQLImport extends SpecialPage {
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<input type="text" name="extsparqlurl" size="60" value="$extSparqlUrl"></input>
+				<a href="#" onClick="addSources();">Use previous source</a>
 				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
 				<input type="hidden" name="offset" value=$offset>
 				<input type="submit" value="$buttonText">
 		</form>
 EOD;
+		$htmlForm .= $this->getJs();
 		return $htmlForm;
 	}
+
+	public function getJs() {
+		$jsCode = '
+<script type="text/javascript">
+function addSources() {
+}
+</script>
+					';
+	return $jsCode;
+	}	
 
 }
