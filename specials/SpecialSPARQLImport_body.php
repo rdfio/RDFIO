@@ -120,8 +120,10 @@ class SPARQLImport extends SpecialPage {
 		<form method="post" action="$thisPageUrl" >
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
+				<div id="urlfields">
 				<input type="text" name="extsparqlurl" size="60" value="$extSparqlUrl"></input>
 				<a href="#" onClick="addSources();">Use previous source</a>
+				</div>
 				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
 				<input type="hidden" name="offset" value=$offset>
 				<input type="submit" value="$buttonText">
@@ -135,6 +137,20 @@ EOD;
 		$jsCode = '
 <script type="text/javascript">
 function addSources() {
+	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
+	var sources = sourceList.getElementsByTagName("a");
+	var urlForm = document.getElementById("urlfields");
+	var urlTextField = document.getElementById("extsparqlurl");
+	var selectList = document.createElement("select");
+	selectList.id = "sourceSelect";
+	urlForm.appendChild(selectList);
+	for (var i = 0; i < sources.length; i++) {
+		var option = document.createElement("option");
+		option.value = sources[i].innerHTML;
+		option.text = sources[i].innerHTML;
+		selectList.appendChild(option);
+	}
+	selectList.onchange = function() {selectedUrl = selectList.options[selectList.selectedIndex].value; selectedUrl1 = selectedUrl.substring(0,1).toLowerCase(); selectedUrl2 = selectedUrl.substring(1); selectedUrl = selectedUrl1.concat(selectedUrl2); urlTextField.value = selectedUrl};
 }
 </script>
 					';
