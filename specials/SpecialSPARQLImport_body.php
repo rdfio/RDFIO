@@ -121,7 +121,7 @@ class SPARQLImport extends SpecialPage {
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<div id="urlfields">
-				<input type="text" name="extsparqlurl" size="60" value="$extSparqlUrl"></input>
+				<input type="text" name="extsparqlurl" id="extsparqlurl" size="60" value="$extSparqlUrl"></input>
 				<a href="#" onClick="addSources();">Use previous source</a>
 				</div>
 				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
