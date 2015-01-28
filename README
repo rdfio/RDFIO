@@ -10,7 +10,7 @@ by providing import of arbitrary RDF triples (not only OWL ontologies, as before
 that allows write operations.
 
 Technically, RDFIO implements the PHP/MySQL based triple store (and its accompanying
-SPARQL Endpoint) provided by the [http://arc.semsol.org/ ARC2] library. 
+SPARQL Endpoint) provided by the [https://github.com/semsol/arc2] library. 
 
 The RDF import stores the original URI of all imported RDF entities (in a special
 property), which can later be used by the SPARQL endpoint, instead of SMW's internal
