@@ -17,9 +17,9 @@ $messages['en'] = array(
 	'rdfio-sparqlimport-desc' => 'A Special page to import semantic data from external SPARQL endpoints',
 	'rdfio-sparqlendpoint-desc' => 'A SPARQL Endpoint provided by the RDFIO extension',
 	'sparqlendpoint' => 'SPARQL Endpoint',
-	'rdfioadmin' => 'RDFIO admin page',
+	'rdfioadmin' => 'RDFIO Admin Page',
 	'rdfio-unknown-error' => 'An unknown error happened!',
-	'action-editinterface' => 'edit RDFIO settings',
+	'action-editinterface' => 'Edit RDFIO Settings',
 );
 
 /** Message documentation (Message documentation)
@@ -93,13 +93,17 @@ $messages['ce'] = array(
  * @author Kghbln
  */
 $messages['de'] = array(
-	'rdfio-desc' => 'Ermöglicht erweiterte RDF Import/Export-Funktionen, einschließlich einer SPARQL-Anknüpfung, für Semantic MediaWiki',
+	'rdfio-desc' => 'Ermöglicht erweiterte Import-Export-Funktionen für RDF, einschließlich eines SPARQL-Endpunkts',
 	'rdfimport' => 'RDF-Import',
-	'rdfio-arc2admin-desc' => 'Stellt eine Administrationsseite für den „ARC2 RDF“-Speicher von Semantic MediaWiki zur Verfügung',
-	'rdfio-rdfimport-desc' => 'Stellt eine Spezialseite zum Import semantischer Daten im RDF/XML-Format zur Verfügung',
-	'rdfio-sparqlendpoint-desc' => 'Stellt eine SPARQL-Anknüpfung für den SMWRDFConnector bereit',
-	'sparqlendpoint' => 'SPARQL-Anknüpfung',
-	'rdfioadmin' => '„ARC2 RDF“-Speicher-Administrationsseite',
+	'sparqlimport' => 'SPARQL-Import',
+	'rdfio-arc2admin-desc' => 'Stellt eine Spezialseite zur Administration des „ARC2-RDF“-Speichers bereit',
+	'rdfio-rdfimport-desc' => 'Stellt eine Spezialseite zum Import semantischer Daten im RDF-XML-Format bereit',
+	'rdfio-sparqlimport-desc' => 'Stellt Spezialseite zum Import semantischer Daten aus SPARQL-Endpunkten bereit',
+	'rdfio-sparqlendpoint-desc' => 'Stellt einen SPARQL-Endpunkt bereit',
+	'sparqlendpoint' => 'SPARQL-Endpunkt',
+	'rdfioadmin' => 'Administrationsseite des „ARC2-RDF“-Speichers',
+	'rdfio-unknown-error' => 'Es ist ein unbekannter Fehler aufgetreten.',
+	'action-editinterface' => 'RDFIO-Einstellungen zu bearbeiten'
 );
 
 /** Spanish (Español)

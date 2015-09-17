@@ -9,6 +9,8 @@ class RDFImport extends SpecialPage {
 	 * The main code goes here
 	 */
 	function execute( $par ) {
+		global $wgOut;			
+
 		try {
 			# Set HTML headers sent to the browser
 			$this->setHeaders();
@@ -16,14 +18,29 @@ class RDFImport extends SpecialPage {
 			# The main code
 			$requestData = $this->getRequestData();
 			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
-				$this->importData( $requestData );
+				$importInfo = $this->importData( $requestData );
+				$triples = $importInfo['triples'];
+				if ( $triples ) { 
+					$rdfImporter = new RDFIORDFImporter();	
+					$wgOut->addHTML($this->getHTMLForm( $requestData ));
+					$wgOut->addHTML($rdfImporter->showImportedTriples( $triples ));
+					if ( $requestData->externalRdfUrl ) {
+						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
+					}
+				} else if ( !$triples ) {
+					throw new RDFIOException ("No new triples to import");
+				}
 			} else if ( !$requestData->hasWriteAccess ) {
 				throw new RDFIOException("User does not have write access");
-			} 
+			} else {  
+				$wgOut->addHTML($this->getHTMLForm( $requestData ));
+				$wgOut->addHTML('<div id=sources style="display:none">');
+				$wgOut->addWikiText('{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}');
+				$wgOut->addHTML('</div>');
+			}
 		} catch (MWException $e) {
-			$this->showErrorMessage('Error!', $e->getMessage());
-		}
-		$this->outputHTMLForm( $requestData );
+			RDFIOUtils::showErrorMessage('Error!', $e->getMessage());
+		} 
 	}
 
 	/**
@@ -33,9 +50,9 @@ class RDFImport extends SpecialPage {
 		$rdfImporter = new RDFIORDFImporter();
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
-			    throw new RDFIOException('URL field is empty!');
+				throw new RDFIOException('URL field is empty!');
 			} else if ( !RDFIOUtils::isURI( $requestData->externalRdfUrl ) ) {
-			    throw new RDFIOException('Invalid URL provided!');
+				throw new RDFIOException('Invalid URL provided!');
 			}
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );
 		} else if ( $requestData->importSource === 'textfield' ) {
@@ -46,18 +63,18 @@ class RDFImport extends SpecialPage {
 			throw new RDFIOException('Import source is not selected!');
 		}
 
-	    switch ( $requestData->dataFormat ) {
-	        case 'rdfxml':
-	            $rdfImporter->importRdfXml( $rdfData );
-	            break;
-	        case 'turtle':
-	            $rdfImporter->importTurtle( $rdfData );
-	            break;
-	    };
-		$this->showSuccessMessage("Success!","Successfully imported the triples");
-
-		global $wgOut;
-		$wgOut->addHTML('Tried to import the data ...');
+		switch ( $requestData->dataFormat ) {
+		    case 'rdfxml':
+		        $importInfo = $rdfImporter->importRdfXml( $rdfData );
+			$triples = $importInfo['triples'];
+		        break;
+		    case 'turtle':
+		        $importInfo = $rdfImporter->importTurtle( $rdfData );
+			$triples = $importInfo['triples'];
+		        break;
+		}
+	
+	return $output = array( 'triples' => $triples);
 	}
 
 	/**
@@ -75,28 +92,21 @@ class RDFImport extends SpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = $this->userHasWriteAccess();
+		$requestData->hasWriteAccess = RDFIOUtils::currentUserHasWriteAccess();
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;
 	}
 
-	/**
-	 * Check whether the current user has rights to edit or create pages
-	 */
-	protected function userHasWriteAccess() {
-		global $wgUser;
-		$userRights = $wgUser->getRights();
-		return ( in_array( 'edit', $userRights ) && in_array( 'createpage', $userRights ) );
-	}
-
+	
 	/**
 	 * Output the HTML for the form, to the user
 	 */
-	function outputHTMLForm( $requestData ) {
-		global $wgOut;
-		$wgOut->addScript( $this->getJsCode() );
-		$wgOut->addHTML( $this->getHTMLFormContent( $requestData ) );
+	function getHTMLForm( $requestData ) {
+		$formText = "";
+		$formText .= $this->getJsCode();
+		$formText .= $this->getHTMLFormContent( $requestData );
+		return $formText;
 	}
 
 	/**
@@ -109,6 +119,7 @@ class RDFImport extends SpecialPage {
 				xmlns:cd=\\"http://www.recshop.fake/cd#\\"\\n\
 				xmlns:countries=\\"http://www.countries.org/onto/\\"\\n\
 				xmlns:rdfs=\\"http://www.w3.org/2000/01/rdf-schema#\\"\\n\
+				xmlns:cat=\\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\\"\\n\
 				>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -118,6 +129,7 @@ class RDFImport extends SpecialPage {
 				<cd:company>Columbia</cd:company>\\n\
 				<cd:price>10.90</cd:price>\\n\
 				<cd:year>1985</cd:year>\\n\
+				<cat:type>Album</cat:type>\\n\
 				</rdf:Description>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -127,6 +139,7 @@ class RDFImport extends SpecialPage {
 				<cd:company>CBS Records</cd:company>\\n\
 				<cd:price>9.90</cd:price>\\n\
 				<cd:year>1988</cd:year>\\n\
+				<cat:type>Album</cat:type>\\n\
 				</rdf:Description>\\n\
 				\\n\
 				<rdf:Description\\n\
@@ -149,20 +162,23 @@ class RDFImport extends SpecialPage {
 				@prefix cd: <http://www.recshop.fake/cd#> .\\n\
 				@prefix countries: <http://www.countries.org/onto/> .\\n\
 				@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\\n\
+				@prefix cat: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
 				\\n\
 				<http://www.recshop.fake/cd/Empire Burlesque>\\n\
 					cd:artist \\"Bob Dylan\\" ;\\n\
 					cd:country countries:USA ;\\n\
 					cd:company \\"Columbia\\" ;\\n\
 					cd:price \\"10.90\\" ;\\n\
-					cd:year \\"1985\\" .\\n\
+					cd:year \\"1985\\" ;\\n\
+					cat:type \\"Album\\" .\\n\
 				\\n\
 				<http://www.recshop.fake/cd/Hide your heart>\\n\
 					cd:artist \\"Bonnie Tyler\\" ;\\n\
 					cd:country \\"UK\\" ;\\n\
 					cd:company \\"CBS Records\\" ;\\n\
 					cd:price \\"9.90\\" ;\\n\
-					cd:year \\"1988\\" .\\n\
+					cd:year \\"1988\\" ;\\n\
+					cat:type \\"Album\\" .\\n\
 				\\n\
 				countries:USA\\n\
 					rdfs:label \\"USA\\" .\\n\
@@ -178,14 +194,17 @@ class RDFImport extends SpecialPage {
 	 * @param string $extraFormContent
 	 * @return string $htmlFormContent
 	 */
-	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
+	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {	
+		$textfieldHiddenContent = '';
 		$urlChecked = ( $requestData->importSource === 'url' );
 		$textfieldChecked = ( $requestData->importSource === 'textfield' );
 		
 		// Show (and pre-select) the URL field, as default
 		if ( !$urlChecked && !$textfieldChecked ) {
 			$urlChecked = true;
-			$textfieldHiddenContent = 'style="display: none"';
+		}
+		if ( !$textfieldChecked ) {
+			$textfieldHiddenContent= 'style="display: none"';
 		}
 
 		$urlCheckedContent = $urlChecked ? 'checked="true"' : '';
@@ -219,7 +238,8 @@ class RDFImport extends SpecialPage {
 						
 					<div id="urlfields">
 						External URL:
-						<input type="text" size="100" name="extrdfurl">
+						<input type="text" size="100" name="extrdfurl" id="extrdfurl">
+						<a href="#" onClick="addSourcesToMenu();">Use previous source</a>
 					</div>
 						
 					<div id="datafields" ' . $textfieldHiddenContent . '>
@@ -234,8 +254,8 @@ class RDFImport extends SpecialPage {
 								<td style="width: 100px;">Data format:</td>
 								<td>
 									<select id="dataformat" name="dataformat">
-    									<option value="rdfxml" selected="selected">RDF/XML</option>
-    									<option value="turtle">Turtle</option>
+										<option value="rdfxml" selected="selected">RDF/XML</option>
+										<option value="turtle">Turtle</option>
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
@@ -274,16 +294,28 @@ function pasteExampleTurtleData(textFieldId) {
 	textfield.value = exampledata;
 	document.getElementById("dataformat").options[1].selected = true;
 }
+
+function addSourcesToMenu() {
+	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
+	var sources = sourceList.getElementsByTagName("a");
+	var urlForm = document.getElementById("urlfields");
+	var urlTextField = document.getElementById("extrdfurl");
+	var selectList = document.createElement("select");
+	selectList.id = "sourceSelect";
+	urlForm.appendChild(selectList);
+	for (var i = 0; i < sources.length; i++) {
+		var option = document.createElement("option");
+		option.value = sources[i].innerHTML;
+		option.text = sources[i].innerHTML;
+		selectList.appendChild(option);
+	}
+	selectList.onchange = function() {selectedUrl = selectList.options[selectList.selectedIndex].value; selectedUrl1 = selectedUrl.substring(0,1).toLowerCase(); selectedUrl2 = selectedUrl.substring(1); selectedUrl = selectedUrl1.concat(selectedUrl2); urlTextField.value = selectedUrl};
+}
 </script>
 						';
 		return $jsCode;
 	}
 
-	function showErrorMessage( $title, $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( $title, $message );
-		$wgOut->addHTML( $errorHtml );
-	}
 }
 
 class RDFIORequestData {

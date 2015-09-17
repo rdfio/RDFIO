@@ -1,4 +1,4 @@
-Last updated 2011-10-28 by Samuel Lampa (samuel.lampa # gmail.com)
+Last updated 2015-01-25 by Ali King (ali # koshatnik.com)
 
 = RDF IO Extension for Semantic MediaWiki =
 
@@ -10,8 +10,7 @@ by providing import of arbitrary RDF triples (not only OWL ontologies, as before
 that allows write operations.
 
 Technically, RDFIO implements the PHP/MySQL based triple store (and its accompanying
-SPARQL Endpoint) provided by the [http://arc.semsol.org/ ARC2] library. For updating
-wiki pages with new triples on import/sparql update, the WOM extension is used.
+SPARQL Endpoint) provided by the [https://github.com/semsol/arc2] library. 
 
 The RDF import stores the original URI of all imported RDF entities (in a special
 property), which can later be used by the SPARQL endpoint, instead of SMW's internal
@@ -35,9 +34,6 @@ project description can be found at http://www.mediawiki.org/wiki/User:SHL/GSoC2
 
 Semantic MediaWiki Extension
 http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki
-
-Wiki Object Model Extension
-https://www.mediawiki.org/wiki/Extension:Wiki_Object_Model
 
 ARC2 RDF library for PHP
 https://github.com/semsol/arc2

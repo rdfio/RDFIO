@@ -19,9 +19,9 @@ class RDFIOAdmin extends SpecialPage {
 		}
 
 		parent::__construct( 'RDFIOAdmin', 'editinterface' );
-    }
+	}
 
-    function execute( $par ) {
+	function execute( $par ) {
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
 			$wgServer, $wgScriptPath, $wgUser;
 		
@@ -29,7 +29,7 @@ class RDFIOAdmin extends SpecialPage {
 			$this->displayRestrictionError();
 			return;
 		};
-	
+		
 		$this->setHeaders();
 		$output = "";
 
@@ -71,7 +71,7 @@ class RDFIOAdmin extends SpecialPage {
 		$htmlOutput = '<form method="get" action="' . $wgServer . $wgScriptPath . '/index.php/Special:RDFIOAdmin"
 			name="createEditQuery">
 			<input type="submit" name="rdfio_action" value="setup">' .
-			Html::Hidden( 'token', $wgUser->editToken() ) . '
+			Html::Hidden( 'token', $wgUser->getEditToken() ) . '
 			</form>';
 
 		$wgOut->addHTML( $htmlOutput );
@@ -85,6 +85,7 @@ class RDFIOAdmin extends SpecialPage {
 					|limit=10
 					}}\n");
 		$wgOut->addWikiText("\n===Pages and Templates===\n");
+		$wgOut->addWikiText("To associate a template with a category, add <nowiki>[[Has template::Template:Name]]</nowiki> to the Category page");
 		
 		$wgOut->addWikiText("{{#ask:  [[:Category:+]]
 					|?Equivalent URI
@@ -93,5 +94,6 @@ class RDFIOAdmin extends SpecialPage {
 					|mainlabel=Category
 					|limit=10
 					}}");
+
 	}
 }

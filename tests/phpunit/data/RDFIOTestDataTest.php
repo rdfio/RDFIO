@@ -82,4 +82,44 @@ class RDFIOTestData {
 				</rdf:RDF>';
         return $testImportData;
     }
+
+	function getTemplateData() {
+		$testImportData = "<noinclude>This template is for albums of recorded music
+				</noinclude>
+				<includeonly>
+				{| class=\"wikitable\"
+				|-
+				|'''Equivalent URI:''' 
+				|[[Equivalent URI::{{{Equivalent URI}}}]]
+				|-
+				|'''Artist:''' 
+				|[[Cd:artist::{{{Artist}}}]]
+				|-
+				| '''Country:''' 
+				|[[Cd:country::{{{Country}}}]]
+				|-
+				| '''Company:''' 
+				|[[Cd:company::{{{Company}}}]]
+				|-
+				| '''Price:''' 
+				|[[Cd:price::{{{Price}}}]]
+				|-
+				| '''Year:''' 
+				|[[Cd:year::{{{Year}}}]]
+				|}
+				</includeonly>";
+		return $testImportData;
+	}
+
+	function getPageDataWithoutTemplate() {
+		$testImportData = '';
+		return $testImportData;
+	}
+
+	function getPageDataWithTemplate() {
+		$testImportData = '{{Album|Equivalent URI=http://www.recshop.fake/cd/Empire Burlesque|Company=Colombia|Price=10.90|Year=1985|Artist=Bob Dylan|Country=Countries:USA}}
+
+[[Category:Album]]';
+		return $testImportData;
+	}
 }
