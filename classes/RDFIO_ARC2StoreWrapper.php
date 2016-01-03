@@ -85,7 +85,7 @@ class RDFIOARC2StoreWrapper {
     public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
         $uriEncoded = str_replace(' ', '%20', $uri);
         $wikiTitleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
-        $wikiTitleResolverUriDecoded = SMWExporter::decodeURI( $wikiTitleResolverUri );
+        $wikiTitleResolverUriDecoded = Escaper::decodeURI( $wikiTitleResolverUri );
 
         $uriParts = explode('/', rtrim( $wikiTitleResolverUriDecoded , '/') ); 
         $wikiTitle = str_replace('_', ' ', array_pop( $uriParts ));
