@@ -28,7 +28,7 @@ class SMWARC2Store extends SMWSQLStore3 {
      * @param $subject
      */
     public function deleteSubject( Title $subject ) {
-        $subject_uri = SMWExporter::expandURI( $this->getURI( $subject ) );
+        $subject_uri = SMWExporter::getInstance()->expandURI( $this->getURI( $subject ) );
         $this->removeDataForURI( $subject_uri );
 
         return parent::deleteSubject( $subject ); // Also update via SQLStore3
@@ -40,8 +40,8 @@ class SMWARC2Store extends SMWSQLStore3 {
      */
     public function updateData( SMWSemanticData $data ) {
     	// TODO: Should doDataUpdate() be used instead? (See SMWStore class)
-        $exportData = SMWExporter::makeExportData( $data );
-        $subjectUri = SMWExporter::expandURI( $exportData->getSubject()->getUri() );
+        $exportData = SMWExporter::getInstance()->makeExportData( $data );
+        $subjectUri = SMWExporter::getInstance()->expandURI( $exportData->getSubject()->getUri() );
 
         $this->removeDataForURI( $subjectUri );
         $tripleList = $exportData->getTripleList();
@@ -60,17 +60,17 @@ class SMWARC2Store extends SMWSQLStore3 {
             	// TODO: Add escaping for results of getLexicalForm()?
                 $objectStr = "\"" . $object->getLexicalForm() . "\"" . ( ( $object->getDatatype() == "" ) ? "" : "^^<" . $object->getDatatype() . ">" );
             } elseif ( $object instanceof SMWExpResource ) {
-                $objectStr = "<" . SMWExporter::expandURI( $object->getUri() ) . ">";
+                $objectStr = "<" . SMWExporter::getInstance()->expandURI( $object->getUri() ) . ">";
             } else {
                 $objectStr = "\"\"";
             }
 
             if ( $subject instanceof SMWExpResource ) {
-                $subjectStr = "<" . SMWExporter::expandURI( $subject->getUri() ) . ">";
+                $subjectStr = "<" . SMWExporter::getInstance()->expandURI( $subject->getUri() ) . ">";
             }
 
             if ( $predicate instanceof SMWExpResource ) {
-                $predicateStr = "<" . SMWExporter::expandURI( $predicate->getUri() ) . ">";
+                $predicateStr = "<" . SMWExporter::getInstance()->expandURI( $predicate->getUri() ) . ">";
             }
 
             $sparqlUpdateText .= $subjectStr . " " . $predicateStr . " " . $objectStr . " .\n";
@@ -95,7 +95,7 @@ class SMWARC2Store extends SMWSQLStore3 {
         $result = parent::changeTitle( $oldTitle, $newTitle, $pageId, $redirectId );
 
         // Delete old stuff
-        $oldUri = SMWExporter::expandURI( $this->getURI( $oldTitle ) );
+        $oldUri = SMWExporter::getInstance()->expandURI( $this->getURI( $oldTitle ) );
         $this->removeDataForURI( $oldUri );
 
         $newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
@@ -172,7 +172,7 @@ class SMWARC2Store extends SMWSQLStore3 {
         $uri = "";
         if ( $title instanceof Title ) {
             $wikiPageDI = SMWDIWikiPage::newFromTitle( $title );
-            $exp = SMWExporter::makeExportDataForSubject( $wikiPageDI ); 
+            $exp = SMWExporter::getInstance()->makeExportDataForSubject( $wikiPageDI ); 
             $uri = $exp->getSubject()->getUri();
         } else {
             // There could be other types as well that we do NOT handle here

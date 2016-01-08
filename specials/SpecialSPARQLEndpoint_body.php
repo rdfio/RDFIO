@@ -24,7 +24,7 @@ class SPARQLEndpoint extends SpecialPage {
     /**
      * The main function
      */
-    function execute() {
+    function execute( $par ) {
         global $wgOut;
 
         $this->setHeaders();
