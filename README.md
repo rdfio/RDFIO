@@ -1,7 +1,7 @@
 RDF IO Extension for Semantic MediaWiki
 =======================================
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/samuell/RDFIO?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)Last updated 2011-10-28 by Samuel Lampa (samuel.lampa \# gmail.com)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/samuell/RDFIO?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Introduction
 ------------
