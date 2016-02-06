@@ -10,7 +10,6 @@
 	],
 	"homepage": "<attempt to pull from ExtensionName.php, else blank>",
 	"license": "<leave as ‘unknown’?>",
-
 	"authors": [
 		{
 			"name": "Samuel Lampa",
@@ -23,7 +22,6 @@
 			"role": "Author"
 		}
 	],
-
 	"support": {},
 	"require": {
 		"composer/installers": ">=1.0.1",
