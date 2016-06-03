@@ -9,9 +9,11 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'Not an entry point.' );
 }
 
-define( 'RDFIO_VERSION', '1.9.7' );
+define( 'RDFIO_VERSION', '1.9.5 beta' ); // TODO: UPdate
 
-$GLOBALS['wgExtensionCredits']['other'][] = array(
+global $wgExtensionCredits;
+
+$wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,
 	'name' => 'RDFIO',
 	'version' => RDFIO_VERSION,
@@ -24,8 +26,20 @@ $GLOBALS['wgExtensionCredits']['other'][] = array(
  * i18n
  ****************************/
 $dir = dirname( __FILE__ ) . '/';
-$GLOBALS['wgExtensionMessagesFiles']['RDFIO'] = $dir . 'RDFIO.i18n.php';
-$GLOBALS['wgExtensionMessagesFiles']['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
+$wgExtensionMessagesFiles['RDFIO'] = $dir . 'RDFIO.i18n.php';
+$wgExtensionMessagesFiles['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
+
+/****************************
+ * ARC2 RDF library for PHP *
+ ****************************/
+
+$smwgARC2Path = $smwgIP . '/libs/arc/';
+$smwgARC2MainFile = $smwgARC2Path . '/ARC2.php';
+if ( ! file_exists( $smwgARC2MainFile )) {
+    throw new MWException("ARC2 library is not installed in Semantic Mediawiki libs folder! Please refer to the installation instructions, to fix that: http://www.mediawiki.org/wiki/Extension:RDFIO#Installation");
+} else {
+    require_once( $smwgARC2MainFile );
+}
 
 /**************************
  *  ARC2 RDF Store config *
@@ -57,21 +71,21 @@ include_once $rdfioDir . '/specials/SpecialSPARQLImport.php';
 include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; 
 
 # Misc
-$GLOBALS['wgAutoloadClasses']['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
-$GLOBALS['wgAutoloadClasses']['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php'; 
-$GLOBALS['wgAutoloadClasses']['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
+$wgAutoloadClasses['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
+$wgAutoloadClasses['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php'; 
+$wgAutoloadClasses['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
+$wgAutoloadClasses['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
+$wgAutoloadClasses['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
 
 # Parsers
-$GLOBALS['wgAutoloadClasses']['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
-$GLOBALS['wgAutoloadClasses']['RDFIORDFXMLToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_RDFXMLToARC2Parser.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_TurtleToARC2Parser.php';
-$GLOBALS['wgAutoloadClasses']['RDFIORDFImporter'] = $rdfioDir . '/classes/RDFIO_RDFImporter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToWikiConverter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Exception.php';
+$wgAutoloadClasses['RDFIOParser'] = $rdfioDir . '/classes/parsers/RDFIO_Parser.php';
+$wgAutoloadClasses['RDFIORDFXMLToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_RDFXMLToARC2Parser.php';
+$wgAutoloadClasses['RDFIOTurtleToARC2Parser'] = $rdfioDir . '/classes/parsers/RDFIO_TurtleToARC2Parser.php';
+$wgAutoloadClasses['RDFIORDFImporter'] = $rdfioDir . '/classes/RDFIO_RDFImporter.php';
+$wgAutoloadClasses['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classes/parsers/RDFIO_ARC2ToWikiConverter.php';
+$wgAutoloadClasses['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
+$wgAutoloadClasses['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
+$wgAutoloadClasses['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Exception.php';
 
 /**************************
  *     Register hooks     *
