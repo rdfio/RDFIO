@@ -60,7 +60,7 @@ class BatchImportRDF extends Maintenance {
 				if ( $chunksize != 0 && $lineinchunk == $chunksize ) {
 					$rdfImporter->importTurtle( $importdata );
 					$totalwithoffset = $totalimported + $offset;
-					echo( "Imported $chunksize tripes in chunk $chunkindex ($totalimported triples imported in total, and $totalwithoffset including offset)!\n" );
+					echo( "Imported $chunksize triples in chunk $chunkindex ($totalimported triples imported in total, and $totalwithoffset including offset)!\n" );
 
 					// Reset variables
 					$lineinchunk = 0;
