@@ -29,18 +29,6 @@ $dir = dirname( __FILE__ ) . '/';
 $wgExtensionMessagesFiles['RDFIO'] = $dir . 'RDFIO.i18n.php';
 $wgExtensionMessagesFiles['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 
-/****************************
- * ARC2 RDF library for PHP *
- ****************************/
-
-$smwgARC2Path = $smwgIP . '/libs/arc/';
-$smwgARC2MainFile = $smwgARC2Path . '/ARC2.php';
-if ( ! file_exists( $smwgARC2MainFile )) {
-    throw new MWException("ARC2 library is not installed in Semantic Mediawiki libs folder! Please refer to the installation instructions, to fix that: http://www.mediawiki.org/wiki/Extension:RDFIO#Installation");
-} else {
-    require_once( $smwgARC2MainFile );
-}
-
 /**************************
  *  ARC2 RDF Store config *
  **************************/
@@ -48,7 +36,7 @@ if ( ! file_exists( $smwgARC2MainFile )) {
 /* Customize these details if you   *
  * want to use an external database */
 $smwgARC2StoreConfig = array(
-		'db_host' => $wgDBserver,
+        'db_host' => $wgDBserver,
         'db_name' => $wgDBname,
         'db_user' => $wgDBuser,
         'db_pwd' =>  $wgDBpassword,
