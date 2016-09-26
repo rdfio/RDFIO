@@ -28,7 +28,7 @@ to use SMW as a collaborative RDF editor, in workflows together with
 other semantic tools, from which it is then possible to "export,
 collaboratively edit, and import again", to/from SMW.
 
-This extensions was developed as part of a
+This extensions was initially developed as part of a
 [Google Summer of Code 2010 project](http://www.mediawiki.org/wiki/User:SHL/GSoC2010),
 and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.org/wiki/Extension:RDFIO/Template_matching_for_RDFIO).
 
