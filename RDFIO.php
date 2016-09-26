@@ -36,7 +36,7 @@ $wgExtensionMessagesFiles['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 /* Customize these details if you   *
  * want to use an external database */
 $smwgARC2StoreConfig = array(
-		'db_host' => $wgDBserver,
+        'db_host' => $wgDBserver,
         'db_name' => $wgDBname,
         'db_user' => $wgDBuser,
         'db_pwd' =>  $wgDBpassword,
