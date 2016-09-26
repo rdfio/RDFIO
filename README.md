@@ -5,6 +5,8 @@ RDF IO Extension for Semantic MediaWiki
 
 - See also [RDFIO's page on MediaWiki.org](https://www.mediawiki.org/wiki/Extension:RDFIO)
 
+![Screenshot of the SPARQL Endpoint shipped with RDFIO](http://i.imgur.com/PMMIHZ4.png)
+
 Introduction
 ------------
 
