@@ -26,7 +26,7 @@
 	"require": {
 		"composer/installers": ">=1.0.1",
 		"mediawiki/semantic-media-wiki": ">=1.9",
-		"semsol/arc2": >="v2.2.4"
+		"semsol/arc2": ">=v2.2.4"
 	},
 	"autoload": {
 		"files": ["RDFIO.php"]
