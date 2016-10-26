@@ -43,8 +43,8 @@ $smwgARC2StoreConfig = array(
 
 $smwgDefaultStore = 'SMWARC2Store'; 
 
-require_once( "$IP/extensions/RDFIO/stores/SMW_ARC2Store.php" );
-require_once( "$IP/extensions/RDFIO/specials/SpecialRDFIOAdmin.php" );
+require_once( $GLOBALS['IP'] . "/extensions/RDFIO/stores/SMW_ARC2Store.php" );
+require_once( $GLOBALS['IP'] . "/extensions/RDFIO/specials/SpecialRDFIOAdmin.php" );
 
 /**************************
  *    RDFIO Components    *
