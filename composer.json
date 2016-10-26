@@ -9,7 +9,7 @@
 		"Linked Data"
 	],
 	"homepage": "https://mediawiki.org/wiki/Extension:RDFIO",
-	"license": "GPL2.0",
+	"license": "GPL-2.0",
 	"authors": [
 		{
 			"name": "Samuel Lampa",
