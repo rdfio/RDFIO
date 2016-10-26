@@ -28,37 +28,20 @@ $GLOBALS['wgExtensionMessagesFiles']['RDFIO'] = $dir . 'RDFIO.i18n.php';
 $GLOBALS['wgExtensionMessagesFiles']['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 
 /**************************
- *  ARC2 RDF Store config *
- **************************/
-
-/* Customize these details if you   *
- * want to use an external database */
-$smwgARC2StoreConfig = array(
-		'db_host' => $wgDBserver,
-        'db_name' => $wgDBname,
-        'db_user' => $wgDBuser,
-        'db_pwd' =>  $wgDBpassword,
-        'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
-);
-
-$smwgDefaultStore = 'SMWARC2Store'; 
-
-require_once( $GLOBALS['IP'] . "/extensions/RDFIO/stores/SMW_ARC2Store.php" );
-require_once( $GLOBALS['IP'] . "/extensions/RDFIO/specials/SpecialRDFIOAdmin.php" );
-
-/**************************
  *    RDFIO Components    *
  **************************/
 
 $rdfioDir = dirname( __FILE__ );
 
-include_once $rdfioDir . '/specials/SpecialRDFImport.php';
-include_once $rdfioDir . '/specials/SpecialSPARQLImport.php';
-include_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; 
+require_once $rdfioDir . '/stores/SMW_ARC2Store.php';
+require_once $rdfioDir . '/specials/SpecialRDFIOAdmin.php';
+require_once $rdfioDir . '/specials/SpecialRDFImport.php';
+require_once $rdfioDir . '/specials/SpecialSPARQLImport.php';
+require_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
 
 # Misc
-$GLOBALS['wgAutoloadClasses']['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php'; 
-$GLOBALS['wgAutoloadClasses']['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php'; 
+$GLOBALS['wgAutoloadClasses']['RDFIOUser'] = $rdfioDir . '/classes/RDFIO_User.php';
+$GLOBALS['wgAutoloadClasses']['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
@@ -72,6 +55,22 @@ $GLOBALS['wgAutoloadClasses']['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classe
 $GLOBALS['wgAutoloadClasses']['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Exception.php';
+
+/**************************
+ *  ARC2 RDF Store config *
+ **************************/
+
+/* Customize these details if you   *
+ * want to use an external database */
+$smwgARC2StoreConfig = array(
+		'db_host' => $GLOBALS['wgDBserver'],
+        'db_name' => $GLOBALS['wgDBname'],
+        'db_user' => $GLOBALS['wgDBuser'],
+        'db_pwd' =>  $GLOBALS['wgDBpassword'],
+        'store_name' => $GLOBALS['wgDBprefix'] . 'arc2store', // Determines table prefix
+);
+
+$smwgDefaultStore = 'SMWARC2Store';
 
 /**************************
  *     Register hooks     *
