@@ -62,12 +62,13 @@ $GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Ex
 
 /* Customize these details if you   *
  * want to use an external database */
+global $smwgARC2StoreConfig, $smwgDefaultStore;
 $smwgARC2StoreConfig = array(
-		'db_host' => $GLOBALS['wgDBserver'],
-        'db_name' => $GLOBALS['wgDBname'],
-        'db_user' => $GLOBALS['wgDBuser'],
-        'db_pwd' =>  $GLOBALS['wgDBpassword'],
-        'store_name' => $GLOBALS['wgDBprefix'] . 'arc2store', // Determines table prefix
+		'db_host' => 'localhost',
+        'db_name' => 'CHANGETHIS',
+        'db_user' => 'CHANGETHIS',
+        'db_pwd' =>  'CHANGETHIS',
+        'store_name' => 'arc2store', // Determines table prefix
 );
 
 $smwgDefaultStore = 'SMWARC2Store';
