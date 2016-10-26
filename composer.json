@@ -1,5 +1,5 @@
 {
-	"name": "mediawiki/rdfio",
+	"name": "rdfio/rdfio",
 	"type": "mediawiki-extension",
 	"description": "RDFIO extension for importing data in RDF format to Semantic MediaWiki",
 	"keywords": [
