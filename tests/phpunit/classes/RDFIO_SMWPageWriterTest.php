@@ -27,20 +27,20 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 			$facts = $wikiPage->getFacts();
 // 			$equivUris = $wikiPage->getEquivalentUris();
 // 			$categories = $wikiPage->getCategories();
-				
+
 // 			// Get property objects from WOM
 // 			$womPropertyObjs = array();
 // 			$womCategoryObjs = array();
 // 			$wikiContent = "";
 // 			$mwTitleObj = Title::newFromText( $wikiTitle );
-			
+
 // 			// If page exists, get it's data from WOM
 // 			if ( is_object($mwTitleObj) && $mwTitleObj->exists() ) {
 // 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
-				
+
 // 				// Get wiki text
 // 				$wikiContent = $womWikiPage->getWikiText();
-				
+
 // 				// Get properties
 // 				try{
 // 					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
@@ -53,7 +53,7 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 				} catch( Exception $e ) {
 // 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
 // 				}
-				
+
 // 				// Get categories
 // 				try {
 // 					$categoryObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//category' );
@@ -65,7 +65,7 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 				} catch( Exception $e ) {
 // 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
 // 				}
-				
+
 // 			}
 
 // 			// Add facts (properties) to the wiki text
@@ -73,10 +73,10 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 			foreach ( $facts as $fact ) {
 // 				$pred = $fact['p'];
 // 				$obj = $fact['o'];
-				
+
 // 				$predTitle = Title::newFromText( $pred );
 // 				$predTitleWikified = $predTitle->getText();
-				
+
 // 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 // 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
 // 				if ( $hasLocalUrl && $isEquivURI ) {
@@ -88,29 +88,29 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
 // 				} else { 
 // 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
-					
+
 // 					// Store the old wiki text for the fact, in order to replace later
 // 					$oldPropertyText = $womPropertyObj->getWikiText();
-					
+
 // 					// Create an updated property
 // 					$objTitle = Title::newFromText( $obj );
 // 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
 // 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
 // 					$newPropertyText = $womPropertyObj->getWikiText();
-						
+
 // 					// Replace the existing property with new value
 // 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
 // 				}
-// 			}			
+// 			}
 // 			$wikiContent .= $newPropertiesAsWikiText;
-			
+
 // 			// Add categories to the wiki text
 // 			$newCategoriesAsWikiText = "\n";
 // 			foreach( $categories as $category ) {
 
 // 				$categoryTitle = Title::newFromText( $category );
 // 				$categoryTitleWikified = $categoryTitle->getText();
-				
+
 // 				if ( !array_key_exists( $categoryTitleWikified, $womCategoryObjs ) ) { // If property already exists ...
 // 					$newWomCategoryObj = new WOMCategoryModel( $categoryTitleWikified );
 // 					$newCategoryAsWikiText = $newWomCategoryObj->getWikiText();
@@ -118,12 +118,12 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 				} 
 // 			}
 // 			$wikiContent .= $newCategoriesAsWikiText;
-				
+
 // 			// Write to wiki
 // 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
 // 		}
 // 	}
-	
+
 // 	/**
 // 	 * The actual write function, that takes the parsed and updated content as 
 // 	 * a string and writes to the wiki.
@@ -138,6 +138,4 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 // 	}
 
 // }
-
 }
-    

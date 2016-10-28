@@ -17,5 +17,5 @@ class RDFIOTest extends MediaWikiTestCase {
 	public function testPhpUnitSetup() {
 		$this->assertTrue(true);
 	}
-	
+
 }
