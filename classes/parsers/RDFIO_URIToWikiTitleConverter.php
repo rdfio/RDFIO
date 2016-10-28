@@ -60,10 +60,9 @@ class RDFIOURIToTitleConverter {
 	/////// CONVERSION STRATEGIES ///////
 
 	/**
-	 * Strategy 1: URI to WikiTitle
+	 * Strategy 1: Use existing title for URI
 	 */
 	function getExistingTitleForURI( $uri ) {
-		# 1. [x] Check if the uri exists as Equiv URI already (Overrides everything)
 		$wikiTitle = $this->arc2Store->getWikiTitleByEquivalentURI( $uri );
 		if ( $wikiTitle != '' ) {
 			return $wikiTitle;
@@ -73,10 +72,11 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * Strategy 2: URI to WikiTitle 
+	 * Strategy 2: Use configured properties to get the title
 	 */
 	function applyGlobalSettingForPropertiesToUseAsWikiTitle( $uri ) {
 		global $rdfiogPropertiesToUseAsWikiTitle;
+
 		$wikiPageTitle = '';
 
 		if ( !$this->globalSettingForPropertiesToUseAsWikiTitleExists() ) {
@@ -95,6 +95,7 @@ class RDFIOURIToTitleConverter {
 				}
 			}
 		}
+
 		if ( $wikiPageTitle != '' ) {
 			$wikiPageTitle = $this->cleanWikiTitle( $wikiPageTitle );
 		}
@@ -106,13 +107,13 @@ class RDFIOURIToTitleConverter {
 	}	
 
 	/**
-	 * Strategy 3: URI to WikiTitle
+	 * Strategy 3: Abbreviate the namespace to its NS prefix as configured in
+	 * mappings in the parser (default ones, or provided as part of the
+	 * imported data)
 	 */
 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
 		global $rdfiogBaseURIs;
 		
-		// Shorten the Namespace (even for entities, optionally) into an NS Prefix
-		// according to mappings from parser (Such as chemInf:Blabla ...)
 		$nsPrefixes = $this->arc2NSPrefixes;
 		$wikiPageTitle = '';
 
@@ -120,7 +121,7 @@ class RDFIOURIToTitleConverter {
 		if ( is_array( $rdfiogBaseURIs ) ) {
 			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
 		}
-			
+
 		// Collect all the inputs for abbreviation, and apply:
 		if ( is_array( $nsPrefixes ) ) {
 			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uriToConvert, $nsPrefixes );
@@ -135,10 +136,9 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * Strategy 4: URI to WikiTitle
+	 * Strategy 4: As a default, just try to get the local part of the URL
 	 */
 	function extractLocalPartFromURI( $uriToConvert ) {
-		// As a default, just try to get the local part of the URL
 		$parts = $this->splitURI( $uriToConvert );
 		if ( $parts[1] != '' ) {
 			$wikiPageTitle = $parts[1];
