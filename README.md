@@ -37,7 +37,29 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-- See the [installation section](http://www.mediawiki.org/wiki/Extension:RDFIO#Installation) on MediaWiki.org.
+### Vagrant box
+
+The absolutely simplest way, is to use the [RDFIO Vagrant
+box](https://github.com/rdfio/rdfio-vagrantbox), which will automatically set
+up MediaWiki, SemanticMediaWiki and RDFIO in a virtual machine in under 20
+minutes.
+
+### Install semi-manually using composer
+
+1. Provided you have the PHP package manager
+   [Composer](https://getcomposer.org/) installed (See [this page](https://getcomposer.org/doc/00-intro.md)
+   for install instructions), you should now be able to install RDFIO via
+   packagist.org, like so:
+
+   ```php
+   cd <wiki_folder>
+   composer require rdfio/rdfio
+   ```
+
+2.  After installing RDFIO using composer, only one manual step is required,
+   namely to go to the `Special:RDFIOAdmin` page on your wiki, and hit the "setup"
+   button, to initialize the MySQL tables needed by the ARC2 library that RDFIO
+   builds upon.
 
 Dependencies
 ------------
