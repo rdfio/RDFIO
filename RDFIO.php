@@ -9,7 +9,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'Not an entry point.' );
 }
 
-define( 'RDFIO_VERSION', 'v2.0.3' );
+define( 'RDFIO_VERSION', 'v2.0.4' );
 
 $GLOBALS['wgExtensionCredits']['other'][] = array(
 	'path' => __FILE__,
