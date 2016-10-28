@@ -60,18 +60,25 @@ $GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Ex
  *  ARC2 RDF Store config *
  **************************/
 
-/* Customize these details if you   *
- * want to use an external database */
-global $smwgARC2StoreConfig, $smwgDefaultStore;
-$smwgARC2StoreConfig = array(
-		'db_host' => 'localhost',
-        'db_name' => 'CHANGETHIS',
-        'db_user' => 'CHANGETHIS',
-        'db_pwd' =>  'CHANGETHIS',
-        'store_name' => 'arc2store', // Determines table prefix
-);
+// Has to be made as an wgExtensionFunction so as to get access to
+// LocalSettings variables, as suggested by @mwjames in
+// https://github.com/rdfio/RDFIO/issues/13#issuecomment-256414481
+$GLOBALS['wgExtensionFunctions'][] = function() {
+	global $wgDBtype, $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
+	global $smwgARC2StoreConfig, $smwgDefaultStore;
 
-$smwgDefaultStore = 'SMWARC2Store';
+    // Customize these details if you
+    // want to use an external database
+	$smwgARC2StoreConfig = array(
+		'db_host' => $wgDBserver,
+		'db_name' => $wgDBname,
+		'db_user' => $wgDBuser,
+		'db_pwd' =>  $wgDBpassword,
+		'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+	);
+
+	$smwgDefaultStore = 'SMWARC2Store';
+};
 
 /**************************
  *     Register hooks     *
