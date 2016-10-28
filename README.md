@@ -43,7 +43,6 @@ Dependencies
 ------------
 
 - [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki)
-- [Wiki Object Model SMW Extension](https://www.mediawiki.org/wiki/Extension:Wiki_Object_Model)
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2)
 
 Bugs, new feature request and contact information
