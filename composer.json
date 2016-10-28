@@ -1,20 +1,19 @@
 {
-	"name": "mediawiki/rdfio",
+	"name": "rdfio/rdfio",
 	"type": "mediawiki-extension",
-	"description": "RDFIO extension for importing  data in RDF format to Semantic MediaWiki",
+	"description": "RDFIO extension for importing data in RDF format to Semantic MediaWiki",
 	"keywords": [
 		"MediaWiki",
 		"Semantic MediaWiki",
 		"RDF",
 		"Linked Data"
 	],
-	"homepage": "<attempt to pull from ExtensionName.php, else blank>",
-	"license": "<leave as ‘unknown’?>",
-
+	"homepage": "https://mediawiki.org/wiki/Extension:RDFIO",
+	"license": "GPL-2.0",
 	"authors": [
 		{
 			"name": "Samuel Lampa",
-			"homepage": "http://saml.rilspace.org",
+			"homepage": "http://bionics.it",
 			"role": "Author"
 		},
 		{
@@ -23,13 +22,18 @@
 			"role": "Author"
 		}
 	],
-
 	"support": {},
 	"require": {
 		"composer/installers": ">=1.0.1",
-		"mediawiki/semantic-media-wiki": ">=1.9"
+		"mediawiki/semantic-media-wiki": ">=2.3",
+		"semsol/arc2": ">=v2.2.4"
 	},
 	"autoload": {
 		"files": ["RDFIO.php"]
+	},
+    "extra": {
+		"branch-alias": {
+				"dev-master": "v2.0.x-dev"
+		}
 	}
 }

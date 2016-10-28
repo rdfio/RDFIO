@@ -8,7 +8,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgExtensionCredits['specialpage'][] = array(
+$GLOBALS['wgExtensionCredits']['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'SPARQLEndpoint',
 	'author' => array('Samuel Lampa', 'Ali King'),
@@ -19,7 +19,7 @@ $wgExtensionCredits['specialpage'][] = array(
 
 $dir = dirname( __FILE__ ) . '/';
 
-$wgAutoloadClasses['SPARQLEndpoint'] = $dir . 'SpecialSPARQLEndpoint_body.php'; # Tell MediaWiki to load the extension body.
-$wgExtensionMessagesFiles['SPARQLEndpoint'] = $dir . '../RDFIO.i18n.php';
-$wgExtensionAliasesFiles['SPARQLEndpoint'] = $dir . '../RDFIO.alias.php';
-$wgSpecialPages['SPARQLEndpoint'] = 'SPARQLEndpoint'; # Let MediaWiki know about your new special page.
+$GLOBALS['wgAutoloadClasses']['SPARQLEndpoint'] = $dir . 'SpecialSPARQLEndpoint_body.php'; # Tell MediaWiki to load the extension body.
+$GLOBALS['wgExtensionMessagesFiles']['SPARQLEndpoint'] = $dir . '../RDFIO.i18n.php';
+$GLOBALS['wgExtensionAliasesFiles']['SPARQLEndpoint'] = $dir . '../RDFIO.alias.php';
+$GLOBALS['wgSpecialPages']['SPARQLEndpoint'] = 'SPARQLEndpoint'; # Let MediaWiki know about your new special page.

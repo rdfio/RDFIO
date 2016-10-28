@@ -8,7 +8,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgExtensionCredits['specialpage'][] = array(
+$GLOBALS['wgExtensionCredits']['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'RDFImport',
 	'author' => array('Samuel Lampa', 'Ali King'),
@@ -19,7 +19,7 @@ $wgExtensionCredits['specialpage'][] = array(
 
 $dir = dirname( __FILE__ ) . '/';
 
-$wgAutoloadClasses['RDFImport'] = $dir . 'SpecialRDFImport_body.php'; # Tell MediaWiki to load the extension body.
-$wgExtensionMessagesFiles['RDFImport'] = $dir . '../RDFIO.i18n.php';
-$wgExtensionAliasFiles['RDFImport'] = $dir . '../RDFIO.alias.php';
-$wgSpecialPages['RDFImport'] = 'RDFImport'; # Let MediaWiki know about your new special page.
+$GLOBALS['wgAutoloadClasses']['RDFImport'] = $dir . 'SpecialRDFImport_body.php'; # Tell MediaWiki to load the extension body.
+$GLOBALS['wgExtensionMessagesFiles']['RDFImport'] = $dir . '../RDFIO.i18n.php';
+$GLOBALS['wgExtensionAliasFiles']['RDFImport'] = $dir . '../RDFIO.alias.php';
+$GLOBALS['wgSpecialPages']['RDFImport'] = 'RDFImport'; # Let MediaWiki know about your new special page.

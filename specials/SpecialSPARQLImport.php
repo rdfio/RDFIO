@@ -8,7 +8,7 @@ EOT;
 	exit( 1 );
 }
 
-$wgExtensionCredits['specialpage'][] = array(
+$GLOBALS['wgExtensionCredits']['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'SPARQLImport',
 	'author' => array('Samuel Lampa', 'Ali King'),
@@ -19,7 +19,7 @@ $wgExtensionCredits['specialpage'][] = array(
 
 $dir = dirname( __FILE__ ) . '/';
 
-$wgAutoloadClasses['SPARQLImport'] = $dir . 'SpecialSPARQLImport_body.php'; # Tell MediaWiki to load the extension body.
-$wgExtensionMessagesFiles['SPARQLImport'] = $dir . '../RDFIO.i18n.php';
-$wgExtensionAliasFiles['SPARQLImport'] = $dir . '../RDFIO.alias.php';
-$wgSpecialPages['SPARQLImport'] = 'SPARQLImport'; # Let MediaWiki know about your new special page.
+$GLOBALS['wgAutoloadClasses']['SPARQLImport'] = $dir . 'SpecialSPARQLImport_body.php'; # Tell MediaWiki to load the extension body.
+$GLOBALS['wgExtensionMessagesFiles']['SPARQLImport'] = $dir . '../RDFIO.i18n.php';
+$GLOBALS['wgExtensionAliasFiles']['SPARQLImport'] = $dir . '../RDFIO.alias.php';
+$GLOBALS['wgSpecialPages']['SPARQLImport'] = 'SPARQLImport'; # Let MediaWiki know about your new special page.

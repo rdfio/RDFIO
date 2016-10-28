@@ -76,16 +76,16 @@ class RDFIOARC2StoreWrapper {
 	    return $uri;
 	}
 
-	/**
-	 * For a URI that is defined using the "Original URI" property, return the wiki
-	 * article corresponding to that entity
-	 * @param string $uri
-	 * @return string $wikititle;
-	 */
-	public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
-	    $uriEncoded = str_replace(' ', '%20', $uri);
-	    $wikiTitleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
-	    $wikiTitleResolverUriDecoded = SMWExporter::decodeURI( $wikiTitleResolverUri );
+    /**
+     * For a URI that is defined using the "Original URI" property, return the wiki
+     * article corresponding to that entity
+     * @param string $uri
+     * @return string $wikititle;
+     */
+    public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
+        $uriEncoded = str_replace(' ', '%20', $uri);
+        $wikiTitleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
+        $wikiTitleResolverUriDecoded = SMWExporter::getInstance()->decodeURI( $wikiTitleResolverUri );
 
 	    $uriParts = explode('/', rtrim( $wikiTitleResolverUriDecoded , '/') ); 
 	    $wikiTitle = str_replace('_', ' ', array_pop( $uriParts ));
