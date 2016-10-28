@@ -24,6 +24,7 @@
 	],
 	"support": {},
 	"require": {
+		"wikimedia/composer-merge-plugin": "dev-master",
 		"composer/installers": ">=1.0.1",
 		"mediawiki/semantic-media-wiki": ">=2.3",
 		"semsol/arc2": ">=v2.2.4"
