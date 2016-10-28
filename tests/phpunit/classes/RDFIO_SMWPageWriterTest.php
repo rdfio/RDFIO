@@ -7,7 +7,7 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
     }
 
     protected function tearDown() {
-    
+        parent::tearDown();
     }
     
 // class RDFIOSMWPageWriter {

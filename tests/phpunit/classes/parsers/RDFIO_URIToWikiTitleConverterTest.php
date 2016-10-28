@@ -20,7 +20,9 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 		$this->uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $triples, $tripleIndex, $namespaces );	
 	}
 	
-	protected function tearDown() {}
+	protected function tearDown() {
+		parent::tearDown();
+	}
 
 	/**
 	 * @covers RDFIOURIToTitleConverter::convert

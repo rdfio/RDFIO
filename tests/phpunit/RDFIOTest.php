@@ -1,11 +1,14 @@
 <?php
 
-class RDFIOTest extends MediaWikiTestCase { 
+class RDFIOTest extends MediaWikiTestCase {
 
 	function setUp() {
-		parent::setUp();		
+		parent::setUp();
 	}
-	function tearDown() {}
+
+	function tearDown() {
+		parent::tearDown();
+	}
 
 	/**
 	 * Simple test to see that the PHPUnit test framework

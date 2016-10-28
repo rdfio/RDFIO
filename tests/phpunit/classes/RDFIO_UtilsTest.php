@@ -6,7 +6,9 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
         parent::setUp();
     }
 
-    protected function tearDown() {}
+	protected function tearDown() {
+		parent::tearDown();
+	}
     
     /**
      * @covers RDFIOURIToTitleConverter::startsWithUnderscore
