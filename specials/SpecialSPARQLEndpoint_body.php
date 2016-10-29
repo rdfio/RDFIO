@@ -675,7 +675,7 @@ class SPARQLEndpoint extends SpecialPage {
 	private function getHTMLForm( $query = '' ) {
 	    global $wgArticlePath, $wgUser, $wgRequest;
 
-	    $uriResolverURI = $this->store->getLocalWikiNamespace();
+	    $uriResolverURI = SpecialPage::getTitleFor( 'URIResolver' )->getFullURL() . '/';
 
 	    $defaultQuery = "@PREFIX w : <$uriResolverURI> .\n\nSELECT *\nWHERE { ?s ?p ?o }\nLIMIT 25";
 
