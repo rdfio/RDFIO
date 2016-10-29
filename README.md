@@ -51,9 +51,9 @@ minutes.
    for install instructions), you should now be able to install RDFIO via
    packagist.org, like so:
 
-   ```php
+   ```bash
    cd <wiki_folder>
-   composer require rdfio/rdfio
+   composer require rdfio/rdfio --update-no-dev
    ```
 
 2.  After installing RDFIO using composer, only one manual step is required,
