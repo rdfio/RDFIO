@@ -65,7 +65,7 @@ $GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Ex
 // https://github.com/rdfio/RDFIO/issues/13#issuecomment-256414481
 $GLOBALS['wgExtensionFunctions'][] = function() {
 	global $wgDBtype, $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
-	global $smwgARC2StoreConfig, $smwgDefaultStore;
+	global $smwgARC2StoreConfig;
 
     // Customize these details if you
     // want to use an external database
@@ -77,8 +77,11 @@ $GLOBALS['wgExtensionFunctions'][] = function() {
 		'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 	);
 
-	$smwgDefaultStore = 'SMWARC2Store';
 };
+
+// This has to be set outside of the wgExtensionFunctions array above
+global $smwgDefaultStore;
+$smwgDefaultStore = 'SMWARC2Store';
 
 /**************************
  *	 Register hooks     *
