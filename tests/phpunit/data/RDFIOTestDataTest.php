@@ -5,22 +5,22 @@ class RDFIOTestData {
     function getTestImportData() {
         $testImportData = '<rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-				xmlns:cd="http://www.recshop.fake/cd#"
-				xmlns:countries="http://www.countries.org/onto/"
+				xmlns:cd="http://www.recshop.fake.org/cd#"
+				xmlns:countries="http://www.countries.fake.org/onto/"
 				xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 				>
     
 				<rdf:Description
-				rdf:about="http://www.recshop.fake/cd/Empire Burlesque">
+				rdf:about="http://www.recshop.fake.org/cd/Empire Burlesque">
 				<cd:artist>Bob Dylan</cd:artist>
-				<cd:country rdf:resource="http://www.countries.org/onto/USA"/>
+				<cd:country rdf:resource="http://www.countries.fake.org/onto/USA"/>
 				<cd:company>Columbia</cd:company>
 				<cd:price>10.90</cd:price>
 				<cd:year>1985</cd:year>
 				</rdf:Description>
     
 				<rdf:Description
-				rdf:about="http://www.recshop.fake/cd/Hide your heart">
+				rdf:about="http://www.recshop.fake.org/cd/Hide your heart">
 				<cd:artist>Bonnie Tyler</cd:artist>
 				<cd:country>UK</cd:country>
 				<cd:company>CBS Records</cd:company>
@@ -29,7 +29,7 @@ class RDFIOTestData {
 				</rdf:Description>
     
 				<!-- rdf:Description
-				rdf:about="http://www.countries.org/onto/USA">
+				rdf:about="http://www.countries.fake.org/onto/USA">
 				<rdfs:label>USA</rdfs:label>
 				</rdf:Description -->
     
@@ -38,8 +38,8 @@ class RDFIOTestData {
 				<rdfs:label>SomeTotallyUnrelatedLabel</rdfs:label>
 				</rdf:Description>                
                 
-                <rdf:Description rdf:about="http://www.countries.org/onto/Albums">
-				<rdfs:subClassOf rdf:resource="http://www.countries.org/onto/MediaCollections"/>
+                <rdf:Description rdf:about="http://www.countries.fake.org/onto/Albums">
+				<rdfs:subClassOf rdf:resource="http://www.countries.fake.org/onto/MediaCollections"/>
 				</rdf:Description>
 				</rdf:RDF>';
         return $testImportData;
@@ -48,22 +48,22 @@ class RDFIOTestData {
     function getInvalidTestImportData() {
         $testImportData = '< rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-				xmlns:cd="http://www.recshop.fake/cd#"
-				xmlns:countries="http://www.countries.org/onto/"
+				xmlns:cd="http://www.recshop.fake.org/cd#"
+				xmlns:countries="http://www.countries.fake.org/onto/"
 				xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 				>
     
 				<rdf:Description
-				rdf:about="http://www.recshop.fake/cd/Empire Burlesque">
+				rdf:about="http://www.recshop.fake.org/cd/Empire Burlesque">
 				<cd:artist>Bob Dylan</cd:artist>
-				<cd:country rdf:resource="http://www.countries.org/onto/USA"/>
+				<cd:country rdf:resource="http://www.countries.fake.org/onto/USA"/>
 				<cd:company>Columbia</cd:company>
 				<cd:price>10.90</cd:price>
 				<cd:year>1985</cd:year>
 				</rdf:Description>
     
 				<rdf:Description
-				rdf:about="http://www.recshop.fake/cd/Hide your heart">
+				rdf:about="http://www.recshop.fake.org/cd/Hide your heart">
 				<cd:artist>Bonnie Tyler</cd:artist>
 				<cd:country>UK</cd:country>
 				<cd:company>CBS Records</cd:company>
@@ -72,12 +72,12 @@ class RDFIOTestData {
 				</rdf:Description>
     
 				<rdf:Description
-				rdf:about="http://www.countries.org/onto/USA">
+				rdf:about="http://www.countries.fake.org/onto/USA">
 				<rdfs:label>USA</rdfs:label>
 				</rdf:Description>
     
-				<rdf:Description rdf:about="http://www.countries.org/onto/Albums">
-				<rdfs:subClassOf rdf:resource="http://www.countries.org/onto/MediaCollections"/>
+				<rdf:Description rdf:about="http://www.countries.fake.org/onto/Albums">
+				<rdfs:subClassOf rdf:resource="http://www.countries.fake.org/onto/MediaCollections"/>
 				</rdf:Description>
 				</rdf:RDF>';
         return $testImportData;
@@ -117,7 +117,7 @@ class RDFIOTestData {
 	}
 
 	function getPageDataWithTemplate() {
-		$testImportData = '{{Album|Equivalent URI=http://www.recshop.fake/cd/Empire Burlesque|Company=Colombia|Price=10.90|Year=1985|Artist=Bob Dylan|Country=Countries:USA}}
+		$testImportData = '{{Album|Equivalent URI=http://www.recshop.fake.org/cd/Empire Burlesque|Company=Colombia|Price=10.90|Year=1985|Artist=Bob Dylan|Country=Countries:USA}}
 
 [[Category:Album]]';
 		return $testImportData;

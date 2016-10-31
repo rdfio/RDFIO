@@ -29,17 +29,17 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	 * @covers RDFIOURIToPropertyTitleConverter::convert
 	 */
 	public function testConvertWithABunchOfExampleURLs() {
-	    $uri1 = 'http://www.recshop.fake/cd/Empire Burlesque';
+	    $uri1 = 'http://www.recshop.fake.org/cd/Empire Burlesque';
 	    $title1 = $this->uriToWikiTitleConverter->convert( $uri1 );
 	    $this->assertEquals('Empire Burlesque', $title1);
 
-	    $uri2 = 'http://www.recshop.fake/cd#artist';
+	    $uri2 = 'http://www.recshop.fake.org/cd#artist';
 	    $title2 = $this->uriToPropertyTitleConverter->convert( $uri2 );
 	    $this->assertEquals('cd:artist', $title2);
-	     
- 	    $uri3 = 'http://www.countries.org/onto/USA';
- 	    $title3 = $this->uriToWikiTitleConverter->convert( $uri3 );
- 	    $this->assertEquals('countries:USA', $title3);
+
+	    $uri3 = 'http://www.countries.fake.org/onto/USA';
+	    $title3 = $this->uriToWikiTitleConverter->convert( $uri3 );
+	    $this->assertEquals('countries:USA', $title3);
 	     
  	    $uri4 = 'http://something.totally.unrelated.to/its/label';
  	    $title4 = $this->uriToWikiTitleConverter->convert( $uri4 );
@@ -85,7 +85,7 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	public function testShortenURINamespaceToAliasInSourceRDF() {
 	    global $rdfiogBaseURIs;
 
-	    $title = $this->uriToWikiTitleConverter->shortenURINamespaceToAliasInSourceRDF('http://www.countries.org/onto/Canada');
+	    $title = $this->uriToWikiTitleConverter->shortenURINamespaceToAliasInSourceRDF('http://www.countries.fake.org/onto/Canada');
 	    $this->assertEquals('countries:Canada', $title);
 	}
 
