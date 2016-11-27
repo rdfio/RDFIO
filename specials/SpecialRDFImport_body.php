@@ -158,33 +158,36 @@ class RDFImport extends SpecialPage {
 	 * @return string
 	 */
 	public function getExampleTurtleData() {
-		return '@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
-				@prefix cd: <http://www.recshop.fake/cd#> .\\n\
-				@prefix countries: <http://www.countries.org/onto/> .\\n\
-				@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\\n\
-				@prefix cat: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
-				\\n\
-				<http://www.recshop.fake/cd/Empire Burlesque>\\n\
-					cd:artist \\"Bob Dylan\\" ;\\n\
-					cd:country countries:USA ;\\n\
-					cd:company \\"Columbia\\" ;\\n\
-					cd:price \\"10.90\\" ;\\n\
-					cd:year \\"1985\\" ;\\n\
-					cat:type \\"Album\\" .\\n\
-				\\n\
-				<http://www.recshop.fake/cd/Hide your heart>\\n\
-					cd:artist \\"Bonnie Tyler\\" ;\\n\
-					cd:country \\"UK\\" ;\\n\
-					cd:company \\"CBS Records\\" ;\\n\
-					cd:price \\"9.90\\" ;\\n\
-					cd:year \\"1988\\" ;\\n\
-					cat:type \\"Album\\" .\\n\
-				\\n\
-				countries:USA\\n\
-					rdfs:label \\"USA\\" .\\n\
-				\\n\
-				countries:Albums\\n\
-					rdfs:subClassOf countries:MediaCollections .';
+		$example_data = <<<EOT
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
+@prefix cd: <http://www.recshop.fake/cd#> .\\n\
+@prefix countries: <http://www.countries.org/onto/> .\\n\
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\\n\
+@prefix cat: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
+\\n\
+<http://www.recshop.fake/cd/Empire Burlesque>\\n\
+	cd:artist \\"Bob Dylan\\" ;\\n\
+	cd:country countries:USA ;\\n\
+	cd:company \\"Columbia\\" ;\\n\
+	cd:price \\"10.90\\" ;\\n\
+	cd:year \\"1985\\" ;\\n\
+	cat:type \\"Album\\" .\\n\
+\\n\
+<http://www.recshop.fake/cd/Hide your heart>\\n\
+	cd:artist \\"Bonnie Tyler\\" ;\\n\
+	cd:country \\"UK\\" ;\\n\
+	cd:company \\"CBS Records\\" ;\\n\
+	cd:price \\"9.90\\" ;\\n\
+	cd:year \\"1988\\" ;\\n\
+	cat:type \\"Album\\" .\\n\
+\\n\
+countries:USA\\n\
+	rdfs:label \\"USA\\" .\\n\
+\\n\
+countries:Albums\\n\
+	rdfs:subClassOf countries:MediaCollections .';
+EOT;
+	return $example_data;
 	}
 
 	/**
