@@ -251,7 +251,7 @@ EOT;
 								<td colspan="3">Data to import:</td>
 							</tr>
 							<tr>
-								<td colspan="3"><textarea cols="80" rows="9" name="importdata" id="importdata">' . $requestData->importData . '</textarea></td>
+								<td colspan="3"><textarea cols="80" rows="16" name="importdata" id="importdata">' . $requestData->importData . '</textarea></td>
 							</tr>
 							<tr>
 								<td style="width: 100px;">Data format:</td>
