@@ -257,8 +257,8 @@ EOT;
 								<td style="width: 100px;">Data format:</td>
 								<td>
 									<select id="dataformat" name="dataformat">
-										<option value="rdfxml" selected="selected">RDF/XML</option>
-										<option value="turtle">Turtle</option>
+										<option value="turtle" selected="selected">Turtle</option>
+										<option value="rdfxml">RDF/XML</option>
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
@@ -288,14 +288,14 @@ function pasteExampleRDFXMLData(textFieldId) {
 	var textfield = document.getElementById(textFieldId);
 	var exampledata = "' . $this->getExampleRDFXMLData() . '";
 	textfield.value = exampledata;
-	document.getElementById("dataformat").options[0].selected = true;
+	document.getElementById("dataformat").options[1].selected = true;
 	
 }	
 function pasteExampleTurtleData(textFieldId) {
 	var textfield = document.getElementById(textFieldId);
 	var exampledata = "' . $this->getExampleTurtleData() . '";
 	textfield.value = exampledata;
-	document.getElementById("dataformat").options[1].selected = true;
+	document.getElementById("dataformat").options[0].selected = true;
 }
 
 function addSourcesToMenu() {
