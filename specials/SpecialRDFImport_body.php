@@ -262,8 +262,8 @@ EOT;
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
-									[<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">RDFXML example data</a>]
-									[<a href="#" onClick="pasteExampleTurtleData(\'importdata\');">Turtle example data</a>]
+									<!-- TEMPORARILY DISABLED DUE TO NON-RESOLVED BUGS: [<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">RDFXML example data</a>] -->
+									[<a href="#" onClick="pasteExampleTurtleData(\'importdata\');">Paste example data</a>]
 									[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
 								</td>
 							</tr>
