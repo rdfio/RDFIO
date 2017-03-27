@@ -1,8 +1,6 @@
 RDF IO Extension for Semantic MediaWiki
 =======================================
 
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/samuell/RDFIO?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 - See also [RDFIO's page on MediaWiki.org](https://www.mediawiki.org/wiki/Extension:RDFIO)
 
 ![Screenshot of the SPARQL Endpoint shipped with RDFIO](http://i.imgur.com/PMMIHZ4.png)
@@ -37,6 +35,8 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
+**Please note:** RDFIO is not yet updated to work with SMW 2.5.x, so you have to use 2.4.x at the moment! 
+
 ### Vagrant box
 
 The absolutely simplest way, is to use the [RDFIO Vagrant
@@ -64,7 +64,7 @@ minutes.
 Dependencies
 ------------
 
-- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki)
+- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) 2.4.x
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2)
 
 Bugs, new feature request and contact information
