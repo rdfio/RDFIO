@@ -22,15 +22,15 @@ class RDFIOSMWPageWriter {
 			$titleExists = $mwTitleObj->exists();
 	
 			$newTemplateCalls = null;
-		
+
+                        $mwProperties = array();
+                        $mwCategories= array();
+                        $mwTemplates = array();
+
 			if ( $titleIsObj && $titleExists ) {
 
 				$mwPageObj = WikiPage::factory( $mwTitleObj );			
 				$oldWikiContent = $mwPageObj->getText();
-	
-				$mwProperties = array();
-				$mwCategories= array();
-				$mwTemplates = array();
 
 				preg_match('/^\s?$/', $oldWikiContent, $isBlank );
 
@@ -109,12 +109,12 @@ class RDFIOSMWPageWriter {
 				foreach ( $mwTemplates as $name => $array ) {
 					$updatedTemplateCalls[$name] = $array['templateCallText'];
 				}
-				
-			}
 
-			$newWikiContent = $oldWikiContent; // using new variable to separate extraction from editing
-			
-			
+                            $newWikiContent = $oldWikiContent; // using new variable to separate extraction from editing
+
+                        }
+
+
 			if ( !$titleExists ) {
 				// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
 				$newTemplates = $this->getTemplatesForCategories( $wikiPage );
@@ -161,10 +161,12 @@ class RDFIOSMWPageWriter {
 					// Find whether the property is in any template(s) on the page
 				if ( !empty( $mwTemplates ) ) {
 					foreach( $mwTemplates as $templateName => $array ) {
-						$isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
-						if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
-							$templatesWithProperty[] = $templateName;
-						}
+                                                if ( array_key_exists('properties', $mwTemplates[$templateName]) ) {
+                                                    $isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
+                                                    if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
+                                                            $templatesWithProperty[] = $templateName;
+                                                    }
+                                                }
 					}
 				}
 				$isInPage = array_key_exists( $predTitleWikified, $mwProperties );
@@ -266,15 +268,17 @@ class RDFIOSMWPageWriter {
 			// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
 			$output = array();
 			foreach( $wikiPage->getCategories() as $cat ) {
+				$categoryTitle = Title::newFromText( $cat, $defaultNamespace=NS_CATEGORY );
+				$categoryPage = WikiPage::factory( $categoryTitle );  // get Category page, if exists
+				$categoryPageWikitext = $categoryPage->getText();
 
-				$categoryTitle = Title::newFromText( $cat, $defaultNamespace=NS_CATEGORY );	
-				$mwCategoryObj = WikiPage::factory( $categoryTitle );  // get Category page, if exists
-				$mwCategoryWikitext = $mwCategoryObj->getText();
-				preg_match('/\[\[Has template::Template:(.*)\]\]/', $mwCategoryWikitext, $categoryTemplateMatches );// get Has template property, if exists
-				$templateName = $categoryTemplateMatches[1];
-				$templateCallText = '{{' . $templateName . '}}';  // Add template call to page wikitext - {{templatename}}
-				$output[$templateName] = $templateCallText;
-				// This will then be populated with included paramters in the next section
+				preg_match('/\[\[Has template::Template:(.*)\]\]/', $categoryPageWikitext, $categoryTemplateMatches );// get Has template property, if exists
+                                if ( count($categoryTemplateMatches) > 0 ) {
+                                    $templateName = $categoryTemplateMatches[1];
+                                    $templateCallText = '{{' . $templateName . '}}';  // Add template call to page wikitext - {{templatename}}
+                                    $output[$templateName] = $templateCallText;
+                                    // This will then be populated with included paramters in the next section
+                                }
 			}
 		return $output;
 		
