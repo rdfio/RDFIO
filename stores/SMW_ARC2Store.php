@@ -52,28 +52,28 @@ class SMWARC2Store extends SMWSQLStore3 {
 			$predicate = $triple[1];
 			$object = $triple[2];
 
-			$objectStr = "";
-			$subjectStr = "";
-			$predicateStr = "";
+			$objectStr = '';
+			$subjectStr = '';
+			$predicateStr = '';
 
 			if ( $object instanceof SMWExpLiteral ) {
 				// TODO: Add escaping for results of getLexicalForm()?
-				$objectStr = "\"" . $object->getLexicalForm() . "\"" . ( ( $object->getDatatype() == "" ) ? "" : "^^<" . $object->getDatatype() . ">" );
+				$objectStr = '"' . $object->getLexicalForm() . '"' . ( ( $object->getDatatype() == '' ) ? '' : '^^<' . $object->getDatatype() . '>' );
 			} elseif ( $object instanceof SMWExpResource ) {
-				$objectStr = "<" . SMWExporter::getInstance()->expandURI( $object->getUri() ) . ">";
+				$objectStr = '<' . SMWExporter::getInstance()->expandURI( $object->getUri() ) . '>';
 			} else {
-				$objectStr = "\"\"";
+				$objectStr = '""';
 			}
 
 			if ( $subject instanceof SMWExpResource ) {
-				$subjectStr = "<" . SMWExporter::getInstance()->expandURI( $subject->getUri() ) . ">";
+				$subjectStr = '<' . SMWExporter::getInstance()->expandURI( $subject->getUri() ) . '>';
 			}
 
 			if ( $predicate instanceof SMWExpResource ) {
-				$predicateStr = "<" . SMWExporter::getInstance()->expandURI( $predicate->getUri() ) . ">";
+				$predicateStr = '<' . SMWExporter::getInstance()->expandURI( $predicate->getUri() ) . '>';
 			}
 
-			$sparqlUpdateText .= $subjectStr . " " . $predicateStr . " " . $objectStr . " .\n";
+			$sparqlUpdateText .= $subjectStr . ' ' . $predicateStr . ' ' . $objectStr . " .\n";
 		}
 		$sparqlUpdateText .= "}\n";
 
@@ -156,7 +156,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 * @param $uri
 	 */
 	private function removeDataForURI( $uri ) {
-		$sparqlUpdateText = "DELETE { <" . $uri . "> ?x ?y . }";
+		$sparqlUpdateText = 'DELETE { <' . $uri . '> ?x ?y . }';
 		wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Keep?
 		$response = $this->executeArc2Query( $sparqlUpdateText );
 		return $response;
@@ -169,7 +169,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 * @return string $uri
 	 */
 	private function getURI( $title ) {
-		$uri = "";
+		$uri = '';
 		if ( $title instanceof Title ) {
 			$wikiPageDI = SMWDIWikiPage::newFromTitle( $title );
 			$exp = SMWExporter::getInstance()->makeExportDataForSubject( $wikiPageDI );
