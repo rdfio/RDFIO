@@ -179,7 +179,7 @@ class RDFIOSMWPageWriter {
 					$newSMWValue = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
 				} else {
 					// Create an updated property
-					$objTitle = Title::newFromText( $obj );					    	
+					$objTitle = Title::newFromText( RDFIOUtils::sanitizeWikiTitleString($obj) );
 					$newSMWValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
 				}
 				$newValueText = $newSMWValue->getWikiValue();	

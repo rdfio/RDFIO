@@ -52,8 +52,7 @@ class RDFIOWikiPage {
 	
 	public function setTitle( $wikiTitle ) {
 		// Sanitize the title a bit
-		$wikiTitle = str_replace('[','',$wikiTitle);
-		$wikiTitle = str_replace(']','',$wikiTitle);
+		$wikiTitle = RDFIOUtils::sanitizeWikiTitleString( $wikiTitle );
 		$this->title = $wikiTitle;		
 	}
 	

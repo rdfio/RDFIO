@@ -77,4 +77,10 @@ class RDFIOUtils {
 		$wgOut->addHTML( $successMsgHtml );
 	}
 
+		static function sanitizeWikiTitleString( $titleText ) {
+			$titleText = str_replace('[','',$titleText);
+			$titleText = str_replace(']','',$titleText);
+			return $titleText;
+		}
+
 }
