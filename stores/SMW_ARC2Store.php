@@ -79,7 +79,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 
 		wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Remove debug code?
 		$response = $this->executeArc2Query( $sparqlUpdateText );
-		return parent::updateData( $data );
+		parent::updateData( $data );
 	}
 
 	/**
@@ -92,7 +92,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 	public function changeTitle( Title $oldTitle, Title $newTitle, $pageId, $redirectId = 0 ) {
 		// Save it in parent store now!
 		// We need that so we get all information correctly!
-		$result = parent::changeTitle( $oldTitle, $newTitle, $pageId, $redirectId );
+		parent::changeTitle( $oldTitle, $newTitle, $pageId, $redirectId );
 
 		// Delete old stuff
 		$oldUri = SMWExporter::getInstance()->expandURI( $this->getURI( $oldTitle ) );
@@ -107,8 +107,6 @@ class SMWARC2Store extends SMWSQLStore3 {
 		$oldpage->setValues( $oldTitle->getDBkey(), $oldTitle->getNamespace(), $redirectId );
 		$semdata = $this->getSemanticData( $oldpage );
 		$this->updateData( $semdata, false );
-
-		return $result;
 	}
 
 	/**
