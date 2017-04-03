@@ -14,21 +14,15 @@ class RDFIOSMWPageWriter {
 		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-			// Get properties, categories, templates and related data from the page
-			$newWikiContent = "";
-			$mwTitleObj = Title::newFromText( $wikiTitle );
-
-			// If page exists, get its data
-			$titleIsObj = is_object( $mwTitleObj );
-			$titleExists = $mwTitleObj->exists();
-
+			$newWikiContent = '';
 			$newTemplateCalls = null;
 
 			$mwProperties = array();
 			$mwCategories = array();
 			$mwTemplates = array();
 
-			if ( $titleIsObj && $titleExists ) {
+			$mwTitleObj = Title::newFromText( $wikiTitle );
+			if ( is_object( $mwTitleObj ) && $mwTitleObj->exists() ) {
 
 				$mwPageObj = WikiPage::factory( $mwTitleObj );
 				$oldWikiContent = $mwPageObj->getContent();
