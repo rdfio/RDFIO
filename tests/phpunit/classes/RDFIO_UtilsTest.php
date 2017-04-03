@@ -19,9 +19,9 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @covers RDFIOUtils::startsWithUnderscore
+	 * @covers RDFIOUtils::isURI
 	 */
-	public function testStartsWithHttpOrHttps() {
+	public function testIsURI() {
 		$this->assertTrue( RDFIOUtils::isURI( 'http://example.com' ) );
 		$this->assertTrue( RDFIOUtils::isURI( 'https://example.com' ) );
 		$this->assertFalse( RDFIOUtils::isURI( 'ftp://example.com' ) );
@@ -39,7 +39,7 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 	/**
 	 * @covers RDFIOUtils::cleanWikiTitle
 	 */
-	public function testRemoveInvalidChars() {
+	public function testClearWikiTitle() {
 		$cleanedTitle = RDFIOUtils::cleanWikiTitle( '[Some] words in the title' );
 		$this->assertEquals( 'Some words in the title', $cleanedTitle );
 	}
