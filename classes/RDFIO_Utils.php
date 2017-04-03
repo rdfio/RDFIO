@@ -1,23 +1,23 @@
 <?php
 
 class RDFIOUtils {
-	
+
 	/**
 	 * Check whether the string starts with 'http://' or 'https://'
 	 * @param string $str
 	 * @return boolean
 	 */
 	static function isURI( $str ) {
-	    return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
+		return ( substr( $str, 0, 7 ) === 'http://' || substr( $str, 0, 8 ) == 'https://' );
 	}
-	
+
 	/**
 	 * Check whether the string ends with a ':'
 	 * @param string $str
 	 * @return boolean
 	 */
 	static function endsWithColon( $str ) {
-	    return ( substr( $str, -1 ) === ':' );
+		return ( substr( $str, -1 ) === ':' );
 	}
 
 	/**
@@ -26,7 +26,7 @@ class RDFIOUtils {
 	 * @return boolean
 	 */
 	static function startsWithUnderscore( $str ) {
-	    return substr( $str, 0, 1 ) === '_';
+		return substr( $str, 0, 1 ) === '_';
 	}
 
 	/**
@@ -36,29 +36,29 @@ class RDFIOUtils {
 	 * @return string $errorhtml
 	 */
 	static function formatErrorHTML( $title, $message ) {
-	    $errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
+		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
 				<h3>' . $title . '</h3>
 				<p>' . $message . '</p>
 								</div>';
-	    return $errorHtml;
+		return $errorHtml;
 	}
-	
+
 	static function formatSuccessMessageHTML( $title, $message ) {
-	    $successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #99FF99; background-color: #DDFFDD;">
+		$successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #99FF99; background-color: #DDFFDD;">
 				<h3>' . $title . '</h3>
 				<p>' . $message . '</p>
 								</div>';
-	    return $successHtml;
+		return $successHtml;
 	}
 
 	static function inString( $needle, $haystack ) {
-	    return strpos( $needle, $haystack ) != false;
+		return strpos( $needle, $haystack ) != false;
 	}
-	
+
 	static function arrayEmpty( $array ) {
-	    return ( count( $array ) < 1 );
+		return ( count( $array ) < 1 );
 	}
- 
+
 	static function currentUserHasWriteAccess() {
 		global $wgUser;
 		$userRights = $wgUser->getRights();
@@ -69,18 +69,17 @@ class RDFIOUtils {
 		global $wgOut;
 		$errorHtml = self::formatErrorHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
-	}	
-	
+	}
+
 	static function showSuccessMessage( $title, $message ) {
 		global $wgOut;
 		$successMsgHtml = self::formatSuccessMessageHTML( $title, $message );
 		$wgOut->addHTML( $successMsgHtml );
 	}
 
-		static function sanitizeWikiTitleString( $titleText ) {
-			$titleText = str_replace('[','',$titleText);
-			$titleText = str_replace(']','',$titleText);
-			return $titleText;
-		}
-
+	static function sanitizeWikiTitleString( $titleText ) {
+		$titleText = str_replace( '[', '', $titleText );
+		$titleText = str_replace( ']', '', $titleText );
+		return $titleText;
+	}
 }

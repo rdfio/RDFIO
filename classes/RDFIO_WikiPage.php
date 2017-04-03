@@ -2,8 +2,8 @@
 
 /**
  * RDFIO specific class for holding data (title, facts (property/object tuples),
- * categories, equivalentURIs etc. about a wiki article, to make it easy to 
- * collect data and later write these data to MediaWiki. 
+ * categories, equivalentURIs etc. about a wiki article, to make it easy to
+ * collect data and later write these data to MediaWiki.
  */
 class RDFIOWikiPage {
 	protected $title;
@@ -25,37 +25,37 @@ class RDFIOWikiPage {
 			$this->addFact( array( 'p' => 'Equivalent URI', 'o' => $equivURI ) );
 		}
 	}
-	
+
 	public function addFact( $fact ) {
 		if ( !is_null( $fact ) ) {
 			$this->facts[] = $fact; // TODO: Detect duplicates?
 		}
 	}
-	
+
 	public function addCategory( $category ) {
 		if ( !is_null( $category ) && !$this->categoryExists( $category ) ) {
-			$this->categories[] = $category; 
+			$this->categories[] = $category;
 		}
-	}	
-	
+	}
+
 	public function getEquivalentUris() {
 		return $this->equivalentUris;
 	}
-	
+
 	public function getFacts() {
-		return $this->facts;	
+		return $this->facts;
 	}
 
 	public function getCategories() {
 		return $this->categories;
 	}
-	
+
 	public function setTitle( $wikiTitle ) {
 		// Sanitize the title a bit
 		$wikiTitle = RDFIOUtils::sanitizeWikiTitleString( $wikiTitle );
-		$this->title = $wikiTitle;		
+		$this->title = $wikiTitle;
 	}
-	
+
 	private function equivalentURIExists( $equivURI ) {
 		return in_array( $equivURI, $this->equivalentUris );
 	}

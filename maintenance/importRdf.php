@@ -1,13 +1,13 @@
 <?php
 
 /**
-* To the extent possible under law,  I, Samuel Lampa, have waived all copyright and
-* related or neighboring rights to Hello World. This work is published from Sweden.
-*
-* @copyright CC0 http://creativecommons.org/publicdomain/zero/1.0/
-* @author Samuel Lampa <samuel.lampa@gmail.com>
-* @ingroup Maintenance
-*/
+ * To the extent possible under law,  I, Samuel Lampa, have waived all copyright and
+ * related or neighboring rights to Hello World. This work is published from Sweden.
+ *
+ * @copyright CC0 http://creativecommons.org/publicdomain/zero/1.0/
+ * @author Samuel Lampa <samuel.lampa@gmail.com>
+ * @ingroup Maintenance
+ */
 
 require_once "../../../maintenance/Maintenance.php";
 

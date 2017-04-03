@@ -1,3 +1,4 @@
 <?php
 
-class RDFIOException extends MWException { }
+class RDFIOException extends MWException {
+}

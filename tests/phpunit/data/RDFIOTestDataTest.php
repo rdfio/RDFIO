@@ -2,8 +2,8 @@
 
 class RDFIOTestData {
 
-    function getTestImportData() {
-        $testImportData = '<rdf:RDF
+	function getTestImportData() {
+		$testImportData = '<rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 				xmlns:cd="http://www.recshop.fake.org/cd#"
 				xmlns:countries="http://www.countries.fake.org/onto/"
@@ -42,11 +42,11 @@ class RDFIOTestData {
 				<rdfs:subClassOf rdf:resource="http://www.countries.fake.org/onto/MediaCollections"/>
 				</rdf:Description>
 				</rdf:RDF>';
-        return $testImportData;
-    }    
+		return $testImportData;
+	}
 
-    function getInvalidTestImportData() {
-        $testImportData = '< rdf:RDF
+	function getInvalidTestImportData() {
+		$testImportData = '< rdf:RDF
 				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 				xmlns:cd="http://www.recshop.fake.org/cd#"
 				xmlns:countries="http://www.countries.fake.org/onto/"
@@ -80,8 +80,8 @@ class RDFIOTestData {
 				<rdfs:subClassOf rdf:resource="http://www.countries.fake.org/onto/MediaCollections"/>
 				</rdf:Description>
 				</rdf:RDF>';
-        return $testImportData;
-    }
+		return $testImportData;
+	}
 
 	function getTemplateData() {
 		$testImportData = "<noinclude>This template is for albums of recorded music

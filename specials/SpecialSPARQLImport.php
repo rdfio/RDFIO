@@ -11,7 +11,7 @@ EOT;
 $GLOBALS['wgExtensionCredits']['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'SPARQLImport',
-	'author' => array('Samuel Lampa', 'Ali King'),
+	'author' => array( 'Samuel Lampa', 'Ali King' ),
 	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-sparqlimport-desc',
 	'version' => '0.0.0',

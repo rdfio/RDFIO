@@ -1,141 +1,141 @@
-<?php  
+<?php
 
 class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 
-    protected function setUp() {
-        parent::setUp();
-    }
+	protected function setUp() {
+		parent::setUp();
+	}
 
-    protected function tearDown() {
-        parent::tearDown();
-    }
-    
-// class RDFIOSMWPageWriter {
+	protected function tearDown() {
+		parent::tearDown();
+	}
 
-// 	public function __construct() {}
+	// class RDFIOSMWPageWriter {
 
-// 	/**
-// 	 * Main function, that takes an array of RDFIOWikiPage objects, and writes to
-// 	 * MediaWiki using the WikiObjectModel extension.
-// 	 * @param array $wikiPages
-// 	 */
-// 	public function import( $wikiPages ) {
-// 		global $wgOut;
+	// 	public function __construct() {}
 
-// 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-// 			// Get data from Wiki Page object
-// 			$facts = $wikiPage->getFacts();
-// 			$equivUris = $wikiPage->getEquivalentUris();
-// 			$categories = $wikiPage->getCategories();
+	// 	/**
+	// 	 * Main function, that takes an array of RDFIOWikiPage objects, and writes to
+	// 	 * MediaWiki using the WikiObjectModel extension.
+	// 	 * @param array $wikiPages
+	// 	 */
+	// 	public function import( $wikiPages ) {
+	// 		global $wgOut;
 
-// 			// Get property objects from WOM
-// 			$womPropertyObjs = array();
-// 			$womCategoryObjs = array();
-// 			$wikiContent = "";
-// 			$mwTitleObj = Title::newFromText( $wikiTitle );
+	// 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
+	// 			// Get data from Wiki Page object
+	// 			$facts = $wikiPage->getFacts();
+	// 			$equivUris = $wikiPage->getEquivalentUris();
+	// 			$categories = $wikiPage->getCategories();
 
-// 			// If page exists, get it's data from WOM
-// 			if ( is_object($mwTitleObj) && $mwTitleObj->exists() ) {
-// 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
+	// 			// Get property objects from WOM
+	// 			$womPropertyObjs = array();
+	// 			$womCategoryObjs = array();
+	// 			$wikiContent = "";
+	// 			$mwTitleObj = Title::newFromText( $wikiTitle );
 
-// 				// Get wiki text
-// 				$wikiContent = $womWikiPage->getWikiText();
+	// 			// If page exists, get it's data from WOM
+	// 			if ( is_object($mwTitleObj) && $mwTitleObj->exists() ) {
+	// 				$womWikiPage = WOMProcessor::getPageObject( $mwTitleObj );
 
-// 				// Get properties
-// 				try{
-// 					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
-// 					// use page object functions
-// 					foreach ( $propertyObjIds as $propertyObjId ) {
-// 						$womPropertyObj = $womWikiPage->getObject( $propertyObjId );
-// 						$womPropertyName = $womPropertyObj->getPropertyName();
-// 						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
-// 					}
-// 				} catch( Exception $e ) {
-// 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
-// 				}
+	// 				// Get wiki text
+	// 				$wikiContent = $womWikiPage->getWikiText();
 
-// 				// Get categories
-// 				try {
-// 					$categoryObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//category' );
-// 					foreach ( $categoryObjIds as $categoryObjId ) {
-// 						$womCategoryObj = $womWikiPage->getObject( $categoryObjId );
-// 						$womCategoryName = $womCategoryObj->getName();
-// 						$womCategoryObjs[$womCategoryName] = $womCategoryObj; 
-// 					}
-// 				} catch( Exception $e ) {
-// 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
-// 				}
+	// 				// Get properties
+	// 				try{
+	// 					$propertyObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//property' );
+	// 					// use page object functions
+	// 					foreach ( $propertyObjIds as $propertyObjId ) {
+	// 						$womPropertyObj = $womWikiPage->getObject( $propertyObjId );
+	// 						$womPropertyName = $womPropertyObj->getPropertyName();
+	// 						$womPropertyObjs[$womPropertyName] = $womPropertyObj;
+	// 					}
+	// 				} catch( Exception $e ) {
+	// 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>' );
+	// 				}
 
-// 			}
+	// 				// Get categories
+	// 				try {
+	// 					$categoryObjIds = WOMProcessor::getObjIdByXPath( $mwTitleObj, '//category' );
+	// 					foreach ( $categoryObjIds as $categoryObjId ) {
+	// 						$womCategoryObj = $womWikiPage->getObject( $categoryObjId );
+	// 						$womCategoryName = $womCategoryObj->getName();
+	// 						$womCategoryObjs[$womCategoryName] = $womCategoryObj;
+	// 					}
+	// 				} catch( Exception $e ) {
+	// 					#$wgOut->addHTML( '<pre>Exception when talking to WOM: ' . $e->getMessage() . '</pre>' );
+	// 				}
 
-// 			// Add facts (properties) to the wiki text
-// 			$newPropertiesAsWikiText = "\n";
-// 			foreach ( $facts as $fact ) {
-// 				$pred = $fact['p'];
-// 				$obj = $fact['o'];
+	// 			}
 
-// 				$predTitle = Title::newFromText( $pred );
-// 				$predTitleWikified = $predTitle->getText();
+	// 			// Add facts (properties) to the wiki text
+	// 			$newPropertiesAsWikiText = "\n";
+	// 			foreach ( $facts as $fact ) {
+	// 				$pred = $fact['p'];
+	// 				$obj = $fact['o'];
 
-// 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
-// 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
-// 				if ( $hasLocalUrl && $isEquivURI ) {
-// 					// Don't update Equivalent URI if the URL is a local URL (thus containing
-// 					// "Special:URIResolver").
-// 				} else if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
-// 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
-// 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
-// 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
-// 				} else { 
-// 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
+	// 				$predTitle = Title::newFromText( $pred );
+	// 				$predTitleWikified = $predTitle->getText();
 
-// 					// Store the old wiki text for the fact, in order to replace later
-// 					$oldPropertyText = $womPropertyObj->getWikiText();
+	// 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
+	// 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
+	// 				if ( $hasLocalUrl && $isEquivURI ) {
+	// 					// Don't update Equivalent URI if the URL is a local URL (thus containing
+	// 					// "Special:URIResolver").
+	// 				} else if ( !array_key_exists( $predTitleWikified, $womPropertyObjs ) ) { // If property already exists ...
+	// 					$newWomPropertyObj = new WOMPropertyModel( $pred, $obj, '' ); // FIXME: "Property" should not be included in title
+	// 					$newPropertyAsWikiText = $newWomPropertyObj->getWikiText();
+	// 					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
+	// 				} else {
+	// 					$womPropertyObj = $womPropertyObjs[$predTitleWikified];
 
-// 					// Create an updated property
-// 					$objTitle = Title::newFromText( $obj );
-// 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
-// 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
-// 					$newPropertyText = $womPropertyObj->getWikiText();
+	// 					// Store the old wiki text for the fact, in order to replace later
+	// 					$oldPropertyText = $womPropertyObj->getWikiText();
 
-// 					// Replace the existing property with new value
-// 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
-// 				}
-// 			}
-// 			$wikiContent .= $newPropertiesAsWikiText;
+	// 					// Create an updated property
+	// 					$objTitle = Title::newFromText( $obj );
+	// 					$newSMWPageValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
+	// 					$womPropertyObj->setSMWDataValue( $newSMWPageValue );
+	// 					$newPropertyText = $womPropertyObj->getWikiText();
 
-// 			// Add categories to the wiki text
-// 			$newCategoriesAsWikiText = "\n";
-// 			foreach( $categories as $category ) {
+	// 					// Replace the existing property with new value
+	// 					$wikiContent = str_replace( $oldPropertyText, $newPropertyText, $wikiContent );
+	// 				}
+	// 			}
+	// 			$wikiContent .= $newPropertiesAsWikiText;
 
-// 				$categoryTitle = Title::newFromText( $category );
-// 				$categoryTitleWikified = $categoryTitle->getText();
+	// 			// Add categories to the wiki text
+	// 			$newCategoriesAsWikiText = "\n";
+	// 			foreach( $categories as $category ) {
 
-// 				if ( !array_key_exists( $categoryTitleWikified, $womCategoryObjs ) ) { // If property already exists ...
-// 					$newWomCategoryObj = new WOMCategoryModel( $categoryTitleWikified );
-// 					$newCategoryAsWikiText = $newWomCategoryObj->getWikiText();
-// 					$newCategoriesAsWikiText .= $newCategoryAsWikiText . "\n";
-// 				} 
-// 			}
-// 			$wikiContent .= $newCategoriesAsWikiText;
+	// 				$categoryTitle = Title::newFromText( $category );
+	// 				$categoryTitleWikified = $categoryTitle->getText();
 
-// 			// Write to wiki
-// 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
-// 		}
-// 	}
+	// 				if ( !array_key_exists( $categoryTitleWikified, $womCategoryObjs ) ) { // If property already exists ...
+	// 					$newWomCategoryObj = new WOMCategoryModel( $categoryTitleWikified );
+	// 					$newCategoryAsWikiText = $newWomCategoryObj->getWikiText();
+	// 					$newCategoriesAsWikiText .= $newCategoryAsWikiText . "\n";
+	// 				}
+	// 			}
+	// 			$wikiContent .= $newCategoriesAsWikiText;
 
-// 	/**
-// 	 * The actual write function, that takes the parsed and updated content as 
-// 	 * a string and writes to the wiki.
-// 	 * @param string $wikiTitle
-// 	 * @param string $content
-// 	 * @param string $summary
-// 	 */
-// 	protected function writeToArticle( $wikiTitle, $content, $summary ) {
-// 		$mwTitleObj = Title::newFromText( $wikiTitle );
-// 		$mwArticleObj = new Article( $mwTitleObj );
-// 		$mwArticleObj->doEdit( $content, $summary );
-// 	}
+	// 			// Write to wiki
+	// 			$this->writeToArticle($wikiTitle, $wikiContent, 'Update by RDFIO');
+	// 		}
+	// 	}
 
-// }
+	// 	/**
+	// 	 * The actual write function, that takes the parsed and updated content as
+	// 	 * a string and writes to the wiki.
+	// 	 * @param string $wikiTitle
+	// 	 * @param string $content
+	// 	 * @param string $summary
+	// 	 */
+	// 	protected function writeToArticle( $wikiTitle, $content, $summary ) {
+	// 		$mwTitleObj = Title::newFromText( $wikiTitle );
+	// 		$mwArticleObj = new Article( $mwTitleObj );
+	// 		$mwArticleObj->doEdit( $content, $summary );
+	// 	}
+
+	// }
 }

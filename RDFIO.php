@@ -15,7 +15,7 @@ $GLOBALS['wgExtensionCredits']['other'][] = array(
 	'path' => __FILE__,
 	'name' => 'RDFIO',
 	'version' => RDFIO_VERSION,
-	'author' => array('[http://saml.rilspace.org Samuel Lampa]','[http://koshatnik.com Ali King]'),
+	'author' => array( '[http://saml.rilspace.org Samuel Lampa]', '[http://koshatnik.com Ali King]' ),
 	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-desc',
 );
@@ -28,7 +28,7 @@ $GLOBALS['wgExtensionMessagesFiles']['RDFIO'] = $dir . 'RDFIO.i18n.php';
 $GLOBALS['wgExtensionMessagesFiles']['RDFIOAliases'] = $dir . 'RDFIO.alias.php';
 
 /**************************
- *	RDFIO Components    *
+ *    RDFIO Components    *
  **************************/
 
 $rdfioDir = dirname( __FILE__ );
@@ -67,13 +67,13 @@ $GLOBALS['wgExtensionFunctions'][] = function() {
 	global $wgDBtype, $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
 	global $smwgARC2StoreConfig;
 
-    // Customize these details if you
-    // want to use an external database
+	// Customize these details if you
+	// want to use an external database
 	$smwgARC2StoreConfig = array(
 		'db_host' => $wgDBserver,
 		'db_name' => $wgDBname,
 		'db_user' => $wgDBuser,
-		'db_pwd' =>  $wgDBpassword,
+		'db_pwd' => $wgDBpassword,
 		'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 	);
 
@@ -84,14 +84,14 @@ global $smwgDefaultStore;
 $smwgDefaultStore = 'SMWARC2Store';
 
 /**************************
- *	 Register hooks     *
+ *     Register hooks     *
  **************************/
 
 include_once $rdfioDir . '/RDFIO.hooks.php';
 $wgHooks['UnitTestsList'][] = 'RDFIOHooks::onUnitTestsList';
 
 /**************************
- *	Create metadata pages *
+ *    Create metadata pages *
  *************************/
 
 $wgHooks['loadExtensionSchemaUpdate'][] = 'RDFIOCreatePagesOnInstall::create';

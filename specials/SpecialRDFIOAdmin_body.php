@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SpecialRDFIOAdmin is a Special page for setting up the database tables for an ARC2 RDF Store
  * @author samuel.lampa@gmail.com
@@ -23,13 +24,13 @@ class RDFIOAdmin extends SpecialPage {
 
 	function execute( $par ) {
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
-			$wgServer, $wgScriptPath, $wgUser;
-		
+			   $wgServer, $wgScriptPath, $wgUser;
+
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
 			$this->displayRestrictionError();
 			return;
 		};
-		
+
 		$this->setHeaders();
 		$output = "";
 
@@ -54,7 +55,7 @@ class RDFIOAdmin extends SpecialPage {
 							$output .= "* Done!\n";
 						} else {
 							$output .= "Setup failed:\n";
-							$store->getErrors();	
+							$store->getErrors();
 						}
 					} else {
 						$errorMessage = "Only sysops can perform this operation!";
@@ -76,24 +77,24 @@ class RDFIOAdmin extends SpecialPage {
 
 		$wgOut->addHTML( $htmlOutput );
 
-		$wgOut->addWikiText("\n===Data Sources===\n");
-		$wgOut->addWikiText("\n{{#ask: [[Category:RDFIO Data Source]]
+		$wgOut->addWikiText( "\n===Data Sources===\n" );
+		$wgOut->addWikiText( "\n{{#ask: [[Category:RDFIO Data Source]]
 					|?Equivalent URI
 					|?RDFIO Import Type
 					|format=table
 					|mainlabel=Data Source
 					|limit=10
-					}}\n");
-		$wgOut->addWikiText("\n===Pages and Templates===\n");
-		$wgOut->addWikiText("To associate a template with a category, add <nowiki>[[Has template::Template:Name]]</nowiki> to the Category page");
-		
-		$wgOut->addWikiText("{{#ask:  [[:Category:+]]
+					}}\n" );
+		$wgOut->addWikiText( "\n===Pages and Templates===\n" );
+		$wgOut->addWikiText( "To associate a template with a category, add <nowiki>[[Has template::Template:Name]]</nowiki> to the Category page" );
+
+		$wgOut->addWikiText( "{{#ask:  [[:Category:+]]
 					|?Equivalent URI
 					|?Has template
 					|format=table
 					|mainlabel=Category
 					|limit=10
-					}}");
+					}}" );
 
 	}
 }

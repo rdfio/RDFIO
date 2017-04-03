@@ -4,7 +4,7 @@
  *
  * @file
  * @ingroup Extensions
-*/
+ */
 
 $messages = array();
 
