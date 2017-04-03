@@ -52,7 +52,7 @@ class RDFIOWikiPage {
 
 	public function setTitle( $wikiTitle ) {
 		// Sanitize the title a bit
-		$wikiTitle = RDFIOUtils::sanitizeWikiTitleString( $wikiTitle );
+		$wikiTitle = RDFIOUtils::cleanWikiTitle( $wikiTitle );
 		$this->title = $wikiTitle;
 	}
 

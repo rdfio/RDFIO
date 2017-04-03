@@ -77,9 +77,15 @@ class RDFIOUtils {
 		$wgOut->addHTML( $successMsgHtml );
 	}
 
-	static function sanitizeWikiTitleString( $titleText ) {
-		$titleText = str_replace( '[', '', $titleText );
-		$titleText = str_replace( ']', '', $titleText );
-		return $titleText;
+	/**
+	 * Remove some characters that are not allowed in Wiki titles.
+	 * @param string $title
+	 * @return string $title
+	 */
+	static function cleanWikiTitle( $title ) {
+		$title = str_replace('[', '', $title);
+		$title = str_replace(']', '', $title);
+		// TODO: Add more here later ...
+		return $title;
 	}
 }

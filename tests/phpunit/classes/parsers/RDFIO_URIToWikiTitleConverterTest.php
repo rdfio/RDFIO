@@ -141,13 +141,4 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 		$this->assertFalse( $uriToWikiTitleConverter->globalSettingForPropertiesToUseAsWikiTitleExists() );
 	}
 
-	/**
-	 * @covers RDFIOURIToTitleConverter::cleanWikiTitle
-	 */
-	public function testRemoveInvalidChars() {
-		$uriToWikiTitleConverter = new RDFIOURIToTitleConverter( array(), array(), array() );
-		$cleanedTitle = $uriToWikiTitleConverter->cleanWikiTitle( '[Some] words in the title' );
-		$this->assertEquals( 'Some words in the title', $cleanedTitle );
-	}
-
 }

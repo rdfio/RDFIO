@@ -97,7 +97,7 @@ class RDFIOURIToTitleConverter {
 		}
 
 		if ( $wikiPageTitle != '' ) {
-			$wikiPageTitle = $this->cleanWikiTitle( $wikiPageTitle );
+			$wikiPageTitle = RDFIOUtils::cleanWikiTitle( $wikiPageTitle );
 		}
 		if ( $wikiPageTitle != '' ) {
 			return $wikiPageTitle;
@@ -175,18 +175,6 @@ class RDFIOURIToTitleConverter {
 			'http://www.w3.org/2004/02/skos/core#preferredLabel',
 			'http://xmlns.com/foaf/0.1/name'
 		);
-	}
-
-	/**
-	 * Remove some characters that are not allowed in Wiki titles.
-	 * @param string $title
-	 * @return string $title
-	 */
-	function cleanWikiTitle( $title ) {
-		$title = str_replace('[', '', $title);
-		$title = str_replace(']', '', $title);
-		// TODO: Add more here later ...
-		return $title;
 	}
 
 	/**
@@ -321,7 +309,7 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
 			$propertyTitle = $uriToWikiTitleConverter->convert( $propertyURI );
 		}
-		$propertyTitle = $this->cleanWikiTitle( $propertyTitle );
+		$propertyTitle = RDFIOUtils::cleanWikiTitle( $propertyTitle );
 		return $propertyTitle;
 	}
 
