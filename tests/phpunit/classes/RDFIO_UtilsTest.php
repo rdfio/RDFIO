@@ -11,7 +11,7 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
+	 * @covers RDFIOUtils::startsWithUnderscore
 	 */
 	public function testStartsWithUnderscore() {
 		$this->assertTrue( RDFIOUtils::startsWithUnderscore( '_blabla' ) );
@@ -19,7 +19,7 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @covers RDFIOURIToTitleConverter::startsWithUnderscore
+	 * @covers RDFIOUtils::startsWithUnderscore
 	 */
 	public function testStartsWithHttpOrHttps() {
 		$this->assertTrue( RDFIOUtils::isURI( 'http://example.com' ) );
@@ -29,7 +29,7 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 
 
 	/**
-	 * @covers RDFIOURIToTitleConverter::endsWithColon
+	 * @covers RDFIOUtils::endsWithColon
 	 */
 	public function testEndsWithColon() {
 		$this->assertTrue( RDFIOUtils::endsWithColon( 'http:' ) );
