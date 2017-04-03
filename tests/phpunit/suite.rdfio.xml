@@ -26,4 +26,13 @@
 			<group>Stub</group>
 		</exclude>
 	</groups>
+	<!-- Whitelisting for Coverage analytics -->
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">../../*</directory>
+			<exclude>
+				<directory suffix=".php">../../tests</directory>
+			</exclude>
+		</whitelist>
+	</filter>
 </phpunit>
