@@ -9,7 +9,9 @@
  * @ingroup Maintenance
  */
 
-require_once "../../../maintenance/Maintenance.php";
+$basePath = getenv( 'MW_INSTALL_PATH' ) !== false ? getenv( 'MW_INSTALL_PATH' ) : __DIR__ . '/../../..';
+
+require_once $basePath . '/maintenance/Maintenance.php';
 
 class SetupArc2Store extends Maintenance {
 	public function __construct() {
