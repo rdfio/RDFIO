@@ -31,7 +31,7 @@ class RDFIOSMWPageWriter {
 			if ( $titleIsObj && $titleExists ) {
 
 				$mwPageObj = WikiPage::factory( $mwTitleObj );
-				$oldWikiContent = $mwPageObj->getText();
+				$oldWikiContent = $mwPageObj->getContent();
 
 				preg_match( '/^\s?$/', $oldWikiContent, $isBlank );
 
@@ -76,7 +76,7 @@ class RDFIOSMWPageWriter {
 					foreach ( $mwTemplates as $templateName => $array ) {
 						$mwTemplatePageTitle = Title::newFromText( $templateName, $defaultNamespace = NS_TEMPLATE );
 						$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
-						$mwTemplateText = $mwTemplateObj->getText();
+						$mwTemplateText = $mwTemplateObj->getContent();
 						$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
 
 						// Get the properties and parameter names used in the templates
@@ -132,7 +132,7 @@ class RDFIOSMWPageWriter {
 			foreach ( $wikiPage->getCategories() as $category ) {
 
 				$categoryTitle = Title::newFromText( $category, $defaultNamespace = NS_CATEGORY );
-				$categoryTitleWikified = $categoryTitle->getText();
+				$categoryTitleWikified = $categoryTitle->getContent();
 
 				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
 					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
@@ -146,7 +146,7 @@ class RDFIOSMWPageWriter {
 				$obj = $fact['o'];
 
 				$predTitle = Title::newFromText( $pred );
-				$predTitleWikified = $predTitle->getText();
+				$predTitleWikified = $predTitle->getContent();
 
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
@@ -264,7 +264,7 @@ class RDFIOSMWPageWriter {
 		foreach ( $wikiPage->getCategories() as $cat ) {
 			$categoryTitle = Title::newFromText( $cat, $defaultNamespace = NS_CATEGORY );
 			$categoryPage = WikiPage::factory( $categoryTitle );  // get Category page, if exists
-			$categoryPageWikitext = $categoryPage->getText();
+			$categoryPageWikitext = $categoryPage->getContent();
 
 			preg_match( '/\[\[Has template::Template:(.*)\]\]/', $categoryPageWikitext, $categoryTemplateMatches );// get Has template property, if exists
 			if ( count( $categoryTemplateMatches ) > 0 ) {
