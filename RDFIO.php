@@ -15,7 +15,7 @@ $GLOBALS['wgExtensionCredits']['other'][] = array(
 	'path' => __FILE__,
 	'name' => 'RDFIO',
 	'version' => RDFIO_VERSION,
-	'author' => array( '[http://saml.rilspace.org Samuel Lampa]', '[http://koshatnik.com Ali King]' ),
+	'author' => array('[http://bionics.it Samuel Lampa]','[http://koshatnik.com Ali King]'),
 	'url' => 'http://www.mediawiki.org/wiki/Extension:RDFIO',
 	'descriptionmsg' => 'rdfio-desc',
 );
