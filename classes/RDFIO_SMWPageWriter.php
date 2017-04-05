@@ -106,7 +106,7 @@ class RDFIOSMWPageWriter {
 				$newWikiContent = $oldWikiContent; // using new variable to separate extraction from editing
 			}
 
-			if ( !$titleExists ) {
+			if ( !$mwTitleObj->exists() ) {
 				// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
 				$newTemplates = $this->getTemplatesForCategories( $wikiPage );
 				foreach ( $newTemplates as $name => $callText ) {
