@@ -31,7 +31,7 @@
 	"autoload": {
 		"files": ["RDFIO.php"]
 	},
-    "extra": {
+	"extra": {
 		"branch-alias": {
 				"dev-master": "v2.0.x-dev"
 		}
