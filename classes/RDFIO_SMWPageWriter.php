@@ -25,7 +25,7 @@ class RDFIOSMWPageWriter {
 			if ( is_object( $mwTitleObj ) && $mwTitleObj->exists() ) {
 
 				$mwPageObj = WikiPage::factory( $mwTitleObj );
-				$oldWikiContent = $mwPageObj->getContent();
+				$oldWikiContent = $mwPageObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
 
 				preg_match( '/^\s?$/', $oldWikiContent, $isBlank );
 
@@ -70,7 +70,7 @@ class RDFIOSMWPageWriter {
 					foreach ( $mwTemplates as $templateName => $array ) {
 						$mwTemplatePageTitle = Title::newFromText( $templateName, $defaultNamespace = NS_TEMPLATE );
 						$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
-						$mwTemplateText = $mwTemplateObj->getContent();
+						$mwTemplateText = $mwTemplateObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
 						$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
 
 						// Get the properties and parameter names used in the templates
@@ -258,14 +258,16 @@ class RDFIOSMWPageWriter {
 		foreach ( $wikiPage->getCategories() as $cat ) {
 			$categoryTitle = Title::newFromText( $cat, $defaultNamespace = NS_CATEGORY );
 			$categoryPage = WikiPage::factory( $categoryTitle );  // get Category page, if exists
-			$categoryPageWikitext = $categoryPage->getContent();
-
-			preg_match( '/\[\[Has template::Template:(.*)\]\]/', $categoryPageWikitext, $categoryTemplateMatches );// get Has template property, if exists
-			if ( count( $categoryTemplateMatches ) > 0 ) {
-				$templateName = $categoryTemplateMatches[1];
-				$templateCallText = '{{' . $templateName . '}}';  // Add template call to page wikitext - {{templatename}}
-				$output[$templateName] = $templateCallText;
-				// This will then be populated with included paramters in the next section
+			$categoryPageContent = $categoryPage->getContent();
+			if ($categoryPageContent != null) {
+				$categoryPageWikitext = $categoryPageContent->getNativeData();
+				preg_match( '/\[\[Has template::Template:(.*)\]\]/', $categoryPageWikitext, $categoryTemplateMatches );// get Has template property, if exists
+				if ( count( $categoryTemplateMatches ) > 0 ) {
+					$templateName = $categoryTemplateMatches[1];
+					$templateCallText = '{{' . $templateName . '}}';  // Add template call to page wikitext - {{templatename}}
+					$output[$templateName] = $templateCallText;
+					// This will then be populated with included paramters in the next section
+				}
 			}
 		}
 		return $output;
