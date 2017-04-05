@@ -126,7 +126,7 @@ class RDFIOSMWPageWriter {
 			foreach ( $wikiPage->getCategories() as $category ) {
 
 				$categoryTitle = Title::newFromText( $category, $defaultNamespace = NS_CATEGORY );
-				$categoryTitleWikified = $categoryTitle->getContent();
+				$categoryTitleWikified = $categoryTitle->getText();
 
 				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
 					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
@@ -140,7 +140,7 @@ class RDFIOSMWPageWriter {
 				$obj = $fact['o'];
 
 				$predTitle = Title::newFromText( $pred );
-				$predTitleWikified = $predTitle->getContent();
+				$predTitleWikified = $predTitle->getText();
 
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
