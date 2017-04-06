@@ -2,7 +2,7 @@ RDFIO Extension for Semantic MediaWiki
 ======================================
 
 [![Build Status](https://img.shields.io/circleci/project/github/rdfio/RDFIO.svg)](https://circleci.com/gh/rdfio/RDFIO)
-[![Test Coverage](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/master)
+[![Test Coverage](https://codecov.io/gh/rdfio/RDFIO/branch/master/graph/badge.svg)](https://codecov.io/gh/rdfio/RDFIO)
 [![Latest Stable Version](https://poser.pugx.org/rdfio/rdfio/version.png)](https://packagist.org/packages/rdfio/rdfio)
 [![Packagist Download Count](https://poser.pugx.org/rdfio/rdfio/d/total.png)](https://packagist.org/packages/rdfio/rdfio)
 
