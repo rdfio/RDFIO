@@ -20,18 +20,10 @@
 			<directory>classes/parsers</directory>
 		</testsuite>
 	</testsuites>
-	<groups>
-		<exclude>
-			<group>Utility</group>
-			<group>Broken</group>
-			<group>ParserFuzz</group>
-			<group>Stub</group>
-		</exclude>
-	</groups>
 	<!-- Whitelisting for Coverage analytics -->
 	<filter>
 		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">../../*</directory>
+			<directory suffix=".php">../../</directory>
 			<exclude>
 				<directory suffix=".php">../../tests</directory>
 			</exclude>

@@ -11,7 +11,7 @@ class RDFIOARC2ToWikiConverterTest extends MediaWikiTestCase {
 	}
 
 	/**
-	 * @covers RDFIOARC2ToWikiConverter
+	 * @covers RDFIOARC2ToWikiConverter::convert
 	 */
 	public function testConvert() {
 		$testData = new RDFIOTestData();
@@ -30,4 +30,3 @@ class RDFIOARC2ToWikiConverterTest extends MediaWikiTestCase {
 	}
 
 }
-
