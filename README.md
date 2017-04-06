@@ -2,13 +2,9 @@ RDFIO Extension for Semantic MediaWiki
 ======================================
 
 [![Build Status](https://img.shields.io/circleci/project/github/rdfio/RDFIO.svg)](https://circleci.com/gh/rdfio/RDFIO)
+[![Test Coverage](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/master)
 [![Latest Stable Version](https://poser.pugx.org/rdfio/rdfio/version.png)](https://packagist.org/packages/rdfio/rdfio)
-[![Packagist download count](https://poser.pugx.org/rdfio/rdfio/d/total.png)](https://packagist.org/packages/rdfio/rdfio)
-
-[![Code coverage in master](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/master)
-<sup>(Master)</sup>
-[![Code coverage in develop](https://img.shields.io/codecov/c/github/rdfio/RDFIO/develop.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/develop)
-<sup>(Develop)</sup>
+[![Packagist Download Count](https://poser.pugx.org/rdfio/rdfio/d/total.png)](https://packagist.org/packages/rdfio/rdfio)
 
 ![Screenshot of the SPARQL Endpoint shipped with RDFIO](http://i.imgur.com/PMMIHZ4.png)
 
