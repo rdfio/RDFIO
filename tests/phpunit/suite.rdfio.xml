@@ -14,8 +14,10 @@
          strict="true"
 		 verbose="true">
 	<testsuites>
-		<testsuite name="includes">
+		<testsuite name="all">
 			<directory>.</directory>
+			<directory>classes</directory>
+			<directory>classes/parsers</directory>
 		</testsuite>
 	</testsuites>
 	<groups>
