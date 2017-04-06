@@ -54,3 +54,5 @@ dependencies:
 test:
   override:
     - bash /home/ubuntu/RDFIO/tests/ci/run-tests.sh
+  post:
+    - bash <(curl -s https://codecov.io/bash)
