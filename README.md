@@ -1,14 +1,14 @@
-RDF IO Extension for Semantic MediaWiki
-=======================================
+RDFIO Extension for Semantic MediaWiki
+======================================
 
 [![Build Status](https://img.shields.io/circleci/project/github/rdfio/RDFIO.svg)](https://circleci.com/gh/rdfio/RDFIO)
 [![Latest Stable Version](https://poser.pugx.org/rdfio/rdfio/version.png)](https://packagist.org/packages/rdfio/rdfio)
 [![Packagist download count](https://poser.pugx.org/rdfio/rdfio/d/total.png)](https://packagist.org/packages/rdfio/rdfio)
+
 [![Code coverage in master](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/master)
-<sup>Develop branch:</sup> [![Code coverage in develop](https://img.shields.io/codecov/c/github/rdfio/RDFIO/develop.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/develop)
-
-
-- See also [RDFIO's page on MediaWiki.org](https://www.mediawiki.org/wiki/Extension:RDFIO)
+<sup>(Master)</sup>
+[![Code coverage in develop](https://img.shields.io/codecov/c/github/rdfio/RDFIO/develop.svg)](https://codecov.io/gh/rdfio/RDFIO/branch/develop)
+<sup>(Develop)</sup>
 
 ![Screenshot of the SPARQL Endpoint shipped with RDFIO](http://i.imgur.com/PMMIHZ4.png)
 
@@ -42,7 +42,7 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-**Please note:** RDFIO is not yet updated to work with SMW 2.5.x, so you have to use 2.4.x at the moment! 
+**Please note:** RDFIO is not yet updated to work with SMW 2.5.x, so you have to use 2.4.x at the moment!
 
 ### Vagrant box
 
@@ -79,3 +79,9 @@ Bugs, new feature request and contact information
 
 Please reports bugs and feature requests in the
 [issue tracker](https://github.com/rdfio/RDFIO/issues) here on Github.
+
+Links
+-----
+
+- [RDFIO's page on MediaWiki.org](https://www.mediawiki.org/wiki/Extension:RDFIO)
+- [RDFIO project page on pharmb.io (where it is partly developed)](https://pharmb.io/project/rdfio/)
