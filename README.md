@@ -3,8 +3,11 @@ RDFIO Extension for Semantic MediaWiki
 
 [![Build Status](https://img.shields.io/circleci/project/github/rdfio/RDFIO.svg)](https://circleci.com/gh/rdfio/RDFIO)
 [![Test Coverage](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO)
+[![Code Climate Rating](https://img.shields.io/codeclimate/github/rdfio/RDFIO.svg)](https://codeclimate.com/github/rdfio/RDFIO)
+[![Code Climate Issues](https://img.shields.io/codeclimate/issues/github/rdfio/RDFIO.svg)](https://codeclimate.com/github/rdfio/RDFIO/issues)
 [![Latest Stable Version](https://poser.pugx.org/rdfio/rdfio/version.png)](https://packagist.org/packages/rdfio/rdfio)
 [![Packagist Download Count](https://poser.pugx.org/rdfio/rdfio/d/total.png)](https://packagist.org/packages/rdfio/rdfio)
+[![Licence](https://img.shields.io/packagist/l/rdfio/rdfio.svg)]()
 
 ![Screenshot of the SPARQL Endpoint shipped with RDFIO](http://i.imgur.com/PMMIHZ4.png)
 
