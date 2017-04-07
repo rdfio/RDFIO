@@ -2,5 +2,5 @@
 set -ex
 
 cd /home/ubuntu/w/extensions/Rdfio/tests/phpunit/
-./run_tests_and_coverage.sh
+php ../../../../tests/phpunit/phpunit.php --configuration=suite.rdfio.xml --coverage-clover=coverage.xml --log-junit $CIRCLE_TEST_REPORTS/phpunit/junit.xml
 mv coverage.xml $HOME/RDFIO/
