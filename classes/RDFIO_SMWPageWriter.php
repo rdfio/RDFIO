@@ -7,57 +7,24 @@ class RDFIOSMWPageWriter {
 
 	/**
 	 * Main function, that takes an array of RDFIOWikiPage objects, and writes to
-	 * MediaWiki using the WikiObjectModel extension.
+	 * MediaWiki.
 	 * @param array $wikiPages
 	 */
 	public function import( $wikiPages ) {
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			$newWikiCont = '';
-			$newTplCalls = null;
+			$newTplCalls = '';
 
-			$mwProperties = array();
-			$mwCategories = array();
-			$mwTemplates = array();
+			$oldWikiCont = $this->getTextForPage( $wikiTitle );
+			if ( $oldWikiCont !== '' ) {
+				$mwProperties = $this->extractProperties( $oldWikiCont );
+				$mwCategories = $this->extractCategories( $oldWikiCont );
+				$mwTemplates = $this->extractTemplates( $oldWikiCont );
 
-			$mwTitleObj = Title::newFromText( $wikiTitle );
-			if ( is_object( $mwTitleObj ) && $mwTitleObj->exists() ) {
-
-				$mwPageObj = WikiPage::factory( $mwTitleObj );
-				$oldWikiCont = $mwPageObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
-
-				preg_match( '/^\s?$/', $oldWikiCont, $isBlank );
-
-				// Find all the properties stored in the conventional way within the page
-				preg_match_all( '/\[\[(.*)::(.*)\]\]/', $oldWikiCont, $propMatches );
-				$oldPropText = $propMatches[0];
-				$oldPropName = $propMatches[1];
-				$oldPropVal = $propMatches[2];
-				foreach ( $oldPropName as $idx => $propName ) {
-					$mwProperties[$propName] = array( 'value' => $oldPropVal[$idx], 'wikitext' => $oldPropText[$idx] );
-				}
-
-				// Find all the categories, in the same way
-				preg_match_all( '/\[\[Category:(.*)\]\]/', $oldWikiCont, $catMatches );
-				$oldCatText = $catMatches[0];
-				$oldCatName = $catMatches[1];
-				foreach ( $oldCatName as $idx => $catName ) {
-					$mwCategories[$catName] = array( 'wikitext' => $oldCatText[$idx] );
-				}
-
-
-				// Find all the templates
-				preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiCont, $tplMatches );
-				$oldTplCall = $tplMatches[0];
-				$oldTplName = $tplMatches[1];
-				$oldTplParams = $tplMatches[2];
-				foreach ( $oldTplName as $idx => $tplName ) {
-					$mwTemplates[$tplName]['templateCallText'] = $oldTplCall[$idx];
-					$mwTemplates[$tplName]['templateParamsValues'] = $oldTplParams[$idx];
-				}
-
-				if ( !empty( $isBlank ) ) {
-					$newTpls = $this->getTemplatesForCategories( $wikiPage );
+				$pageIsBlank = preg_match( '/^\s?$/', $oldWikiCont, $matches );
+				if ( !$pageIsBlank ) {
+					$newTpls = $this->getTemplatesForCategoriesOfPage( $wikiPage );
 					foreach ( $newTpls as $name => $callText ) {
 						$mwTemplates[$name]['templateCallText'] = $callText;
 						$newTplCalls .= $callText . "\n";
@@ -67,9 +34,7 @@ class RDFIOSMWPageWriter {
 				if ( !empty( $mwTemplates ) ) {
 					// Extract the wikitext from each template
 					foreach ( $mwTemplates as $tplName => $array ) {
-						$mwTplPageTitle = Title::newFromText( $tplName, NS_TEMPLATE );
-						$mwTplObj = WikiPage::factory( $mwTplPageTitle );
-						$mwTplText = $mwTplObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
+						$mwTplText = $this->getTextForPage( $tplName, NS_TEMPLATE );
 						$mwTemplates[$tplName]['wikitext'] = $mwTplText;
 
 						// Get the properties and parameter names used in the templates
@@ -105,9 +70,8 @@ class RDFIOSMWPageWriter {
 				$newWikiCont = $oldWikiCont; // using new variable to separate extraction from editing
 			}
 
-			if ( !$mwTitleObj->exists() ) {
-				// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
-				$newTpls = $this->getTemplatesForCategories( $wikiPage );
+			if ( !Title::newFromText( $wikiTitle )->exists() ) {
+				$newTpls = $this->getTemplatesForCategoriesOfPage( $wikiPage );
 				foreach ( $newTpls as $name => $callText ) {
 					$mwTemplates[$name]['templateCallText'] = $callText;
 					$newTplCalls .= $callText . "\n";
@@ -239,36 +203,101 @@ class RDFIOSMWPageWriter {
 	}
 
 	/**
-	 * The actual write function, that takes the parsed and updated content as
+	 * Extract an array of properties from wiki text
+	 * @param string $oldWikiContent
+	 * @return array
+	 */
+	private function extractProperties( $oldWikiContent ) {
+		$mwProperties = array();
+		preg_match_all( '/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $matches );
+		$oldPropText = $matches[0];
+		$oldPropName = $matches[1];
+		$oldPropVal = $matches[2];
+		foreach ( $oldPropName as $idx => $propName ) {
+			$mwProperties[$propName] = array( 'value' => $oldPropVal[$idx], 'wikitext' => $oldPropText[$idx] );
+		}
+		return $mwProperties;
+	}
+
+	/**
+	 * Extract an array of categories from wiki text
+	 * @param string $oldWikiContent
+	 * @return array
+	 */
+	private function extractCategories( $oldWikiContent ) {
+		// Find all the categories, in the same way
+		preg_match_all( '/\[\[Category:(.*)\]\]/', $oldWikiContent, $matches );
+		$oldCatText = $matches[0];
+		$oldCatName = $matches[1];
+		foreach ( $oldCatName as $idx => $catName ) {
+			$mwCategories[$catName] = array( 'wikitext' => $oldCatText[$idx] );
+		}
+		return $mwCategories;
+	}
+
+	/**
+	 * Extract an array of templates from wiki text
+	 * @param string $oldWikiContent
+	 * @return array
+	 */
+	private function extractTemplates( $oldWikiContent ) {
+		preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $matches );
+		$oldTplCall = $matches[0];
+		$oldTplName = $matches[1];
+		$oldTplParams = $matches[2];
+		foreach ( $oldTplName as $idx => $tplName ) {
+			$mwTemplates[$tplName]['templateCallText'] = $oldTplCall[$idx];
+			$mwTemplates[$tplName]['templateParamsValues'] = $oldTplParams[$idx];
+		}
+		return $mwTemplates;
+	}
+
+	/**
+	 * Retrieves wiki text from wiki database
+	 * @param string $title
+	 * @param int $wikiNamespace
+	 * @return string $wikiText
+	 */
+	private function getTextForPage( $title, $wikiNamespace = NS_MAIN ) {
+		$wikiText = '';
+		$titleObj = Title::newFromText( $title, $wikiNamespace );
+		$pageObj = WikiPage::factory( $titleObj );
+		$content = $pageObj->getContent();
+		if ( $content !== null ) {
+			$wikiText = $content->getNativeData();
+		}
+		return $wikiText;
+	}
+
+	/**
+	 * Takes the parsed and updated content as
 	 * a string and writes to the wiki.
 	 * @param string $wikiTitle
 	 * @param string $content
 	 * @param string $summary
 	 */
-	protected function writeToArticle( $wikiTitle, $content, $summary ) {
+	private function writeToArticle( $wikiTitle, $content, $summary ) {
 		$mwTitleObj = Title::newFromText( $wikiTitle );
 		$mwArticleObj = new Article( $mwTitleObj );
 		$mwArticleObj->doEdit( $content, $summary );
 	}
 
-	function getTemplatesForCategories( $wikiPage ) {
-		// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext
-		$output = array();
+	/**
+	 *
+	 * @param RDFIOWikiPage $wikiPage
+	 * @return array $templates
+	 */
+	private function getTemplatesForCategoriesOfPage( $wikiPage ) {
+		$templates = array();
 		foreach ( $wikiPage->getCategories() as $cat ) {
-			$catTitle = Title::newFromText( $cat, NS_CATEGORY );
-			$catPage = WikiPage::factory( $catTitle );  // get Category page, if exists
-			$catPageCont = $catPage->getContent();
-			if ($catPageCont != null) {
-				$catPageText = $catPageCont->getNativeData();
-				preg_match( '/\[\[Has template::Template:(.*)\]\]/', $catPageText, $catTplMatches );// get Has template property, if exists
-				if ( count( $catTplMatches ) > 0 ) {
-					$tplName = $catTplMatches[1];
-					$tplCallText = '{{' . $tplName . '}}';  // Add template call to page wikitext - {{templatename}}
-					$output[$tplName] = $tplCallText;
-					// This will then be populated with included paramters in the next section
-				}
+			$catPageText = $this->getTextForPage( $cat, NS_CATEGORY );
+			preg_match( '/\[\[Has template::Template:(.*)\]\]/', $catPageText, $catTplMatches );// get Has template property, if exists
+			if ( !empty( $catTplMatches ) ) {
+				$tplName = $catTplMatches[1];
+				$tplCallText = '{{' . $tplName . '}}';  // Add template call to page wikitext - {{templatename}}
+				$templates[$tplName] = $tplCallText;
 			}
 		}
-		return $output;
+		return $templates;
 	}
 }
