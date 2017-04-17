@@ -1,3 +1,2 @@
 #!/bin/bash
-
-php ../../../../tests/phpunit/phpunit.php --configuration suite.rdfio.xml
+php ../../../../tests/phpunit/phpunit.php --configuration suite.rdfio.xml --verbose

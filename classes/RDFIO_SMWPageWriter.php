@@ -209,7 +209,7 @@ class RDFIOSMWPageWriter {
 	 */
 	private function extractProperties( $oldWikiContent ) {
 		$mwProperties = array();
-		preg_match_all( '/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $matches );
+		preg_match_all( '/\[\[(.*)::([^\|\]]+)(\|([^\]]*))?\]\]/', $oldWikiContent, $matches );
 		$oldPropText = $matches[0];
 		$oldPropName = $matches[1];
 		$oldPropVal = $matches[2];
