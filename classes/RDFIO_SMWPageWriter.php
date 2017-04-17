@@ -20,7 +20,7 @@ class RDFIOSMWPageWriter {
 			if ( $oldWikiCont !== '' ) {
 				$mwProperties = $this->extractProperties( $oldWikiCont );
 				$mwCategories = $this->extractCategories( $oldWikiCont );
-				$mwTemplates = $this->extractTemplates( $oldWikiCont );
+				$mwTemplates = $this->extractTemplateCalls( $oldWikiCont );
 
 				$pageIsBlank = preg_match( '/^\s?$/', $oldWikiCont, $matches );
 				if ( !$pageIsBlank ) {
@@ -240,7 +240,7 @@ class RDFIOSMWPageWriter {
 	 * @param string $wikiContent
 	 * @return array $mwTemplates
 	 */
-	private function extractTemplates( $wikiContent ) {
+	private function extractTemplateCalls( $wikiContent ) {
 		$mwTemplates = array();
 		preg_match_all( '/\{\{\s?([^#][A-Za-z0-9\ ]+)\s?(\|([^\}]*))?\s?\}\}/U', $wikiContent, $matches );
 		$wikiText = $matches[0];

@@ -100,7 +100,7 @@ EOT;
 				'templateParamsValues' => '' ),
 		);
 
-		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplates', array( $wikiContent ) );
+		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplateCalls', array( $wikiContent ) );
 
 		$this->assertArrayEquals( $expectedOutput, $extractedTemplates, true, true );
 	}
