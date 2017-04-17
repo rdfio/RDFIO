@@ -11,11 +11,10 @@ class RDFIOSMWPageWriter {
 	 * @param array $wikiPages
 	 */
 	public function import( $wikiPages ) {
-		global $wgOut;
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
-			$newWikiContent = '';
-			$newTemplateCalls = null;
+			$newWikiCont = '';
+			$newTplCalls = null;
 
 			$mwProperties = array();
 			$mwCategories = array();
@@ -25,73 +24,73 @@ class RDFIOSMWPageWriter {
 			if ( is_object( $mwTitleObj ) && $mwTitleObj->exists() ) {
 
 				$mwPageObj = WikiPage::factory( $mwTitleObj );
-				$oldWikiContent = $mwPageObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
+				$oldWikiCont = $mwPageObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
 
-				preg_match( '/^\s?$/', $oldWikiContent, $isBlank );
+				preg_match( '/^\s?$/', $oldWikiCont, $isBlank );
 
 				// Find all the properties stored in the conventional way within the page
-				preg_match_all( '/\[\[(.*)::(.*)\]\]/', $oldWikiContent, $propertyMatches );
-				$propertyWikitextInPage = $propertyMatches[0];
-				$propertyNameInPage = $propertyMatches[1];
-				$propertyValueInPage = $propertyMatches[2];
-				foreach ( $propertyNameInPage as $index => $propertyName ) {
-					$mwProperties[$propertyName] = array( 'value' => $propertyValueInPage[$index], 'wikitext' => $propertyWikitextInPage[$index] );
+				preg_match_all( '/\[\[(.*)::(.*)\]\]/', $oldWikiCont, $propMatches );
+				$oldPropText = $propMatches[0];
+				$oldPropName = $propMatches[1];
+				$oldPropVal = $propMatches[2];
+				foreach ( $oldPropName as $idx => $propName ) {
+					$mwProperties[$propName] = array( 'value' => $oldPropVal[$idx], 'wikitext' => $oldPropText[$idx] );
 				}
 
 				// Find all the categories, in the same way
-				preg_match_all( '/\[\[Category:(.*)\]\]/', $oldWikiContent, $categoryMatches );
-				$categoryWikitextInPage = $categoryMatches[0];
-				$categoryNameInPage = $categoryMatches[1];
-				foreach ( $categoryNameInPage as $index => $categoryName ) {
-					$mwCategories[$categoryName] = array( 'wikitext' => $categoryWikitextInPage[$index] );
+				preg_match_all( '/\[\[Category:(.*)\]\]/', $oldWikiCont, $catMatches );
+				$oldCatText = $catMatches[0];
+				$oldCatName = $catMatches[1];
+				foreach ( $oldCatName as $idx => $catName ) {
+					$mwCategories[$catName] = array( 'wikitext' => $oldCatText[$idx] );
 				}
 
 
 				// Find all the templates
-				preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $templateMatches );
-				$templateCallInPage = $templateMatches[0];
-				$templateNameInPage = $templateMatches[1];
-				$templateParamsInPage = $templateMatches[2];
-				foreach ( $templateNameInPage as $index => $templateName ) {
-					$mwTemplates[$templateName]['templateCallText'] = $templateCallInPage[$index];
-					$mwTemplates[$templateName]['templateParamsValues'] = $templateParamsInPage[$index];
+				preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiCont, $tplMatches );
+				$oldTplCall = $tplMatches[0];
+				$oldTplName = $tplMatches[1];
+				$oldTplParams = $tplMatches[2];
+				foreach ( $oldTplName as $idx => $tplName ) {
+					$mwTemplates[$tplName]['templateCallText'] = $oldTplCall[$idx];
+					$mwTemplates[$tplName]['templateParamsValues'] = $oldTplParams[$idx];
 				}
 
 				if ( !empty( $isBlank ) ) {
-					$newTemplates = $this->getTemplatesForCategories( $wikiPage );
-					foreach ( $newTemplates as $name => $callText ) {
+					$newTpls = $this->getTemplatesForCategories( $wikiPage );
+					foreach ( $newTpls as $name => $callText ) {
 						$mwTemplates[$name]['templateCallText'] = $callText;
-						$newTemplateCalls .= $callText . "\n";
+						$newTplCalls .= $callText . "\n";
 					}
 				}
 
 				if ( !empty( $mwTemplates ) ) {
 					// Extract the wikitext from each template
-					foreach ( $mwTemplates as $templateName => $array ) {
-						$mwTemplatePageTitle = Title::newFromText( $templateName, $defaultNamespace = NS_TEMPLATE );
-						$mwTemplateObj = WikiPage::factory( $mwTemplatePageTitle );
-						$mwTemplateText = $mwTemplateObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
-						$mwTemplates[$templateName]['wikitext'] = $mwTemplateText;
+					foreach ( $mwTemplates as $tplName => $array ) {
+						$mwTplPageTitle = Title::newFromText( $tplName, NS_TEMPLATE );
+						$mwTplObj = WikiPage::factory( $mwTplPageTitle );
+						$mwTplText = $mwTplObj->getContent()->getNativeData(); // FIXME: Check if getContent returns null
+						$mwTemplates[$tplName]['wikitext'] = $mwTplText;
 
 						// Get the properties and parameter names used in the templates
-						preg_match_all( '/\[\[(.*)::\{\{\{(.*)\|?\}\}\}\]\]/', $mwTemplateText, $templateParameterMatches );
-						$propertyNameInTemplate = $templateParameterMatches[1];
-						$parameterNameInTemplate = $templateParameterMatches[2];
-						foreach ( $parameterNameInTemplate as $index => $templateParameter ) {
+						preg_match_all( '/\[\[(.*)::\{\{\{(.*)\|?\}\}\}\]\]/', $mwTplText, $tplParamMatches );
+						$propNameInTpl = $tplParamMatches[1];
+						$paramNameInTpl = $tplParamMatches[2];
+						foreach ( $paramNameInTpl as $idx => $tplParam ) {
 							// Store parameter-property pairings both ways round for easy lookup
-							$mwTemplates[$templateName]['parameters'][$templateParameter]['property'] = $propertyNameInTemplate[$index];
-							$mwTemplates[$templateName]['properties'][$propertyNameInTemplate[$index]] = $parameterNameInTemplate[$index];
+							$mwTemplates[$tplName]['parameters'][$tplParam]['property'] = $propNameInTpl[$idx];
+							$mwTemplates[$tplName]['properties'][$propNameInTpl[$idx]] = $paramNameInTpl[$idx];
 						}
 
-						$hasTemplateParams = array_key_exists( 'templateParamsValues', $mwTemplates[$templateName] );
+						$hasTplParams = array_key_exists( 'templateParamsValues', $mwTemplates[$tplName] );
 						// Get the parameter values used in the templates
-						if ( $hasTemplateParams ) {
-							$templateParameterValues = explode( '|', $mwTemplates[$templateName]['templateParamsValues'] );
-							foreach ( $templateParameterValues as $paramPair ) {
-								$paramValueArray = explode( '=', $paramPair );
-								$paramName = $paramValueArray[0];
-								$paramValue = $paramValueArray[1];
-								$mwTemplates[$templateName]['parameters'][$paramName]['value'] = $paramValue;
+						if ( $hasTplParams ) {
+							$tplParamVals = explode( '|', $mwTemplates[$tplName]['templateParamsValues'] );
+							foreach ( $tplParamVals as $paramPair ) {
+								$paramValArray = explode( '=', $paramPair );
+								$paramName = $paramValArray[0];
+								$paramVal = $paramValArray[1];
+								$mwTemplates[$tplName]['parameters'][$paramName]['value'] = $paramVal;
 							}
 						}
 					}
@@ -100,41 +99,41 @@ class RDFIOSMWPageWriter {
 
 				// Put existing template calls into an array for updating more than one fact
 				foreach ( $mwTemplates as $name => $array ) {
-					$updatedTemplateCalls[$name] = $array['templateCallText'];
+					$updatedTplCalls[$name] = $array['templateCallText'];
 				}
 
-				$newWikiContent = $oldWikiContent; // using new variable to separate extraction from editing
+				$newWikiCont = $oldWikiCont; // using new variable to separate extraction from editing
 			}
 
 			if ( !$mwTitleObj->exists() ) {
 				// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext	
-				$newTemplates = $this->getTemplatesForCategories( $wikiPage );
-				foreach ( $newTemplates as $name => $callText ) {
+				$newTpls = $this->getTemplatesForCategories( $wikiPage );
+				foreach ( $newTpls as $name => $callText ) {
 					$mwTemplates[$name]['templateCallText'] = $callText;
-					$newTemplateCalls .= $callText . "\n";
+					$newTplCalls .= $callText . "\n";
 				}
 			}
 
-			if ( $newTemplateCalls ) {
-				$newWikiContent .= $newTemplateCalls;
+			if ( $newTplCalls ) {
+				$newWikiCont .= $newTplCalls;
 			}
 
 			// Add categories to the wiki text 
 			// The new wikitext is actually added to the page at the end.
 			// This allows us to add a template call associated with the category and then populate it with parameters in the facts section
-			$newCategoriesAsWikiText = "\n";
-			foreach ( $wikiPage->getCategories() as $category ) {
+			$newCatsAsText = "\n";
+			foreach ( $wikiPage->getCategories() as $cat ) {
 
-				$categoryTitle = Title::newFromText( $category, $defaultNamespace = NS_CATEGORY );
-				$categoryTitleWikified = $categoryTitle->getText();
+				$catTitle = Title::newFromText( $cat, NS_CATEGORY );
+				$catTitleWikified = $catTitle->getText();
 
-				if ( !array_key_exists( $categoryTitleWikified, $mwCategories ) ) {
-					$newCategoriesAsWikiText .= '[[Category:' . $categoryTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
+				if ( !array_key_exists( $catTitleWikified, $mwCategories ) ) {
+					$newCatsAsText .= '[[Category:' . $catTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
 				}
 			}
 
 			// Add facts (properties) to the wiki text
-			$newPropertiesAsWikiText = "\n";
+			$newPropsAsText = "\n";
 			foreach ( $wikiPage->getFacts() as $fact ) {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
@@ -145,16 +144,16 @@ class RDFIOSMWPageWriter {
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
 
-				$templatesWithProperty = array();
-				$isInTemplate = null;
+				$tplsWithProp = array();
+				$isInTpl = null;
 
 				// Find whether the property is in any template(s) on the page
 				if ( !empty( $mwTemplates ) ) {
-					foreach ( $mwTemplates as $templateName => $array ) {
-						if ( array_key_exists( 'properties', $mwTemplates[$templateName] ) ) {
-							$isInTemplate = array_key_exists( $predTitleWikified, $mwTemplates[$templateName]['properties'] );
-							if ( $isInTemplate && !in_array( $templateName, $templatesWithProperty ) ) {
-								$templatesWithProperty[] = $templateName;
+					foreach ( $mwTemplates as $tplName => $array ) {
+						if ( array_key_exists( 'properties', $mwTemplates[$tplName] ) ) {
+							$isInTpl = array_key_exists( $predTitleWikified, $mwTemplates[$tplName]['properties'] );
+							if ( $isInTpl && !in_array( $tplName, $tplsWithProp ) ) {
+								$tplsWithProp[] = $tplName;
 							}
 						}
 					}
@@ -166,76 +165,76 @@ class RDFIOSMWPageWriter {
 					// FIXME: Should be done for all "URL type" facts, not just
 					//        Equivalent URI:s
 					// Since this is a URL, it should not be made into a WikiTitle
-					$newSMWValue = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
+					$newSMWVal = SMWDataValueFactory::newTypeIdValue( '_uri', $obj );
 				} else {
 					// Create an updated property
 					$objTitle = Title::newFromText( RDFIOUtils::cleanWikiTitle( $obj ) );
-					$newSMWValue = SMWWikiPageValue::makePageFromTitle( $objTitle );
+					$newSMWVal = SMWWikiPageValue::makePageFromTitle( $objTitle );
 				}
-				$newValueText = $newSMWValue->getWikiValue();
+				$newValText = $newSMWVal->getWikiValue();
 
 				// Handle updating differently depending on whether property exists in/outside template
 
 				if ( $hasLocalUrl && $isEquivURI ) {
 					// Don't update Equivalent URI if the URL is a local URL (thus containing
 					// "Special:URIResolver").
-				} else if ( $isInTemplate ) {
+				} else if ( $isInTpl ) {
 					// Code to update/add property to template call(s)
-					foreach ( $templatesWithProperty as $index => $templateName ) {
-						$oldTemplateCall = $updatedTemplateCalls[$templateName];  // use temp value as may be updated more than once
-						$parameter = $mwTemplates[$templateName]['properties'][$predTitleWikified];
-						$oldValue = null;
-						$hasOldValue = array_key_exists( 'value', $mwTemplates[$templateName]['parameters'][$parameter] );
-						if ( $hasOldValue ) {
-							$oldValue = $mwTemplates[$templateName]['parameters'][$parameter]['value'];
+					foreach ( $tplsWithProp as $idx => $tplName ) {
+						$oldTplCall = $updatedTplCalls[$tplName];  // use temp value as may be updated more than once
+						$param = $mwTemplates[$tplName]['properties'][$predTitleWikified];
+						$oldVal = null;
+						$hasOldVal = array_key_exists( 'value', $mwTemplates[$tplName]['parameters'][$param] );
+						if ( $hasOldVal ) {
+							$oldVal = $mwTemplates[$tplName]['parameters'][$param]['value'];
 						}
-						$newParamValueText = $parameter . '=' . $newValueText;
-						$newTemplateCall = $oldTemplateCall;
+						$newParamValText = $param . '=' . $newValText;
+						$newTplCall = $oldTplCall;
 
-						if ( $hasOldValue ) {
+						if ( $hasOldVal ) {
 							// if the parameter already had a value and there's a new value, replace this value in the template call
-							if ( $newValueText != $oldValue ) {
-								$oldParamValueText = $parameter . '=' . $oldValue;
-								$newTemplateCall = str_replace( $oldParamValueText, $newParamValueText, $oldTemplateCall );
+							if ( $newValText != $oldVal ) {
+								$oldParamValText = $param . '=' . $oldVal;
+								$newTplCall = str_replace( $oldParamValText, $newParamValText, $oldTplCall );
 							}
 						} else {
 							// if the parameter wasn't previously populated, add it to the parameter list in the template call
-							preg_match( '/(\{\{\s?.*\s?\|?.?)(\}\})/', $oldTemplateCall, $templateCallMatch );
-							if ( !empty( $templateCallMatch ) ) {
-								$templateCallBeginning = $templateCallMatch[1];
-								$templateCallEnd = $templateCallMatch[2];
-								$newTemplateCall = $templateCallBeginning . '|' . $newParamValueText . $templateCallEnd;
+							preg_match( '/(\{\{\s?.*\s?\|?.?)(\}\})/', $oldTplCall, $tplCallMatch );
+							if ( !empty( $tplCallMatch ) ) {
+								$tplCallStart = $tplCallMatch[1];
+								$tplCallEnd = $tplCallMatch[2];
+								$newTplCall = $tplCallStart . '|' . $newParamValText . $tplCallEnd;
 							}
 						}
 
 					}
-					if ( $newTemplateCall != $oldTemplateCall ) {
+					if ( $newTplCall != $oldTplCall ) {
 						//  if the template call has been updated, change it in the page wikitext and update the placeholder variable
-						$newWikiContent = str_replace( $oldTemplateCall, $newTemplateCall, $newWikiContent );
-						$updatedTemplateCalls[$templateName] = $newTemplateCall;
+						$newWikiCont = str_replace( $oldTplCall, $newTplCall, $newWikiCont );
+						$updatedTplCalls[$tplName] = $newTplCall;
 					}
 
 				} else if ( $isInPage ) {
 					// if it's a standard property in the page, replace value with new one if different
 
-					$oldPropertyText = $mwProperties[$predTitleWikified]['wikitext'];
+					$oldPropText = $mwProperties[$predTitleWikified]['wikitext'];
 					// Store the old wiki text for the fact, in order to replace later
 
-					$newPropertyText = '[[' . $predTitleWikified . '::' . $newValueText . ']]';
+					$newPropText = '[[' . $predTitleWikified . '::' . $newValText . ']]';
 
 					// Replace the existing property with new value
-					if ( $newPropertyText != $oldPropertyText ) {
-						$newWikiContent = str_replace( $oldPropertyText, $newPropertyText, $newWikiContent );
+					if ( $newPropText != $oldPropText ) {
+						$newWikiCont = str_replace( $oldPropText, $newPropText, $newWikiCont );
 					}
 				} else if ( !$isInPage ) { // If property isn't in the page (outside of templates) ...
-					$newPropertyAsWikiText = '[[' . $predTitleWikified . '::' . $obj . ']]';
-					$newPropertiesAsWikiText .= $newPropertyAsWikiText . "\n";
+					$newPropAsText = '[[' . $predTitleWikified . '::' . $obj . ']]';
+					$newPropsAsText .= $newPropAsText . "\n";
 				}
 			}
-			$newWikiContent .= $newPropertiesAsWikiText;
+			$newWikiCont .= $newPropsAsText;
 
 			// Write to wiki
-			$this->writeToArticle( $wikiTitle, $newWikiContent, 'Update by RDFIO' );
+			$this->writeToArticle( $wikiTitle, $newWikiCont, 'Update by RDFIO' );
 		}
 	}
 
@@ -256,16 +255,16 @@ class RDFIOSMWPageWriter {
 		// if page doesn't exist, check for categories in the wikipage data, and add an empty template call to the page wikitext
 		$output = array();
 		foreach ( $wikiPage->getCategories() as $cat ) {
-			$categoryTitle = Title::newFromText( $cat, $defaultNamespace = NS_CATEGORY );
-			$categoryPage = WikiPage::factory( $categoryTitle );  // get Category page, if exists
-			$categoryPageContent = $categoryPage->getContent();
-			if ($categoryPageContent != null) {
-				$categoryPageWikitext = $categoryPageContent->getNativeData();
-				preg_match( '/\[\[Has template::Template:(.*)\]\]/', $categoryPageWikitext, $categoryTemplateMatches );// get Has template property, if exists
-				if ( count( $categoryTemplateMatches ) > 0 ) {
-					$templateName = $categoryTemplateMatches[1];
-					$templateCallText = '{{' . $templateName . '}}';  // Add template call to page wikitext - {{templatename}}
-					$output[$templateName] = $templateCallText;
+			$catTitle = Title::newFromText( $cat, NS_CATEGORY );
+			$catPage = WikiPage::factory( $catTitle );  // get Category page, if exists
+			$catPageCont = $catPage->getContent();
+			if ($catPageCont != null) {
+				$catPageText = $catPageCont->getNativeData();
+				preg_match( '/\[\[Has template::Template:(.*)\]\]/', $catPageText, $catTplMatches );// get Has template property, if exists
+				if ( count( $catTplMatches ) > 0 ) {
+					$tplName = $catTplMatches[1];
+					$tplCallText = '{{' . $tplName . '}}';  // Add template call to page wikitext - {{templatename}}
+					$output[$tplName] = $tplCallText;
 					// This will then be populated with included paramters in the next section
 				}
 			}
