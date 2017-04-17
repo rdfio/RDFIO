@@ -47,7 +47,42 @@ EOT;
 	}
 
 	public function testExtractCategories() {
+		$smwWriter = new RDFIOSMWPageWriter();
 
+		$wikiContent = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm|Sthlm]], which has
+a population of [[Has population::10000000|ten million]].
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+{{Geographical region}}
+EOT;
+
+		$expectedTplCallText = <<<EOT
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+EOT;
+
+		$expectedTplParams = <<<EOT
+Capital=Stockholm
+|Population=10000000
+EOT;
+
+		$expectedOutput = array(
+			'Country' => array(
+				'templateCallText' => $expectedTplCallText,
+				'templateParamsValues' => $expectedTplParams ),
+			'Geographical region' => array(
+				'templateCallText' => '{{Geographical region}}',
+				'templateParamsValues' => '' ),
+		);
+
+		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplates', array( $wikiContent ) );
+
+		$this->assertArrayEquals( $expectedOutput, $extractedTemplates, true, true );
 	}
 
 	public function extractTemplates() {

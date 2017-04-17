@@ -241,11 +241,13 @@ class RDFIOSMWPageWriter {
 	 * @return array $mwTemplates
 	 */
 	private function extractTemplates( $wikiContent ) {
-		preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $wikiContent, $matches );
+		$mwTemplates = array();
+		preg_match_all( '/\{\{\s?([^#][A-Za-z0-9\ ]+)\s?(\|([^\}]*))?\s?\}\}/U', $wikiContent, $matches );
 		$wikiText = $matches[0];
 		$tplName = $matches[1];
-		$tplParams = $matches[2];
+		$tplParams = $matches[3];
 		foreach ( $tplName as $idx => $tName ) {
+			$mwTemplates[$tName] = array();
 			$mwTemplates[$tName]['templateCallText'] = $wikiText[$idx];
 			$mwTemplates[$tName]['templateParamsValues'] = $tplParams[$idx];
 		}
