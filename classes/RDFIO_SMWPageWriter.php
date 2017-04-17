@@ -225,8 +225,8 @@ class RDFIOSMWPageWriter {
 	 * @return array $mwCategories
 	 */
 	private function extractCategories( $wikiContent ) {
-		// Find all the categories, in the same way
-		preg_match_all( '/\[\[Category:(.*)\]\]/', $wikiContent, $matches );
+		$mwCategories = array();
+		preg_match_all( '/\[\[Category:([^\|]*)\|?[^\|]*\]\]/', $wikiContent, $matches );
 		$wikiText = $matches[0];
 		$catName = $matches[1];
 		foreach ( $catName as $idx => $cName ) {

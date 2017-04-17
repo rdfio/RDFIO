@@ -28,6 +28,26 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedProperties, true, true );
 	}
 
+
+	public function testExtractCategories() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$wikiContent = <<<EOT
+The capital of Sweden (which is [[Category:Country|a country]]) is [[Has capital::Stockholm|Sthlm]], which has
+a population of [[Has population::10000000|ten million]].
+[[Category:Country in Europe|]]
+EOT;
+
+		$expectedOutput = array(
+			'Country' => array( 'wikitext' => '[[Category:Country|a country]]' ),
+			'Country in Europe' => array( 'wikitext' => '[[Category:Country in Europe|]]' ),
+		);
+
+		$extractedCategories = $this->invokeMethod( $smwWriter, 'extractCategories', array( $wikiContent ) );
+
+		$this->assertArrayEquals( $expectedOutput, $extractedCategories, true, true );
+	}
+
 	public function testExtractPropertiesDifferentDisplayValue() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
@@ -46,7 +66,7 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedProperties, true, true );
 	}
 
-	public function testExtractCategories() {
+	public function testExtractTemplates() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
 		$wikiContent = <<<EOT
@@ -83,10 +103,6 @@ EOT;
 		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplates', array( $wikiContent ) );
 
 		$this->assertArrayEquals( $expectedOutput, $extractedTemplates, true, true );
-	}
-
-	public function extractTemplates() {
-
 	}
 
 	/**
