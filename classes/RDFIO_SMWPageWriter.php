@@ -204,50 +204,50 @@ class RDFIOSMWPageWriter {
 
 	/**
 	 * Extract an array of properties from wiki text
-	 * @param string $oldWikiContent
+	 * @param string $wikiContent
 	 * @return array
 	 */
-	private function extractProperties( $oldWikiContent ) {
+	private function extractProperties( $wikiContent ) {
 		$mwProperties = array();
-		preg_match_all( '/\[\[(.*)::([^\|\]]+)(\|([^\]]*))?\]\]/', $oldWikiContent, $matches );
-		$oldPropText = $matches[0];
-		$oldPropName = $matches[1];
-		$oldPropVal = $matches[2];
-		foreach ( $oldPropName as $idx => $propName ) {
-			$mwProperties[$propName] = array( 'value' => $oldPropVal[$idx], 'wikitext' => $oldPropText[$idx] );
+		preg_match_all( '/\[\[(.*)::([^\|\]]+)(\|([^\]]*))?\]\]/', $wikiContent, $matches );
+		$wikiText = $matches[0];
+		$propName = $matches[1];
+		$propVal = $matches[2];
+		foreach ( $propName as $idx => $pName ) {
+			$mwProperties[$pName] = array( 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
 		}
 		return $mwProperties;
 	}
 
 	/**
 	 * Extract an array of categories from wiki text
-	 * @param string $oldWikiContent
-	 * @return array
+	 * @param string $wikiContent
+	 * @return array $mwCategories
 	 */
-	private function extractCategories( $oldWikiContent ) {
+	private function extractCategories( $wikiContent ) {
 		// Find all the categories, in the same way
-		preg_match_all( '/\[\[Category:(.*)\]\]/', $oldWikiContent, $matches );
-		$oldCatText = $matches[0];
-		$oldCatName = $matches[1];
-		foreach ( $oldCatName as $idx => $catName ) {
-			$mwCategories[$catName] = array( 'wikitext' => $oldCatText[$idx] );
+		preg_match_all( '/\[\[Category:(.*)\]\]/', $wikiContent, $matches );
+		$wikiText = $matches[0];
+		$catName = $matches[1];
+		foreach ( $catName as $idx => $cName ) {
+			$mwCategories[$cName] = array( 'wikitext' => $wikiText[$idx] );
 		}
 		return $mwCategories;
 	}
 
 	/**
 	 * Extract an array of templates from wiki text
-	 * @param string $oldWikiContent
-	 * @return array
+	 * @param string $wikiContent
+	 * @return array $mwTemplates
 	 */
-	private function extractTemplates( $oldWikiContent ) {
-		preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $oldWikiContent, $matches );
-		$oldTplCall = $matches[0];
-		$oldTplName = $matches[1];
-		$oldTplParams = $matches[2];
-		foreach ( $oldTplName as $idx => $tplName ) {
-			$mwTemplates[$tplName]['templateCallText'] = $oldTplCall[$idx];
-			$mwTemplates[$tplName]['templateParamsValues'] = $oldTplParams[$idx];
+	private function extractTemplates( $wikiContent ) {
+		preg_match_all( '/\{\{\s?([^#][a-zA-Z0-9]+)\s?\|(.*)\}\}/U', $wikiContent, $matches );
+		$wikiText = $matches[0];
+		$tplName = $matches[1];
+		$tplParams = $matches[2];
+		foreach ( $tplName as $idx => $tName ) {
+			$mwTemplates[$tName]['templateCallText'] = $wikiText[$idx];
+			$mwTemplates[$tName]['templateParamsValues'] = $tplParams[$idx];
 		}
 		return $mwTemplates;
 	}

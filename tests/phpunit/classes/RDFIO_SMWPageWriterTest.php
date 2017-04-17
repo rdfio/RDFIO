@@ -46,8 +46,15 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedProperties, true, true );
 	}
 
+	public function testExtractCategories() {
 
-		/**
+	}
+
+	public function extractTemplates() {
+
+	}
+
+	/**
 	 * Call protected/private method of a class.
 	 *
 	 * @param object &$object    Instantiated object that we will run method on.
