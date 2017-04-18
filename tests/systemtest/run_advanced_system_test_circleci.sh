@@ -1,6 +1,8 @@
 #!/bin/bash
 echo "Starting advanced system test ...";
 
+mysql -u root circle_test < emptydb.sql
+
 php ../../../../maintenance/importDump.php initial_content_advanced.xml
 
 php ../../maintenance/importRdf.php --indata data/testdata_advanced.ttl
