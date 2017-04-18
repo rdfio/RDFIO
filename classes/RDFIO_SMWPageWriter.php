@@ -18,12 +18,8 @@ class RDFIOSMWPageWriter {
 			$oldWikiCont = $this->getTextForPage( $wikiTitle );
 			$newWikiCont = $oldWikiCont; // using new variable to separate extraction from editing
 
-			$oldProperties = array();
-			$oldCategories = array();
 			$oldTemplates = array();
 			if ( Title::newFromText( $wikiTitle )->exists() && $oldWikiCont !== '' ) {
-				$oldProperties = $this->extractProperties( $oldWikiCont );
-				$oldCategories = $this->extractCategories( $oldWikiCont );
 				$oldTemplates = $this->extractTemplateCalls( $oldWikiCont );
 			}
 
@@ -73,10 +69,10 @@ class RDFIOSMWPageWriter {
 			}
 
 			// Add Facts
-			$newWikiCont = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $updatedTplCalls, $oldTemplates, $oldProperties, $newWikiCont );
+			$newWikiCont = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $updatedTplCalls, $oldTemplates, $newWikiCont );
 
 			// Add Categories
-			$newWikiCont = $this->addNewCategoriesToWikiText( $newCategories, $oldCategories, $newWikiCont );
+			$newWikiCont = $this->addNewCategoriesToWikiText( $newCategories, $newWikiCont );
 
 			// Write to wiki
 			$this->writeToArticle( $wikiTitle, $newWikiCont, 'Update by RDFIO' );
@@ -88,11 +84,12 @@ class RDFIOSMWPageWriter {
 	 * @param array $facts
 	 * @param array $updatedTplCalls
 	 * @param array $oldTemplates
-	 * @param array $oldProperties
 	 * @param string $wikiText
 	 * @return string $wikiText
 	 */
-	private function addNewFactsToWikiText( $facts, $updatedTplCalls, $oldTemplates, $oldProperties, $wikiText ) {
+	private function addNewFactsToWikiText( $facts, $updatedTplCalls, $oldTemplates, $wikiText ) {
+		$oldProperties = $this->extractProperties( $wikiText );
+
 		$newPropsAsText = "\n";
 		foreach ( $facts as $fact ) {
 			$pred = $fact['p'];
@@ -195,11 +192,12 @@ class RDFIOSMWPageWriter {
 	/**
 	 * Add category statements to the wiki text
 	 * @param array $newCategories
-	 * @param array $newCategories
 	 * @param string $wikiText
 	 * @return string $wikiText
 	 */
-	private function addNewCategoriesToWikiText( $newCategories, $oldCategories, $wikiText ) {
+	private function addNewCategoriesToWikiText( $newCategories, $wikiText ) {
+		$oldCategories = $this->extractCategories( $wikiText );
+
 		$newCatText = '';
 		foreach ( $newCategories as $cat ) {
 			$catTitleWikified = $this->getWikifiedTitle( $cat, NS_CATEGORY );

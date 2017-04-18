@@ -114,11 +114,6 @@ a population of [[Has population::10000000|ten million]].
 [[Category:Country in Europe|]]
 EOT;
 
-		$oldCategories = array(
-			'Country' => array( 'wikitext' => '[[Category:Country|a country]]' ),
-			'Country in Europe' => array( 'wikitext' => '[[Category:Country in Europe|]]' ),
-		);
-
 		$newCategories = array( 'Geographical region', 'Geographical region in Europe' );
 
 		$expectedWikiContent = <<<EOT
@@ -129,7 +124,7 @@ a population of [[Has population::10000000|ten million]].
 [[Category:Geographical region in Europe]]
 EOT;
 
-		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategoriesToWikiText', array( $newCategories, $oldCategories, $oldWikiContent ) );
+		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategoriesToWikiText', array( $newCategories, $oldWikiContent ) );
 
 		$this->assertEquals( $expectedWikiContent, $newWikiContent );
 	}
