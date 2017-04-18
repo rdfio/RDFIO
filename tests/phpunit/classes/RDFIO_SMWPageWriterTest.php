@@ -29,6 +29,26 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedFacts, true, true );
 	}
 
+	public function testUpdateExplicitFactsInText() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000000|]].
+EOT;
+
+		$expectedWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000001|]].
+EOT;
+
+		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
+
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldWikiText ) );
+
+		$this->assertEquals( $expectedWikiText, $updatedWikiText );
+	}
+
 	public function testExtractFacts() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
@@ -38,8 +58,8 @@ a population of [[Has population::10000000|]].
 EOT;
 
 		$expectedOutput = array(
-			array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
-			array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000|]]' ),
+			'Has capital' => array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
+			'Has population' => array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000|]]' ),
 		);
 
 		$extractedFacts = $this->invokeMethod( $smwWriter, 'extractFacts', array( $wikiContent ) );

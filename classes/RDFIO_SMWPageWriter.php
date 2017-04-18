@@ -85,35 +85,71 @@ class RDFIOSMWPageWriter {
 			// Build the index
 			$propTplIndex = array();
 			foreach ( $wikiPage->getFacts() as $fact ) {
-				$propTplIndex[$fact['p']] = array( 'templates' );
-			}
-
-
-
-			if ( !empty( $oldTemplates ) ) {
-
-				$hasTplParams = array_key_exists( 'paramvals', $oldTemplates[$tplName] );
-				// Get the parameter values used in the templates
-				if ( $hasTplParams ) {
-					$paramvals = explode( '|', $oldTemplates[$tplName]['paramvals'] );
-					foreach ( $paramvals as $paramPair ) {
-						$paramValArray = explode( '=', $paramPair );
-						$paramName = $paramValArray[0];
-						$paramVal = $paramValArray[1];
-						$oldTemplates[$tplName]['parameters'][$paramName]['value'] = $paramVal;
+				$prop = $fact['p'];
+				$propTplIndex[$prop] = array();
+				foreach ( $allTemplateFacts as $tplName => $tplFacts ) {
+					if ( in_array( $prop, $tplFacts  ) ) {
+						$paramName = $tplFacts[$prop];
+						$propTplIndex[$prop][$tplName] = $paramName;
 					}
 				}
 			}
 
+			// ----------------------------------------------------------------------
+			//  7. Loop over each fact and:
+			// ----------------------------------------------------------------------
+			foreach ( $wikiPage->getFacts() as $fact ) {
+				//  8. Update all existing fact statements on page
+				$newWikiText = $this->updateExplicitFactsInText( $fact, $newWikiText );
+				//  9. Update in all existing templates, based on index
+				// 10. Add to any relevant templates as new template calls
+				// 11. If neither of 8-10 was done, add as new fact statements
+				// 12. Update any URI-type objects with an Equivalent URI fact.
+			}
+
+
+
+			// if ( !empty( $oldTemplates ) ) {
+			//
+			// $hasTplParams = array_key_exists( 'paramvals', $oldTemplates[$tplName] );
+			// // Get the parameter values used in the templates
+			// if ( $hasTplParams ) {
+			// 	$paramvals = explode( '|', $oldTemplates[$tplName]['paramvals'] );
+			// 	foreach ( $paramvals as $paramPair ) {
+			// 		$paramValArray = explode( '=', $paramPair );
+			// 		$paramName = $paramValArray[0];
+			// 		$paramVal = $paramValArray[1];
+			// 		$oldTemplates[$tplName]['parameters'][$paramName]['value'] = $paramVal;
+			// 	}
+			// }
+			// }
+
 			// Add Facts
-			$newWikiText = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $oldTemplates, $newWikiText );
+			// $newWikiText = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $oldTemplates, $newWikiText );
 
 			// Add Categories
-			$newWikiText = $this->addNewCategoriesToWikiText( $newCategories, $newWikiText );
+			// $newWikiText = $this->addNewCategoriesToWikiText( $newCategories, $newWikiText );
 
 			// Write to wiki
-			$this->writeToArticle( $wikiTitle, $newWikiText, 'Update by RDFIO' );
+			$this->writeToArticle( $wikiTitle, $newWikiText, 'Page updated by RDFIO' );
 		}
+	}
+
+	/**
+	 * @param array $fact
+	 * @param string $wikiText
+	 * @return string $wikiText
+	 */
+	private function updateExplicitFactsInText( $fact, $wikiText ) {
+		$prop = $fact['p'];
+		$newVal = $fact['o'];
+
+		$oldFacts = $this->extractFacts( $wikiText );
+		if ( array_key_exists( $prop, $oldFacts ) ) {
+			$oldVal = $oldFacts[$prop]['value'];
+			$wikiText = str_replace( $oldVal, $newVal, $wikiText );
+		}
+		return $wikiText;
 	}
 
 	/**
@@ -276,7 +312,7 @@ class RDFIOSMWPageWriter {
 		$propName = $matches[1];
 		$propVal = $matches[2];
 		foreach ( $propName as $idx => $pName ) {
-			$facts[] = array( 'property' => $propName[$idx], 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
+			$facts[$pName] = array( 'property' => $pName, 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
 		}
 		return $facts;
 	}
