@@ -26,8 +26,9 @@ class RDFIOSMWPageWriter {
 		//          9. Update in all existing templates, based on index
 		//         10. Add to any relevant templates as new template calls
 		//         11. If neither of 8-10 was done, add as new fact statements
-		//     12. Add category tags (if template with category has not been added yet).
-		// 	   13. Write updated article
+		//         12. Update any URI-type objects with an Equivalent URI fact.
+		//     13. Add category tags (if template with category has not been added yet).
+		//     14. Write updated article
 		// ---------------------------------------------------------------------------------------------
 
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
