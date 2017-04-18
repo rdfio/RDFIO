@@ -10,6 +10,24 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 		parent::tearDown();
 	}
 
+	public function testExtractFacts() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$wikiContent = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000000|]].
+EOT;
+
+		$expectedOutput = array(
+			array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
+			array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000|]]' ),
+		);
+
+		$extractedFacts = $this->invokeMethod( $smwWriter, 'extractFacts', array( $wikiContent ) );
+
+		$this->assertArrayEquals( $expectedOutput, $extractedFacts, true, true );
+	}
+
 	public function testExtractPropertiesSimple() {
 		$smwWriter = new RDFIOSMWPageWriter();
 

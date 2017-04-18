@@ -31,11 +31,16 @@ class RDFIOSMWPageWriter {
 		//     14. Write updated article
 		// ---------------------------------------------------------------------------------------------
 
+		//  1. Loop over wiki pages
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			/* @var $wikiPage RDFIOWikiPage */
 
+			//  2. Get the old wiki text for current page
 			$oldWikiText = $this->getTextForPage( $wikiTitle );
 			$newWikiText = $oldWikiText; // using new variable to separate extraction from editing
+
+			//  3. Find all existing fact statements in page (to be updated)
+			// $oldFacts = $this->extractFacts( $oldWikiText );
 
 			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
 
@@ -218,6 +223,25 @@ class RDFIOSMWPageWriter {
 		$wikiText .= $newCatText;
 
 		return $wikiText;
+	}
+
+
+	/**
+	 * Extract an array of properties from wiki text
+	 * FIXME: Refactor to be 'extractFacts' instead
+	 * @param string $wikiContent
+	 * @return array
+	 */
+	private function extractFacts( $wikiContent ) {
+		$facts = array();
+		preg_match_all( '/\[\[(.*)::([^\|\]]+)(\|([^\]]*))?\]\]/', $wikiContent, $matches );
+		$wikiText = $matches[0];
+		$propName = $matches[1];
+		$propVal = $matches[2];
+		foreach ( $propName as $idx => $pName ) {
+			$facts[] = array( 'property' => $propName[$idx], 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
+		}
+		return $facts;
 	}
 
 	/**
