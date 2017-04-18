@@ -339,7 +339,7 @@ class RDFIOSMWPageWriter {
 	private function extractPropertyParameterIndex( $tplPageText ) {
 		$propParamIndex = array();
 		// Get the properties and parameter names used in the templates
-		preg_match_all( '/\[\[(.*)::\{\{\{([^\|\}]+)\|?\}\}\}\]\]/', $tplPageText, $tplParamMatches );
+		preg_match_all( '/\[\[([^\:]+)::\{\{\{([^\|\}]+)\|?\}\}\}\]\]/', $tplPageText, $tplParamMatches );
 		$propNames = $tplParamMatches[1];
 		$paramNames = $tplParamMatches[2];
 		foreach ( $propNames as $idx => $propName ) {
