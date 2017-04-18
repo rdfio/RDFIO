@@ -240,7 +240,8 @@ Now please follow these steps:
       <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Gothenburg]]&quot;</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="54">[[Equivalent URI::http://example.org/onto/Gothenburg]]</text>
+      <text xml:space="preserve" bytes="54">
+[[Equivalent URI::http://example.org/onto/Gothenburg]]</text>
       <sha1>44rdn8s2i8cp4w6nq3pk01mi1uav5s4</sha1>
     </revision>
   </page>
@@ -257,7 +258,8 @@ Now please follow these steps:
       <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Frankfurt]]&quot;</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="53">[[Equivalent URI::http://example.org/onto/Frankfurt]]</text>
+	  <text xml:space="preserve" bytes="53">
+[[Equivalent URI::http://example.org/onto/Frankfurt]]</text>
       <sha1>eqfptun4sxgbsrlvg3lj4tmv041ah73</sha1>
     </revision>
   </page>
