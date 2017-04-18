@@ -171,37 +171,19 @@ EOT;
 
 		$wikiContent = <<<EOT
 The capital of Sweden is [[Has capital::Stockholm]], which has
-a population of [[Has population::10000000|]].
+a population of [[Has population::10000000|]]. It's second city is [[Has second city::Gothenburg|Göteborg]].
 EOT;
 
 		$expectedOutput = array(
 			'Has capital' => array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
 			'Has population' => array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000|]]' ),
+			'Has second city' => array( 'property' => 'Has second city', 'value' => 'Gothenburg', 'wikitext' => '[[Has second city::Gothenburg|Göteborg]]' ),
 		);
 
 		$extractedFacts = $this->invokeMethod( $smwWriter, 'extractFacts', array( $wikiContent ) );
 
 		$this->assertArrayEquals( $expectedOutput, $extractedFacts, true, true );
 	}
-
-	public function testExtractPropertiesSimple() {
-		$smwWriter = new RDFIOSMWPageWriter();
-
-		$wikiContent = <<<EOT
-The capital of Sweden is [[Has capital::Stockholm]], which has
-a population of [[Has population::10000000]].
-EOT;
-
-		$expectedOutput = array(
-			'Has capital' => array( 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]'),
-			'Has population' => array( 'value' => '10000000', 'wikitext' => '[[Has population::10000000]]')
-		);
-
-		$extractedProperties = $this->invokeMethod( $smwWriter, 'extractProperties', array( $wikiContent ) );
-
-		$this->assertArrayEquals( $expectedOutput, $extractedProperties, true, true );
-	}
-
 
 	public function testExtractCategories() {
 		$smwWriter = new RDFIOSMWPageWriter();
@@ -220,24 +202,6 @@ EOT;
 		$extractedCategories = $this->invokeMethod( $smwWriter, 'extractCategories', array( $wikiContent ) );
 
 		$this->assertArrayEquals( $expectedOutput, $extractedCategories, true, true );
-	}
-
-	public function testExtractPropertiesDifferentDisplayValue() {
-		$smwWriter = new RDFIOSMWPageWriter();
-
-		$wikiContent = <<<EOT
-The capital of Sweden is [[Has capital::Stockholm|Sthlm]], which has
-a population of [[Has population::10000000|ten million]].
-EOT;
-
-		$expectedOutput = array(
-			'Has capital' => array( 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm|Sthlm]]' ),
-			'Has population' => array( 'value' => '10000000', 'wikitext' => '[[Has population::10000000|ten million]]' )
-		);
-
-		$extractedProperties = $this->invokeMethod( $smwWriter, 'extractProperties', array( $wikiContent ) );
-
-		$this->assertArrayEquals( $expectedOutput, $extractedProperties, true, true );
 	}
 
 	public function testExtractTemplates() {
@@ -278,7 +242,7 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedTemplates, true, true );
 	}
 
-	public function testAddNewCategoriesToWikiText() {
+	public function testAddNewCategory() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
 		$wikiContent = <<<EOT
@@ -287,17 +251,16 @@ a population of [[Has population::10000000|ten million]].
 [[Category:Country in Europe|]]
 EOT;
 
-		$newCategories = array( 'Geographical region', 'Geographical region in Europe' );
+		$category = 'Geographical region';
 
 		$expectedWikiContent = <<<EOT
 The capital of Sweden (which is [[Category:Country|a country]]) is [[Has capital::Stockholm|Sthlm]], which has
 a population of [[Has population::10000000|ten million]].
 [[Category:Country in Europe|]]
 [[Category:Geographical region]]
-[[Category:Geographical region in Europe]]
 EOT;
 
-		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategoriesToWikiText', array( $newCategories, $wikiContent ) );
+		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategory', array( $category, $wikiContent ) );
 
 		$this->assertEquals( $expectedWikiContent, $newWikiContent );
 	}
