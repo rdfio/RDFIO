@@ -6,4 +6,4 @@ php ../../../../tests/phpunit/phpunit.php --configuration=suite.rdfio.xml --cove
 mv coverage.xml $HOME/RDFIO/
 
 cd /home/ubuntu/w/extensions/Rdfio/tests/systemtest/
-./run_system_text.sh
+./run_system_test_circleci.sh
