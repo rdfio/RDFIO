@@ -29,6 +29,7 @@ EOT;
 		$this->assertArrayEquals( $expectedOutput, $extractedFacts, true, true );
 	}
 
+
 	public function testUpdateExplicitFactsInText() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
@@ -48,6 +49,62 @@ EOT;
 
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
 	}
+
+	/**
+	 *
+	 */
+	public function testUpdateTemplateCalls() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm|Sthlm]], which has
+a population of [[Has population::10000000|ten million]].
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+{{Geographical region}}
+EOT;
+
+		$expectedWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm|Sthlm]], which has
+a population of [[Has population::10000000|ten million]].
+{{Country
+|Capital=Stockholm
+|Population=10000001
+}}
+{{Geographical region}}
+EOT;
+
+		$propTplIndex = array(
+			'Has population' => array(
+				'Country' => 'Population',
+			),
+		);
+
+		$tplCallCountry = <<<EOT
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+EOT;
+		$tplCallGeoRegion = <<<EOT
+{{Geographical region}}
+EOT;
+
+
+		$oldTemplateCalls = array(
+			'Country' => $tplCallCountry,
+			'Geographical region' => $tplCallGeoRegion,
+		);
+
+		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
+
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
+
+		$this->assertEquals( $expectedWikiText, $updatedWikiText );
+	}
+
 
 	public function testExtractFacts() {
 		$smwWriter = new RDFIOSMWPageWriter();

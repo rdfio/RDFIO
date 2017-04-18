@@ -51,7 +51,7 @@ class RDFIOSMWPageWriter {
 			// ----------------------------------------------------------------------
 			//  4. Find all existing template statements in page (to be updated)
 			// ----------------------------------------------------------------------
-			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
+			$oldTemplateCalls = $this->extractTemplateCalls( $oldWikiText );
 
 			// ----------------------------------------------------------------------
 			//  5. Find all templates that might be used (in current page, and via all its categories)
@@ -61,7 +61,7 @@ class RDFIOSMWPageWriter {
 
 			// Collect old and new template names in one array
 			$allTemplateNames = [];
-			foreach ( $oldTemplates as $tplName => $tplInfo ) {
+			foreach ( $oldTemplateCalls as $tplName => $tplInfo ) {
 				$allTemplateNames[] = $tplName;
 			}
 			$allTemplateNames = array_merge( $allTemplateNames, $tplsForCats );
@@ -99,12 +99,27 @@ class RDFIOSMWPageWriter {
 			//  7. Loop over each fact and:
 			// ----------------------------------------------------------------------
 			foreach ( $wikiPage->getFacts() as $fact ) {
+				// ----------------------------------------------------------------------
 				//  8. Update all existing fact statements on page
+				// ----------------------------------------------------------------------
 				$newWikiText = $this->updateExplicitFactsInText( $fact, $newWikiText );
-				//  9. Update in all existing templates, based on index
-				// 10. Add to any relevant templates as new template calls
+
+				// ----------------------------------------------------------------------
+				//  9. Update in all existing template calls, based on index
+				// ----------------------------------------------------------------------
+				$newWikiText = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $newWikiText );
+
+				// ----------------------------------------------------------------------
+				// 10. Add via any relevant templates as new template calls
+				// ----------------------------------------------------------------------
+
+				// ----------------------------------------------------------------------
 				// 11. If neither of 8-10 was done, add as new fact statements
+				// ----------------------------------------------------------------------
+
+				// ----------------------------------------------------------------------
 				// 12. Update any URI-type objects with an Equivalent URI fact.
+				// ----------------------------------------------------------------------
 			}
 
 
@@ -130,7 +145,13 @@ class RDFIOSMWPageWriter {
 			// Add Categories
 			// $newWikiText = $this->addNewCategoriesToWikiText( $newCategories, $newWikiText );
 
-			// Write to wiki
+			// ----------------------------------------------------------------------
+			// 13. Add category tags (if template with category has not been added yet).
+			// ----------------------------------------------------------------------
+
+			// ----------------------------------------------------------------------
+			// 14. Write updated article
+			// ----------------------------------------------------------------------
 			$this->writeToArticle( $wikiTitle, $newWikiText, 'Page updated by RDFIO' );
 		}
 	}
@@ -149,6 +170,33 @@ class RDFIOSMWPageWriter {
 			$oldVal = $oldFacts[$prop]['value'];
 			$wikiText = str_replace( $oldVal, $newVal, $wikiText );
 		}
+		return $wikiText;
+	}
+
+
+	/**
+	 * @param $fact
+	 * @param $propTplIndex
+	 * @param $wikiText
+	 * @return string $wikiText
+	 */
+	private function updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiText ) {
+		$prop = $fact['p'];
+		$newVal = $fact['o'];
+
+		if ( array_key_exists($prop, $propTplIndex) ) {
+			foreach ( $propTplIndex[$prop] as $tplName => $paramName ) {
+				$oldTplCallText = $oldTemplateCalls[$tplName];
+
+				preg_match( '/\|' . $paramName . '\=([^\=\|\}\n]+)/', $oldTplCallText, $matches );
+				if ( !empty( $matches ) ) {
+					$oldVal = $matches[1];
+					$newTplCallText = str_replace( $oldVal, $newVal, $oldTplCallText );
+					$wikiText = str_replace( $oldTplCallText, $newTplCallText, $wikiText );
+				}
+			}
+		}
+
 		return $wikiText;
 	}
 
