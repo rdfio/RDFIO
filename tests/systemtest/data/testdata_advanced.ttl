@@ -1,0 +1,11 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix ex: <http://example.org/onto/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:Sweden
+	ex:has_second_city ex:Gothenburg ;
+	ex:has_population 10000001 .
+
+ex:Germany
+	ex:has_second_city ex:Frankfurt ;
+	ex:has_population 82000001 .

@@ -173,7 +173,7 @@ class RDFIOSMWPageWriter {
 				}
 				if ( $newTplCall != $oldTplCall ) {
 					//  if the template call has been updated, change it in the page wikitext and update the placeholder variable
-					$newWikiCont = str_replace( $oldTplCall, $newTplCall, $wikiText );
+					$wikiText = str_replace( $oldTplCall, $newTplCall, $wikiText );
 					$updatedTplCalls[$tplName] = $newTplCall;
 				}
 
@@ -187,7 +187,7 @@ class RDFIOSMWPageWriter {
 
 				// Replace the existing property with new value
 				if ( $newPropText != $oldPropText ) {
-					$newWikiCont = str_replace( $oldPropText, $newPropText, $newWikiCont );
+					$wikiText = str_replace( $oldPropText, $newPropText, $wikiText );
 				}
 			} else if ( !$isInPage ) { // If property isn't in the page (outside of templates) ...
 				$newPropAsText = '[[' . $predTitleWikified . '::' . $obj . ']]';

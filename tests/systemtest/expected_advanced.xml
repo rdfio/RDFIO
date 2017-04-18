@@ -1,0 +1,264 @@
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.10/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mediawiki.org/xml/export-0.10/ http://www.mediawiki.org/xml/export-0.10.xsd" version="0.10" xml:lang="en">
+  <siteinfo>
+    <sitename>MW</sitename>
+    <dbname>smw</dbname>
+    <base>http://localhost/w/index.php/Main_Page</base>
+    <generator>MediaWiki 1.26.4</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="-2" case="first-letter">Media</namespace>
+      <namespace key="-1" case="first-letter">Special</namespace>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="3" case="first-letter">User talk</namespace>
+      <namespace key="4" case="first-letter">MW</namespace>
+      <namespace key="5" case="first-letter">MW talk</namespace>
+      <namespace key="6" case="first-letter">File</namespace>
+      <namespace key="7" case="first-letter">File talk</namespace>
+      <namespace key="8" case="first-letter">MediaWiki</namespace>
+      <namespace key="9" case="first-letter">MediaWiki talk</namespace>
+      <namespace key="10" case="first-letter">Template</namespace>
+      <namespace key="11" case="first-letter">Template talk</namespace>
+      <namespace key="12" case="first-letter">Help</namespace>
+      <namespace key="13" case="first-letter">Help talk</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+      <namespace key="15" case="first-letter">Category talk</namespace>
+      <namespace key="102" case="first-letter">Property</namespace>
+      <namespace key="103" case="first-letter">Property talk</namespace>
+      <namespace key="104" case="first-letter">Type</namespace>
+      <namespace key="105" case="first-letter">Type talk</namespace>
+      <namespace key="106" case="first-letter">Form</namespace>
+      <namespace key="107" case="first-letter">Form talk</namespace>
+      <namespace key="108" case="first-letter">Concept</namespace>
+      <namespace key="109" case="first-letter">Concept talk</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Main Page</title>
+    <ns>0</ns>
+    <id>1</id>
+    <revision>
+      <id>2</id>
+      <parentid>1</parentid>
+      <timestamp>2017-04-04T16:05:19Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="678">MediaWiki, Semantic MediaWiki and RDFIO successfully installed!
+
+Now please follow these steps:
+
+# First [[Special:UserLogin|log in to the wiki]] (user Admin, pass changethis).
+# Please go to the [[Special:RDFIOAdmin|RDFIO Admin Special Page]] and ensure that the ARC2 store is properly set up.
+# Go to the [[Special:RDFImport|RDF Import Special Page]], click &quot;Paste RDF&quot;, and then &quot;RDFXML example data&quot; under the text field, and import it.
+# GO to [[Special:RecentChanges|Recent Changes]], to see if you got some newly imported data.
+# Finally, go to the [[Special:SPARQLEndpoint|SPARQL Endpoint]] and execute the example query, and see if you can see the example data show up!</text>
+      <sha1>5y31eit7f2g5i04aupvorm5gabtee0x</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>MediaWiki:Sidebar</title>
+    <ns>8</ns>
+    <id>2</id>
+    <revision>
+      <id>3</id>
+      <timestamp>2017-04-04T16:05:21Z</timestamp>
+      <contributor>
+        <username>Admin</username>
+        <id>1</id>
+      </contributor>
+      <comment>Add links to RDFIO tools</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="386">* navigation
+** mainpage|mainpage-description
+** recentchanges-url|recentchanges
+** randompage-url|randompage
+** helppage|help
+* Semantic Tools
+** Special:RDFIOAdmin|RDFIO Admin
+** Special:RDFImport|RDF Import
+** Special:SPARQLEndpoint|SPARQL Endpoint
+** Special:SPARQLImport|SPARQL Import
+** Special:Categories|Categories
+** Special:Properties|Properties
+* SEARCH
+* TOOLBOX
+* LANGUAGES</text>
+      <sha1>j0cs55m2u3xvju7x5n7c32pukilef2g</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Sweden</title>
+    <ns>0</ns>
+    <id>3</id>
+    <revision>
+      <id>14</id>
+      <parentid>4</parentid>
+      <timestamp>2017-04-18T13:29:34Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="160">[[Has capital::Stockholm]]
+[[Has population::10000001]]
+
+[[Equivalent URI::http://example.org/onto/Sweden]]
+[[Category:Country]]
+[[Has second city::Gothenburg]]</text>
+      <sha1>5c3mosrmlmy8r69y74dzigpmz8jmqka</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Has capital</title>
+    <ns>102</ns>
+    <id>4</id>
+    <revision>
+      <id>5</id>
+      <timestamp>2017-04-18T12:28:49Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_capital]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="55">[[Equivalent URI::http://example.org/onto/has_capital]]</text>
+      <sha1>2qcyhr3r8rmj6kdv8o6aaej78gosoam</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Germany</title>
+    <ns>0</ns>
+    <id>5</id>
+    <revision>
+      <id>13</id>
+      <parentid>6</parentid>
+      <timestamp>2017-04-18T13:29:10Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="223">Germany is a [[Category:Country|country]] in [[Europe]], with a population of [[Has population::82000001]].
+
+{{Country
+|Capital=Berlin
+|Population=82000001
+|Orig URI=http://example.org/onto/Germany
+|Second city=Frankfurt
+}}</text>
+      <sha1>cq9v7xdilpx5eckw6wlbgppgb8ejazu</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Template:Country</title>
+    <ns>10</ns>
+    <id>6</id>
+    <revision>
+      <id>7</id>
+      <timestamp>2017-04-18T12:53:15Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="252">=== Some basic info ===
+
+* '''Capital:''' [[Has capital::{{{Capital|}}}]]
+* '''Second city:''' [[Has second city::{{{Second city|}}}]]
+* '''Population:''' [[Has population::{{{Population|}}}]]
+* '''Equivalent URI:''' [[Equivalent URI::{{{Orig URI|}}}]]</text>
+      <sha1>n7zfk7qg3ys7dydb3z1ivndculdqu9h</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Category:Country</title>
+    <ns>14</ns>
+    <id>7</id>
+    <revision>
+      <id>8</id>
+      <timestamp>2017-04-18T12:33:58Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Has template::Template:Country]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="34">[[Has template::Template:Country]]</text>
+      <sha1>jcogs6okll0fqrbuo50l2uj0pmc7qhn</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Has population</title>
+    <ns>102</ns>
+    <id>8</id>
+    <revision>
+      <id>9</id>
+      <timestamp>2017-04-18T13:02:46Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_population]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="58">[[Equivalent URI::http://example.org/onto/has_population]]</text>
+      <sha1>mvjtaozbmxcv15el4k7vi9pi5jllbwj</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Has second city</title>
+    <ns>102</ns>
+    <id>9</id>
+    <revision>
+      <id>10</id>
+      <timestamp>2017-04-18T13:03:25Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_second_city]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="59">[[Equivalent URI::http://example.org/onto/has_second_city]]</text>
+      <sha1>pzey0qi9kt2okn1v0emsm3x7f107jfk</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Gothenburg</title>
+    <ns>0</ns>
+    <id>10</id>
+    <revision>
+      <id>11</id>
+      <timestamp>2017-04-18T13:28:16Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Gothenburg]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="54">[[Equivalent URI::http://example.org/onto/Gothenburg]]</text>
+      <sha1>44rdn8s2i8cp4w6nq3pk01mi1uav5s4</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Frankfurt</title>
+    <ns>0</ns>
+    <id>11</id>
+    <revision>
+      <id>12</id>
+      <timestamp>2017-04-18T13:28:42Z</timestamp>
+      <contributor>
+        <ip>10.0.2.2</ip>
+      </contributor>
+      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Frankfurt]]&quot;</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="53">[[Equivalent URI::http://example.org/onto/Frankfurt]]</text>
+      <sha1>eqfptun4sxgbsrlvg3lj4tmv041ah73</sha1>
+    </revision>
+  </page>
+</mediawiki>
