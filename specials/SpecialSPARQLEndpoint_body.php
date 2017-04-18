@@ -111,8 +111,8 @@ class SPARQLEndpoint extends SpecialPage {
 		if ( $outputtype == 'rdfxml' ) {
 			# Here the results should be RDF/XML triples,
 			# not just plain XML SPARQL result set
-			$output_structure = unserialize( $output );
-			$tripleindex = $output_structure['result'];
+			$outputStructure = unserialize( $output );
+			$tripleindex = $outputStructure['result'];
 			$triples = ARC2::getTriplesFromIndex( $tripleindex );
 
 			if ( $this->requestdata->outputequivuris ) {
@@ -126,17 +126,17 @@ class SPARQLEndpoint extends SpecialPage {
 		} else {
 			// TODO: Add some kind of check that the output is really an object
 			if ( count( $output ) > 0 ) {
-				$output_structure = unserialize( $output );
+				$outputStructure = unserialize( $output );
 				if ( $this->requestdata->outputequivuris ) {
-					$output_structure = $this->urisToEquivURIsInSparqlResults( $output_structure );
+					$outputStructure = $this->urisToEquivURIsInSparqlResults( $outputStructure );
 				}
 
 				if ( $outputtype == 'htmltab' ) {
-					$output = $this->sparqlResultToHTML( $output_structure );
+					$output = $this->sparqlResultToHTML( $outputStructure );
 					$wgOut->addHTML( $output );
 				} else {
 					# Using echo instead of $wgOut->addHTML() here, since output format is not HTML
-					$output = $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $output_structure );
+					$output = $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputStructure );
 					echo $output;
 				}
 			} else {
@@ -232,40 +232,38 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
 	function urisToEquivURIsInQuery() {
-		$query_structure = $this->requestdata->query_parsed;
-		//print_r($query_structure);
-		$triple = $query_structure['query']['pattern']['patterns'][0]['patterns'][0];
-		$s = $triple['s'];
-		$p = $triple['p'];
-		$o = $triple['o'];
-		$s_type = $triple['s_type'];
-		$p_type = $triple['p_type'];
-		$o_type = $triple['o_type'];
-		if ( $s_type === 'uri' ) {
+		$queryStructure = $this->requestdata->query_parsed;
+		$triple = $queryStructure['query']['pattern']['patterns'][0]['patterns'][0];
+		$subj = $triple['s'];
+		$prop = $triple['p'];
+		$obj = $triple['o'];
+		$subjType = $triple['s_type'];
+		$propType = $triple['p_type'];
+		$objType = $triple['o_type'];
+		if ( $subjType === 'uri' ) {
 			$triple['s'] = 's';
 			$triple['s_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $s, 's' );
+			$newtriple = $this->createEquivURITriple( $subj, 's' );
 			// TODO: Shouldn't the new triple replace the old one, not just be added?
-			$query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
 		}
-		if ( $p_type === 'uri' ) {
+		if ( $propType === 'uri' ) {
 			$triple['p'] = 'p';
 			$triple['p_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $p, 'p', true );
-			$query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$newtriple = $this->createEquivURITriple( $prop, 'p', true );
+			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
 		}
-		if ( $o_type === 'uri' ) {
+		if ( $objType === 'uri' ) {
 			$triple['o'] = 'o';
 			$triple['o_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $o, 'o' );
-			$query_structure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$newtriple = $this->createEquivURITriple( $obj, 'o' );
+			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
 		}
 		// restore the first triple into its original location
-		$query_structure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
-		//print_r($query_structure);
+		$queryStructure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
 		require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
 		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
-		$query = $sparqlserializer->toString( $query_structure );
+		$query = $sparqlserializer->toString( $queryStructure );
 
 		$this->setQueryInPost( $query );
 	}
@@ -391,11 +389,11 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param string $output
 	 * @return string $html
 	 */
-	function sparqlResultToHTML( $result_structure ) {
+	function sparqlResultToHTML( $resultStructure ) {
 		$html = "";
 		$html = "<h3>Result:</h3><div style='font-size: 11px;'>" . $html . "</div>";
 		$html .= "<table class=\"wikitable sortable\">";
-		$result = $result_structure['result'];
+		$result = $resultStructure['result'];
 		$variables = $result['variables'];
 
 		$html .= "<tr>";
@@ -466,55 +464,55 @@ class SPARQLEndpoint extends SpecialPage {
 	 * thereof). If $p_uris_filter is set, allow only triples with properties
 	 * included in this filter array
 	 * @param array $triples
-	 * @param array $p_uris_filter
+	 * @param array $propUrisFilter
 	 * @return array $triples
 	 */
-	function complementTriplesWithEquivURIs( $triples, $p_uris_filter = '' ) {
+	function complementTriplesWithEquivURIs( $triples, $propUrisFilter = '' ) {
 		$variables = array( 's', 'p', 'o' );
 		$newtriples = array();
 		foreach ( $triples as $tripleid => $triple ) {
 			// Subject
-			$s_equivuris = array( $triple['s'] );
+			$subjEquivUris = array( $triple['s'] );
 			if ( $triple['s_type'] === 'uri' ) {
-				$s_uri = $triple['s'];
-				$s_equivuris_temp = $this->store->getEquivURIsForURI( $s_uri );
-				if ( count( $s_equivuris_temp ) > 0 ) {
-					$s_equivuris = $s_equivuris_temp;
+				$subjUri = $triple['s'];
+				$subjEquivUrisTmp = $this->store->getEquivURIsForURI( $subjUri );
+				if ( count( $subjEquivUrisTmp ) > 0 ) {
+					$subjEquivUris = $subjEquivUrisTmp;
 				}
 			}
 
 			// Property
 			$propertyuri = $triple['p'];
-			$p_equivuris = array( $triple['p'] );
-			$p_equivuris_temp = $this->store->getEquivURIsForURI( $propertyuri, true );
-			if ( count( $p_equivuris_temp ) > 0 ) {
-				if ( $p_uris_filter != '' ) {
+			$propEquivUris = array( $triple['p'] );
+			$propEquivUrisTmp = $this->store->getEquivURIsForURI( $propertyuri, true );
+			if ( count( $propEquivUrisTmp ) > 0 ) {
+				if ( $propUrisFilter != '' ) {
 					// Only include URIs that occur in the filter
-					$p_equivuris_temp = array_intersect( $p_equivuris_temp, $p_uris_filter );
+					$propEquivUrisTmp = array_intersect( $propEquivUrisTmp, $propUrisFilter );
 				}
-				if ( $p_equivuris_temp != '' ) {
-					$p_equivuris = $p_equivuris_temp;
+				if ( $propEquivUrisTmp != '' ) {
+					$propEquivUris = $propEquivUrisTmp;
 				}
 			}
 
 			// Object
-			$o_equivuris = array( $triple['o'] );
+			$objEquivUris = array( $triple['o'] );
 			if ( $triple['o_type'] === 'uri' ) {
-				$o_uri = $triple['o'];
-				$o_equivuris_temp = $this->store->getEquivURIsForURI( $o_uri );
-				if ( count( $o_equivuris_temp ) > 0 ) {
-					$o_equivuris = $o_equivuris_temp;
+				$objUri = $triple['o'];
+				$objEquivUrisTmp = $this->store->getEquivURIsForURI( $objUri );
+				if ( count( $objEquivUrisTmp ) > 0 ) {
+					$objEquivUris = $objEquivUrisTmp;
 				}
 			}
 
 			// Generate triples
-			foreach ( $s_equivuris as $s_equivuri ) {
-				foreach ( $p_equivuris as $p_equivuri ) {
-					foreach ( $o_equivuris as $o_equivuri ) {
+			foreach ( $subjEquivUris as $subjEquivUri ) {
+				foreach ( $propEquivUris as $propEquivUri ) {
+					foreach ( $objEquivUris as $objEquivUri ) {
 						$newtriple = array(
-							's' => $s_equivuri,
-							'p' => $p_equivuri,
-							'o' => $o_equivuri
+							's' => $subjEquivUri,
+							'p' => $propEquivUri,
+							'o' => $objEquivUri
 						);
 						$newtriples[] = $newtriple;
 					}
@@ -528,31 +526,30 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Replace URI:s with an accompanying "Equivalent URI" with that one. If
 	 * there are móre than one Equivalent URI for a given URI, the others than
 	 * the first one will be ignored.
-	 * @param array $sparql_resultstructure
-	 * @param string $p_uris_filter
-	 * @return array $sparql_resultstructure
+	 * @param array $sparqlResult
+	 * @return array $sparqlResult
 	 */
-	function urisToEquivURIsInSparqlResults( $sparql_resultstructure ) {
-		$rows = $sparql_resultstructure['result']['rows'];
-		$sparql_varnames = $sparql_resultstructure['result']['variables'];
+	function urisToEquivURIsInSparqlResults( $sparqlResult ) {
+		$rows = $sparqlResult['result']['rows'];
+		$sparqlVars = $sparqlResult['result']['variables'];
 		foreach ( $rows as $rowid => $row ) {
-			foreach ( $sparql_varnames as $sparql_varname ) {
-				$typekey = "$sparql_varname type";
-				$type = $row[$typekey];
-				$uri = $row[$sparql_varname];
+			foreach ( $sparqlVars as $sparqlVar ) {
+				$typeKey = "$sparqlVar type";
+				$type = $row[$typeKey];
+				$uri = $row[$sparqlVar];
 				if ( $type === 'uri' ) {
-					$equivuris = $this->store->getEquivURIsForURI( $uri );
-					if ( !RDFIOUtils::arrayEmpty( $equivuris ) ) {
-						$equivuri = $equivuris[0];
+					$equivURIs = $this->store->getEquivURIsForURI( $uri );
+					if ( !RDFIOUtils::arrayEmpty( $equivURIs ) ) {
+						$equivURI = $equivURIs[0];
 						# Replace the URI with the Equivalent URI
-						$rows[$rowid][$sparql_varname] = $equivuri;
+						$rows[$rowid][$sparqlVar] = $equivURI;
 					}
 				}
 			}
 		}
 		# Put back the modified rows into the results structure
-		$sparql_resultstructure['result']['rows'] = $rows;
-		return $sparql_resultstructure;
+		$sparqlResult['result']['rows'] = $rows;
+		return $sparqlResult;
 	}
 
 	/**
@@ -591,8 +588,8 @@ class SPARQLEndpoint extends SpecialPage {
 	}
 
 	function getPredicateVariableName() {
-		$pred_varname = $this->requestdata->query_parsed['vars'][1];
-		return $pred_varname;
+		$predVar = $this->requestdata->query_parsed['vars'][1];
+		return $predVar;
 	}
 
 	/**
@@ -684,18 +681,16 @@ class SPARQLEndpoint extends SpecialPage {
 			$query = $defaultQuery;
 		}
 
-		$checked_equivuri_q = $wgRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
-		$checked_equivuri_o = $wgRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
-		$checked_filtervocab = $wgRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
-		$checked_allowwrite = $wgRequest->getBool( 'allowwrite', false ) == 1 ? ' checked="true" ' : '';
-		$checked_showquery = $wgRequest->getBool( 'showquery', false ) == 1 ? ' checked="true" ' : '';
+		$checkedEquivUriQ = $wgRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
+		$checkedEquivUriO = $wgRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
+		$checkedFilterVocab = $wgRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
 
-		$selected_output_html = $wgRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
-		$selected_output_rdfxml = $wgRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
+		$selectedOutputHTML = $wgRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
+		$selectedOutputRDFXML = $wgRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
 
 		// Make the HTML format selected by default
-		if ( $selected_output_rdfxml == '' ) {
-			$selected_output_html = ' selected="selected" ';
+		if ( $selectedOutputRDFXML == '' ) {
+			$selectedOutputHTML = ' selected="selected" ';
 		}
 
 		$htmlForm = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:SPARQLEndpoint"
@@ -711,7 +706,7 @@ class SPARQLEndpoint extends SpecialPage {
 	        <table border="0" style="background: transparent; font-size: 11px;">
 	        <tr><td style="text-align: right">Query by Equivalent URIs:</td>
 	        <td>
-			<input type="checkbox" name="equivuri_q" value="1" ' . $checked_equivuri_q . '/>
+			<input type="checkbox" name="equivuri_q" value="1" ' . $checkedEquivUriQ . '/>
 	        </td></tr>
 	        </table>
 
@@ -721,7 +716,7 @@ class SPARQLEndpoint extends SpecialPage {
 	        <table border="0" style="font-size: 11px; background: transparent;">
 	        <tr><td style="text-align: right">Output Equivalent URIs:</td>
 	        <td>
-			<input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checked_equivuri_o /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/>
+			<input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checkedEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/>
 	        </td></tr>
 	        </table>
 
@@ -737,9 +732,9 @@ Output Equivalent
 	          <!-- <option value="plain" >Plain</option> -->
 	          <!-- <option value="php_ser" >Serialized PHP</option> -->
 	          <!-- <option value="turtle" >Turtle</option> -->
-	          <option value="htmltab" ' . $selected_output_html . '>HTML</option>
+	          <option value="htmltab" ' . $selectedOutputHTML . '>HTML</option>
 	          <option value="xml" >XML Resultset</option>
-	          <option value="rdfxml" ' . $selected_output_rdfxml . '>RDF/XML</option>
+	          <option value="rdfxml" ' . $selectedOutputRDFXML . '>RDF/XML</option>
 	          <!-- <option value="infos" >Query Structure</option> -->
 	          <!-- <option value="tsv" >TSV</option> -->
 	        </select>
@@ -759,7 +754,7 @@ Output Equivalent
 	        <table border="0" style="font-size: 11px; background: transparent;" >
 	        <tr><td style="text-align: right;">Filter by vocabulary:</td>
 	        <td>
-			<input type="checkbox" name="filtervocab" value="1" ' . $checked_filtervocab . '/>
+			<input type="checkbox" name="filtervocab" value="1" ' . $checkedFilterVocab . '/>
 	        </td>
 	        <td style="text-align: right">Vocabulary URL:</td>
 	        <td>
