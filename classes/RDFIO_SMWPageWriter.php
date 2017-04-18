@@ -229,7 +229,9 @@ class RDFIOSMWPageWriter {
 		$p = $fact['p'];
 		$o = $fact['o'];
 
-		$newFactText = "\n" . '[[' . $p . '::' . $o . ']]';
+		$pWikified = $this->getWikifiedTitle( $p );
+
+		$newFactText = "\n" . '[[' . $pWikified . '::' . $o . ']]';
 		$wikiText .= $newFactText;
 
 		return $wikiText;
