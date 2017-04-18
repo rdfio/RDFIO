@@ -44,10 +44,6 @@ class RDFIOSMWPageWriter {
 			$newWikiText = $oldWikiText; // using new variable to separate extraction from editing
 
 			// ----------------------------------------------------------------------
-			//  3. Find all existing fact statements in page (to be updated)
-			// ----------------------------------------------------------------------
-
-			// ----------------------------------------------------------------------
 			//  4. Find all existing template statements in page (to be updated)
 			// ----------------------------------------------------------------------
 			$oldTemplateCalls = $this->extractTemplateCalls( $oldWikiText );
@@ -60,7 +56,7 @@ class RDFIOSMWPageWriter {
 
 			// Collect old and new template names in one array
 			$allTemplateNames = [];
-			foreach ( $oldTemplateCalls as $tplName => $tplInfo ) {
+			foreach ( array_keys( $oldTemplateCalls ) as $tplName ) {
 				$allTemplateNames[] = $tplName;
 			}
 			$allTemplateNames = array_merge( $allTemplateNames, $tplsForNewCats );
@@ -87,29 +83,29 @@ class RDFIOSMWPageWriter {
 			//  7. Loop over each fact and:
 			// ----------------------------------------------------------------------
 			foreach ( $wikiPage->getFacts() as $fact ) {
-				$wikiTextUpdatedWithFact = $newWikiText;
+				$wikiTextUpdated = $newWikiText;
 				// ----------------------------------------------------------------------
 				//  8. Update all existing fact statements on page
 				// ----------------------------------------------------------------------
-				$wikiTextUpdatedWithFact = $this->updateExplicitFactsInText( $fact, $wikiTextUpdatedWithFact );
+				$wikiTextUpdated = $this->updateExplicitFactsInText( $fact, $wikiTextUpdated );
 
 				// ----------------------------------------------------------------------
 				//  9. Update in all existing template calls, based on index
 				// ----------------------------------------------------------------------
-				$wikiTextUpdatedWithFact = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiTextUpdatedWithFact );
+				$wikiTextUpdated = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiTextUpdated );
 
 				// ----------------------------------------------------------------------
 				// 10. If the fact is not updated yet, write via any relevant templates as new template calls
 				// ----------------------------------------------------------------------
-				//if ( $wikiTextUpdatedWithFact === $newWikiText ) {
-				//	$wikiTextUpdatedWithFact = $this->addViaNewTemplateCalls( $wikiTextUpdatedWithFact );
+				//if ( $wikiTextUpdated === $newWikiText ) {
+				//	$wikiTextUpdated = $this->addViaNewTemplateCalls( $wikiTextUpdated );
 				//}
 
 				// ----------------------------------------------------------------------
 				// 11. If neither of 8-10 was done, add as new fact statements
 				// ----------------------------------------------------------------------
-				if ( $wikiTextUpdatedWithFact === $newWikiText ) {
-					$wikiTextUpdatedWithFact = $this->addNewExplicitFact( $fact, $wikiTextUpdatedWithFact );
+				if ( $wikiTextUpdated === $newWikiText ) { // FIXME: This is not enough of a check - there might have been an existing fact, so no change, but should still not add new fact!
+					$wikiTextUpdated = $this->addNewExplicitFact( $fact, $wikiTextUpdated );
 				}
 
 				// ----------------------------------------------------------------------
@@ -117,7 +113,7 @@ class RDFIOSMWPageWriter {
 				// ----------------------------------------------------------------------
 
 				// Update main wiki text variable with changes for fact
-				$newWikiText = $wikiTextUpdatedWithFact;
+				$newWikiText = $wikiTextUpdated;
 			}
 
 			// ----------------------------------------------------------------------
@@ -207,14 +203,14 @@ class RDFIOSMWPageWriter {
 	 * @return string $wikiText
 	 */
 	private function addNewExplicitFact( $fact, $wikiText ) {
-		$p = $fact['p'];
-		$o = $fact['o'];
+		$prop = $fact['p'];
+		$val = $fact['o'];
 
-		$pWikified = $this->getWikifiedTitle( $p );
+		$propWikified = $this->getWikifiedTitle( $prop );
 
 		$oldFacts = $this->extractFacts( $wikiText );
-		if ( !array_key_exists( $pWikified, $oldFacts ) ) {
-			$newFactText = "\n" . '[[' . $pWikified . '::' . $o . ']]';
+		if ( !array_key_exists( $propWikified, $oldFacts ) ) {
+			$newFactText = "\n" . '[[' . $propWikified . '::' . $val . ']]';
 			$wikiText .= $newFactText;
 		}
 
@@ -305,7 +301,7 @@ class RDFIOSMWPageWriter {
 			$names = $paramMatches[1];
 			$vals = $paramMatches[2];
 			foreach ( $names as $idx => $name ) {
-				$paramVals[] = array( 'name' => $names[$idx], 'val' => $vals[$idx] );
+				$paramVals[] = array( 'name' => $name, 'val' => $vals[$idx] );
 			}
 			$templates[$tName]['paramvals'] = $paramVals;
 		}
