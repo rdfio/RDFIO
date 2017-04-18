@@ -40,15 +40,16 @@ class RDFIOSMWPageWriter {
 			$newWikiText = $oldWikiText; // using new variable to separate extraction from editing
 
 			//  3. Find all existing fact statements in page (to be updated)
-			// $oldFacts = $this->extractFacts( $oldWikiText );
+			$oldFacts = $this->extractFacts( $oldWikiText );
 
+			//  4. Find all existing template statements in page (to be updated)
 			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
 
 			$newCategories = $wikiPage->getCategories();
 			$tplsForCats = $this->getTemplatesForCategories( $newCategories );
 			$newTplCalls = '';
 			foreach ( $tplsForCats as $tplName => $callText ) {
-				$oldTemplates[$tplName]['templateCallText'] = $callText; // FIXME: Kind of silly
+				$oldTemplates[$tplName]['calltext'] = $callText; // FIXME: Kind of silly
 				$newTplCalls .= $callText . "\n";
 			}
 			$newWikiText .= $newTplCalls;
@@ -69,11 +70,11 @@ class RDFIOSMWPageWriter {
 						$oldTemplates[$tplName]['properties'][$propNameInTpl[$idx]] = $paramNameInTpl[$idx];
 					}
 
-					$hasTplParams = array_key_exists( 'templateParamsValues', $oldTemplates[$tplName] );
+					$hasTplParams = array_key_exists( 'paramvals', $oldTemplates[$tplName] );
 					// Get the parameter values used in the templates
 					if ( $hasTplParams ) {
-						$tplParamVals = explode( '|', $oldTemplates[$tplName]['templateParamsValues'] );
-						foreach ( $tplParamVals as $paramPair ) {
+						$paramvals = explode( '|', $oldTemplates[$tplName]['paramvals'] );
+						foreach ( $paramvals as $paramPair ) {
 							$paramValArray = explode( '=', $paramPair );
 							$paramName = $paramValArray[0];
 							$paramVal = $paramValArray[1];
@@ -150,7 +151,7 @@ class RDFIOSMWPageWriter {
 			} else if ( $occursInATpl ) {
 				// Code to update/add property to template call(s)
 				foreach ( $tplsWithProp as $idx => $tplName ) {
-					$oldTplCall = $oldTemplates[$tplName]['templateCallText'];  // use temp value as may be updated more than once
+					$oldTplCall = $oldTemplates[$tplName]['calltext'];  // use temp value as may be updated more than once
 					$param = $oldTemplates[$tplName]['properties'][$predTitleWikified];
 					$oldVal = null;
 					$hasOldVal = array_key_exists( 'value', $oldTemplates[$tplName]['parameters'][$param] );
@@ -291,8 +292,8 @@ class RDFIOSMWPageWriter {
 		$tplParams = $matches[3];
 		foreach ( $tplName as $idx => $tName ) {
 			$mwTemplates[$tName] = array();
-			$mwTemplates[$tName]['templateCallText'] = $wikiText[$idx];
-			$mwTemplates[$tName]['templateParamsValues'] = $tplParams[$idx];
+			$mwTemplates[$tName]['calltext'] = $wikiText[$idx];
+			$mwTemplates[$tName]['paramvals'] = $tplParams[$idx];
 		}
 		return $mwTemplates;
 	}
@@ -351,8 +352,8 @@ class RDFIOSMWPageWriter {
 			preg_match( '/\[\[Has template::Template:(.*)\]\]/', $catPageText, $matches ); // get Has template property, if exists
 			if ( !empty( $matches ) ) {
 				$tplName = $matches[1];
-				$tplCallText = '{{' . $tplName . '}}'; // Add template call to page wikitext - {{templatename}}
-				$templates[$tplName] = $tplCallText;
+				$calltext = '{{' . $tplName . '}}'; // Add template call to page wikitext - {{templatename}}
+				$templates[$tplName] = $calltext;
 			}
 		}
 		return $templates;

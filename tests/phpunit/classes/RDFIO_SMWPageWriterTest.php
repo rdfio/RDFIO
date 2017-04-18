@@ -97,7 +97,7 @@ a population of [[Has population::10000000|ten million]].
 {{Geographical region}}
 EOT;
 
-		$expectedTplCallText = <<<EOT
+		$expectedcalltext = <<<EOT
 {{Country
 |Capital=Stockholm
 |Population=10000000
@@ -111,11 +111,11 @@ EOT;
 
 		$expectedOutput = array(
 			'Country' => array(
-				'templateCallText' => $expectedTplCallText,
-				'templateParamsValues' => $expectedTplParams ),
+				'calltext' => $expectedcalltext,
+				'paramvals' => $expectedTplParams ),
 			'Geographical region' => array(
-				'templateCallText' => '{{Geographical region}}',
-				'templateParamsValues' => '' ),
+				'calltext' => '{{Geographical region}}',
+				'paramvals' => '' ),
 		);
 
 		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplateCalls', array( $wikiContent ) );
