@@ -163,8 +163,60 @@ EOT;
 
 		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
 
-		$out = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
-		$updatedWikiText = $out[0];
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
+
+		$this->assertEquals( $expectedWikiText, $updatedWikiText );
+	}
+
+
+	public function testUpdateTemplateCallsAddTemplateParam() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+{{Geographical region}}
+EOT;
+
+		$expectedWikiText = <<<EOT
+{{Country
+|Capital=Stockholm
+|Population=10000000
+|Second city=Gothenburg
+}}
+{{Geographical region}}
+EOT;
+
+		$propTplIndex = array(
+			'Has population' => array(
+				'Country' => 'Population',
+			),
+			'Has second city' => array(
+				'Country' => 'Second city',
+			)
+		);
+
+		$tplCallCountry = <<<EOT
+{{Country
+|Capital=Stockholm
+|Population=10000000
+}}
+EOT;
+		$tplCallGeoRegion = <<<EOT
+{{Geographical region}}
+EOT;
+
+
+		$oldTemplateCalls = array(
+			'Country' => array( 'calltext' => $tplCallCountry ),
+			'Geographical region' => array( 'calltext' => $tplCallGeoRegion ),
+		);
+
+		$newFact = array( 'p' => 'Has second city', 'o' => 'Gothenburg' );
+
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
 
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
 	}

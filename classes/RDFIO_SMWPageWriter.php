@@ -51,7 +51,7 @@ class RDFIOSMWPageWriter {
 			// ----------------------------------------------------------------------
 			//  4. Find all existing template statements in page (to be updated)
 			// ----------------------------------------------------------------------
-			$oldTemplateCalls = $this->extractTemplateCalls( $oldWikiText );
+			$oldTplCalls = $this->extractTemplateCalls( $oldWikiText );
 
 			// ----------------------------------------------------------------------
 			//  5. Find all templates that might be used (in current page, and via all its categories)
@@ -61,7 +61,7 @@ class RDFIOSMWPageWriter {
 
 			// Collect old and new template names in one array
 			$allTemplateNames = [];
-			foreach ( array_keys( $oldTemplateCalls ) as $tplName ) {
+			foreach ( array_keys( $oldTplCalls ) as $tplName ) {
 				$allTemplateNames[] = $tplName;
 			}
 			$allTemplateNames = array_merge( $allTemplateNames, $tplsForNewCats );
@@ -97,9 +97,8 @@ class RDFIOSMWPageWriter {
 				// ----------------------------------------------------------------------
 				//  9. Update in all existing template calls, based on index
 				// ----------------------------------------------------------------------
-				$out = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiTextUpdated );
-				$wikiTextUpdated = $out[0];
-				$propFoundInTplCall = $out[1];
+				$currentTplCalls = $this->extractTemplateCalls( $wikiTextUpdated );
+				$wikiTextUpdated = $this->updateTemplateCalls( $fact, $propTplIndex, $currentTplCalls, $wikiTextUpdated );
 
 				// ----------------------------------------------------------------------
 				// 10. If the fact is not updated yet, write via any relevant templates as new template calls
@@ -112,7 +111,7 @@ class RDFIOSMWPageWriter {
 				// 11. If neither of 8-10 was done, add as new fact statements
 				// ----------------------------------------------------------------------
 				$prop = $fact['p'];
-				if ( !array_key_exists( $prop, $oldFacts ) && !$propFoundInTplCall ) {
+				if ( !array_key_exists( $prop, $oldFacts ) && !( $propTplIndex[$prop] ) ) {
 					$wikiTextUpdated = $this->addNewExplicitFact( $fact, $wikiTextUpdated );
 				}
 
@@ -182,7 +181,7 @@ class RDFIOSMWPageWriter {
 	 * @param $fact
 	 * @param $propTplIndex
 	 * @param $wikiText
-	 * @return string $wikiText
+	 * @return array
 	 */
 	private function updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiText ) {
 		$prop = $fact['p'];
@@ -195,17 +194,17 @@ class RDFIOSMWPageWriter {
 				$oldTplCallText = $oldTemplateCalls[$tplName]['calltext'];
 
 				preg_match( '/\|' . $paramName . '\=([^\=\|\}\n]+)/', $oldTplCallText, $matches );
-				if ( !empty( $matches ) ) {
+				if ( $matches ) {
 					$oldVal = $matches[1];
 					$newTplCallText = str_replace( $oldVal, $newVal, $oldTplCallText );
-					$wikiText = str_replace( $oldTplCallText, $newTplCallText, $wikiText );
-
-					$propFoundInTplCall = true;
+				} else {
+					$newTplCallText = str_replace('}}', '|' . $paramName . '=' . $newVal . "\n}}", $oldTplCallText);
 				}
+				$wikiText = str_replace( $oldTplCallText, $newTplCallText, $wikiText );
 			}
 		}
 
-		return [$wikiText, $propFoundInTplCall];
+		return $wikiText;
 	}
 
 	/**
