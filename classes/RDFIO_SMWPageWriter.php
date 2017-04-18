@@ -17,6 +17,8 @@ class RDFIOSMWPageWriter {
 			$newTplCalls = '';
 
 			$oldWikiCont = $this->getTextForPage( $wikiTitle );
+
+			// FIXME: From here ...
 			if ( $oldWikiCont !== '' ) {
 				$mwProperties = $this->extractProperties( $oldWikiCont );
 				$mwCategories = $this->extractCategories( $oldWikiCont );
@@ -61,7 +63,6 @@ class RDFIOSMWPageWriter {
 					}
 				}
 
-
 				// Put existing template calls into an array for updating more than one fact
 				foreach ( $mwTemplates as $name => $array ) {
 					$updatedTplCalls[$name] = $array['templateCallText'];
@@ -81,16 +82,15 @@ class RDFIOSMWPageWriter {
 			if ( $newTplCalls ) {
 				$newWikiCont .= $newTplCalls;
 			}
+			// FIXME: ... to here, we should extract into some "template messing" method
 
 			// Add categories to the wiki text 
 			// The new wikitext is actually added to the page at the end.
 			// This allows us to add a template call associated with the category and then populate it with parameters in the facts section
 			$newCatsAsText = "\n";
-			foreach ( $wikiPage->getCategories() as $cat ) {
-
-				$catTitle = Title::newFromText( $cat, NS_CATEGORY );
-				$catTitleWikified = $catTitle->getText();
-
+			$oldCats = $wikiPage->getCategories();
+			foreach ( $oldCats as $oldCat ) {
+				$catTitleWikified = $this->getWikifiedTitle( $oldCat, NS_CATEGORY );
 				if ( !array_key_exists( $catTitleWikified, $mwCategories ) ) {
 					$newCatsAsText .= '[[Category:' . $catTitleWikified . "]]\n"; // Is there an inbuilt class method to do this?  Can't find one in Category.
 				}
@@ -102,8 +102,7 @@ class RDFIOSMWPageWriter {
 				$pred = $fact['p'];
 				$obj = $fact['o'];
 
-				$predTitle = Title::newFromText( $pred );
-				$predTitleWikified = $predTitle->getText();
+				$predTitleWikified = $this->getWikifiedTitle( $pred );
 
 				$isEquivURI = strpos( $pred, "Equivalent URI" ) !== false;
 				$hasLocalUrl = strpos( $obj, "Special:URIResolver" ) !== false;
@@ -195,7 +194,10 @@ class RDFIOSMWPageWriter {
 					$newPropsAsText .= $newPropAsText . "\n";
 				}
 			}
+
+
 			$newWikiCont .= $newPropsAsText;
+			$newWikiCont .= $newCatsAsText;
 
 			// Write to wiki
 			$this->writeToArticle( $wikiTitle, $newWikiCont, 'Update by RDFIO' );
@@ -252,6 +254,18 @@ class RDFIOSMWPageWriter {
 			$mwTemplates[$tName]['templateParamsValues'] = $tplParams[$idx];
 		}
 		return $mwTemplates;
+	}
+
+	/**
+	 * Get the wikified title
+	 * @param string $title
+	 * @param int $wikiNamespace
+	 * @return string $wikifiedTitle
+	 */
+	private function getWikifiedTitle( $title, $wikiNamespace = NS_MAIN ) {
+		$titleObj = Title::newFromText( $title, $wikiNamespace );
+		$wikifiedTitle = $titleObj->getText();
+		return $wikifiedTitle;
 	}
 
 	/**
