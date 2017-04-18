@@ -1,4 +1,8 @@
 #!/bin/bash
+echo "Starting simple system test..."
+
+mysql -u root circle_test < emptydb.sql
+
 php ../../maintenance/importRdf.php --indata data/testdata.ttl
 php ../../../../maintenance/dumpBackup.php --current | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > actual_content.xml
 if ! diff -q {expected,actual}_content.xml &>/dev/null; then

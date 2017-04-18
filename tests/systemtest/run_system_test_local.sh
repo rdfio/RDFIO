@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "Starting simple system test..."
+
 rm actual_content.xml
 mysql -u root smw < emptydb.sql
 php ../../maintenance/importRdf.php --indata data/testdata.ttl
