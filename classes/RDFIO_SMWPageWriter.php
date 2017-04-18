@@ -45,6 +45,7 @@ class RDFIOSMWPageWriter {
 			//  4. Find all existing template statements in page (to be updated)
 			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
 
+			//  5. Find all templates that might be used (in current page, and via all its categories)
 			$newCategories = $wikiPage->getCategories();
 			$tplsForCats = $this->getTemplatesForCategories( $newCategories );
 			$newTplCalls = '';
@@ -228,10 +229,9 @@ class RDFIOSMWPageWriter {
 
 
 	/**
-	 * Extract an array of properties from wiki text
-	 * FIXME: Refactor to be 'extractFacts' instead
+	 * Extract an array of facts from wiki text
 	 * @param string $wikiContent
-	 * @return array
+	 * @return array $facts
 	 */
 	private function extractFacts( $wikiContent ) {
 		$facts = array();
@@ -247,9 +247,8 @@ class RDFIOSMWPageWriter {
 
 	/**
 	 * Extract an array of properties from wiki text
-	 * FIXME: Refactor to be 'extractFacts' instead
 	 * @param string $wikiContent
-	 * @return array
+	 * @return array $mwProperties
 	 */
 	private function extractProperties( $wikiContent ) {
 		$mwProperties = array();
@@ -289,11 +288,19 @@ class RDFIOSMWPageWriter {
 		preg_match_all( '/\{\{\s?([^#][A-Za-z0-9\ ]+)\s?(\|([^\}]*))?\s?\}\}/U', $wikiContent, $matches );
 		$wikiText = $matches[0];
 		$tplName = $matches[1];
-		$tplParams = $matches[3];
+		$tplParamsText = $matches[2];
 		foreach ( $tplName as $idx => $tName ) {
 			$mwTemplates[$tName] = array();
 			$mwTemplates[$tName]['calltext'] = $wikiText[$idx];
-			$mwTemplates[$tName]['paramvals'] = $tplParams[$idx];
+
+			$paramVals = array();
+			preg_match_all( '/\|([^\|\n\=]+)\=([^\|\=\n]+)/', $tplParamsText[$idx], $paramMatches );
+			$names = $paramMatches[1];
+			$vals = $paramMatches[2];
+			foreach ( $names as $idx => $name ) {
+				$paramVals[] = array( 'name' => $names[$idx], 'val' => $vals[$idx] );
+			}
+			$mwTemplates[$tName]['paramvals'] = $paramVals;
 		}
 		return $mwTemplates;
 	}

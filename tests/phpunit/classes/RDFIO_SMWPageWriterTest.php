@@ -104,18 +104,17 @@ EOT;
 }}
 EOT;
 
-		$expectedTplParams = <<<EOT
-Capital=Stockholm
-|Population=10000000
-EOT;
-
 		$expectedOutput = array(
 			'Country' => array(
 				'calltext' => $expectedcalltext,
-				'paramvals' => $expectedTplParams ),
+				'paramvals' => [
+					[ 'name' => 'Capital', 'val' => 'Stockholm' ],
+					[ 'name' => 'Population', 'val' => '10000000' ],
+				],
+			),
 			'Geographical region' => array(
 				'calltext' => '{{Geographical region}}',
-				'paramvals' => '' ),
+				'paramvals' => [] ),
 		);
 
 		$extractedTemplates = $this->invokeMethod( $smwWriter, 'extractTemplateCalls', array( $wikiContent ) );
