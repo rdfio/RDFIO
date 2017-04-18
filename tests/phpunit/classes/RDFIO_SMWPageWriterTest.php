@@ -10,6 +10,42 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 		parent::tearDown();
 	}
 
+
+	public function testBuildPropertyTemplateParamIndex() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$facts = array(
+			array(
+				'p' => 'Has capital',
+				'o' => 'Stockholm',
+			),
+			array(
+				'p' => 'Has population',
+				'o' => '10000001',
+			),
+		);
+		$tplFacts = array(
+			'Country' => array(
+				'Has capital' => 'Capital',
+				'Has population' => 'Country population',
+			),
+		);
+
+		$expectedPropTplParamIdx = array(
+			'Has capital' => array(
+				'Country' => 'Capital',
+			),
+			'Has population' => array(
+				'Country' => 'Country population',
+			),
+		);
+
+		$propTplParamIdx = $this->invokeMethod( $smwWriter, 'buildPropertyTemplateParamIndex', array( $facts, $tplFacts ) );
+
+		$this->assertArrayEquals( $expectedPropTplParamIdx, $propTplParamIdx, true, true );
+	}
+
+
 	public function testExtractPropertyParameterIndex() {
 		$smwWriter = new RDFIOSMWPageWriter();
 

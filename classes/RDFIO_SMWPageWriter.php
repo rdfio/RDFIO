@@ -82,18 +82,7 @@ class RDFIOSMWPageWriter {
 				$allTemplateFacts[$tplName] = $this->extractPropertyParameterIndex( $tplPageText );
 			}
 
-			// Build the index
-			$propTplIndex = array();
-			foreach ( $wikiPage->getFacts() as $fact ) {
-				$prop = $fact['p'];
-				$propTplIndex[$prop] = array();
-				foreach ( $allTemplateFacts as $tplName => $tplFacts ) {
-					if ( in_array( $prop, $tplFacts  ) ) {
-						$paramName = $tplFacts[$prop];
-						$propTplIndex[$prop][$tplName] = $paramName;
-					}
-				}
-			}
+			$propTplIndex = $this->buildPropertyTemplateParamIndex( $wikiPage->getFacts(), $allTemplateFacts );
 
 			// ----------------------------------------------------------------------
 			//  7. Loop over each fact and:
@@ -157,6 +146,27 @@ class RDFIOSMWPageWriter {
 	}
 
 	/**
+	 * @param array $newFacts
+	 * @param array $allTemplateFacts
+	 * @return array
+	 */
+	private function buildPropertyTemplateParamIndex( $newFacts, $allTemplateFacts ) {
+		// Build the index
+		$propTplIndex = array();
+		foreach ( $newFacts  as $fact ) {
+			$prop = $fact['p'];
+			$propTplIndex[$prop] = array();
+			foreach ( $allTemplateFacts as $tplName => $tplFacts ) {
+				if ( array_key_exists( $prop, $tplFacts  ) ) {
+					$paramName = $tplFacts[$prop];
+					$propTplIndex[$prop][$tplName] = $paramName;
+				}
+			}
+		}
+		return $propTplIndex;
+	}
+
+	/**
 	 * @param array $fact
 	 * @param string $wikiText
 	 * @return string $wikiText
@@ -186,7 +196,7 @@ class RDFIOSMWPageWriter {
 
 		if ( array_key_exists($prop, $propTplIndex) ) {
 			foreach ( $propTplIndex[$prop] as $tplName => $paramName ) {
-				$oldTplCallText = $oldTemplateCalls[$tplName];
+				$oldTplCallText = $oldTemplateCalls[$tplName]['calltext'];
 
 				preg_match( '/\|' . $paramName . '\=([^\=\|\}\n]+)/', $oldTplCallText, $matches );
 				if ( !empty( $matches ) ) {
