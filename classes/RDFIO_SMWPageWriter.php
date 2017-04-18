@@ -31,56 +31,76 @@ class RDFIOSMWPageWriter {
 		//     14. Write updated article
 		// ---------------------------------------------------------------------------------------------
 
+		// ----------------------------------------------------------------------
 		//  1. Loop over wiki pages
+		// ----------------------------------------------------------------------
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			/* @var $wikiPage RDFIOWikiPage */
 
+			// ----------------------------------------------------------------------
 			//  2. Get the old wiki text for current page
+			// ----------------------------------------------------------------------
 			$oldWikiText = $this->getTextForPage( $wikiTitle );
 			$newWikiText = $oldWikiText; // using new variable to separate extraction from editing
 
+			// ----------------------------------------------------------------------
 			//  3. Find all existing fact statements in page (to be updated)
+			// ----------------------------------------------------------------------
 			$oldFacts = $this->extractFacts( $oldWikiText );
 
+			// ----------------------------------------------------------------------
 			//  4. Find all existing template statements in page (to be updated)
+			// ----------------------------------------------------------------------
 			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
 
+			// ----------------------------------------------------------------------
 			//  5. Find all templates that might be used (in current page, and via all its categories)
+			// ----------------------------------------------------------------------
 			$newCategories = $wikiPage->getCategories();
 			$tplsForCats = $this->getTemplatesForCategories( $newCategories );
-			$newTplCalls = '';
-			foreach ( $tplsForCats as $tplName => $callText ) {
-				$oldTemplates[$tplName]['calltext'] = $callText; // FIXME: Kind of silly
-				$newTplCalls .= $callText . "\n";
+
+			// Collect old and new template names in one array
+			$allTemplateNames = [];
+			foreach ( $oldTemplates as $tplName => $tplInfo ) {
+				$allTemplateNames[] = $tplName;
 			}
-			$newWikiText .= $newTplCalls;
+			$allTemplateNames = array_merge( $allTemplateNames, $tplsForCats );
+
+			// ----------------------------------------------------------------------
+			//  6. Build an index: Property -> Template(s) -> Parameter name(s)
+			// ----------------------------------------------------------------------
+			// Collect template wiki texts for building property/template index
+			$allTemplateTexts = array();
+			foreach ( $allTemplateNames as $tplName ) {
+				$tplPageText = $this->getTextForPage( $tplName, NS_TEMPLATE );
+				$allTemplateTexts[$tplName] = $tplPageText;
+			}
+
+			// Extract facts from template wiki texts (for building property/template index)
+			$allTemplateFacts = array();
+			foreach ( $allTemplateTexts as $tplName => $tplPageText ) {
+				$allTemplateFacts[$tplName] = $this->extractPropertyParameterIndex( $tplPageText );
+			}
+
+			// Build the index
+			$propTplIndex = array();
+			foreach ( $wikiPage->getFacts() as $fact ) {
+				$propTplIndex[$fact['p']] = array( 'templates' );
+			}
+
+
 
 			if ( !empty( $oldTemplates ) ) {
-				// Extract the wikitext from each template
-				foreach ( $oldTemplates as $tplName => $array ) {
-					$mwTplText = $this->getTextForPage( $tplName, NS_TEMPLATE );
-					$oldTemplates[$tplName]['wikitext'] = $mwTplText;
 
-					// Get the properties and parameter names used in the templates
-					preg_match_all( '/\[\[(.*)::\{\{\{(.*)\|?\}\}\}\]\]/', $mwTplText, $tplParamMatches );
-					$propNameInTpl = $tplParamMatches[1];
-					$paramNameInTpl = $tplParamMatches[2];
-					foreach ( $paramNameInTpl as $idx => $tplParam ) {
-						// Store parameter-property pairings both ways round for easy lookup
-						$oldTemplates[$tplName]['parameters'][$tplParam]['property'] = $propNameInTpl[$idx];
-						$oldTemplates[$tplName]['properties'][$propNameInTpl[$idx]] = $paramNameInTpl[$idx];
-					}
-
-					$hasTplParams = array_key_exists( 'paramvals', $oldTemplates[$tplName] );
-					// Get the parameter values used in the templates
-					if ( $hasTplParams ) {
-						$paramvals = explode( '|', $oldTemplates[$tplName]['paramvals'] );
-						foreach ( $paramvals as $paramPair ) {
-							$paramValArray = explode( '=', $paramPair );
-							$paramName = $paramValArray[0];
-							$paramVal = $paramValArray[1];
-							$oldTemplates[$tplName]['parameters'][$paramName]['value'] = $paramVal;
-						}
+				$hasTplParams = array_key_exists( 'paramvals', $oldTemplates[$tplName] );
+				// Get the parameter values used in the templates
+				if ( $hasTplParams ) {
+					$paramvals = explode( '|', $oldTemplates[$tplName]['paramvals'] );
+					foreach ( $paramvals as $paramPair ) {
+						$paramValArray = explode( '=', $paramPair );
+						$paramName = $paramValArray[0];
+						$paramVal = $paramValArray[1];
+						$oldTemplates[$tplName]['parameters'][$paramName]['value'] = $paramVal;
 					}
 				}
 			}
@@ -229,6 +249,22 @@ class RDFIOSMWPageWriter {
 
 
 	/**
+	 * @param $tplPageText
+	 * @return array $propParamIndex
+	 */
+	private function extractPropertyParameterIndex( $tplPageText ) {
+		$propParamIndex = array();
+		// Get the properties and parameter names used in the templates
+		preg_match_all( '/\[\[(.*)::\{\{\{([^\|\}]+)\|?\}\}\}\]\]/', $tplPageText, $tplParamMatches );
+		$propNames = $tplParamMatches[1];
+		$paramNames = $tplParamMatches[2];
+		foreach ( $propNames as $idx => $propName ) {
+			$propParamIndex[$propName] = $paramNames[$idx];
+		}
+		return $propParamIndex;
+	}
+
+	/**
 	 * Extract an array of facts from wiki text
 	 * @param string $wikiContent
 	 * @return array $facts
@@ -281,17 +317,17 @@ class RDFIOSMWPageWriter {
 	/**
 	 * Extract an array of templates from wiki text
 	 * @param string $wikiContent
-	 * @return array $mwTemplates
+	 * @return array $templates
 	 */
 	private function extractTemplateCalls( $wikiContent ) {
-		$mwTemplates = array();
+		$templates = array();
 		preg_match_all( '/\{\{\s?([^#][A-Za-z0-9\ ]+)\s?(\|([^\}]*))?\s?\}\}/U', $wikiContent, $matches );
 		$wikiText = $matches[0];
 		$tplName = $matches[1];
 		$tplParamsText = $matches[2];
 		foreach ( $tplName as $idx => $tName ) {
-			$mwTemplates[$tName] = array();
-			$mwTemplates[$tName]['calltext'] = $wikiText[$idx];
+			$templates[$tName] = array();
+			$templates[$tName]['calltext'] = $wikiText[$idx];
 
 			$paramVals = array();
 			preg_match_all( '/\|([^\|\n\=]+)\=([^\|\=\n]+)/', $tplParamsText[$idx], $paramMatches );
@@ -300,9 +336,9 @@ class RDFIOSMWPageWriter {
 			foreach ( $names as $idx => $name ) {
 				$paramVals[] = array( 'name' => $names[$idx], 'val' => $vals[$idx] );
 			}
-			$mwTemplates[$tName]['paramvals'] = $paramVals;
+			$templates[$tName]['paramvals'] = $paramVals;
 		}
-		return $mwTemplates;
+		return $templates;
 	}
 
 	/**
@@ -348,7 +384,7 @@ class RDFIOSMWPageWriter {
 	}
 
 	/**
-	 *
+	 * Get templates referred to via "Has template", by a set of categories
 	 * @param RDFIOWikiPage $wikiPage
 	 * @return array $templateNames
 	 */

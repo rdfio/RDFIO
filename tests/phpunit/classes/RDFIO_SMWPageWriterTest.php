@@ -10,6 +10,25 @@ class RDFIOSMWPageWriterTest extends MediaWikiTestCase {
 		parent::tearDown();
 	}
 
+	public function testExtractPropertyParameterIndex() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$wikiContent = <<<EOT
+## Some info
+* [[Has capital::{{{Capital|}}}]]
+* [[Has population::{{{Country population}}}]]
+EOT;
+
+		$expectedOutput = array(
+			'Has capital' => 'Capital',
+			'Has population' => 'Country population',
+		);
+
+		$extractedFacts = $this->invokeMethod( $smwWriter, 'extractPropertyParameterIndex', array( $wikiContent ) );
+
+		$this->assertArrayEquals( $expectedOutput, $extractedFacts, true, true );
+	}
+
 	public function testExtractFacts() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
