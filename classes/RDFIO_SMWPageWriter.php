@@ -12,6 +12,24 @@ class RDFIOSMWPageWriter {
 	 */
 	public function import( $wikiPages ) {
 
+		// ---------------------------------------------------------------------------------------------
+		// Overview of intended process
+		// ---------------------------------------------------------------------------------------------
+		//  1. Loop over wiki pages
+		//      2. Get the old wiki text for current page
+		//      3. Find all existing fact statements in page (to be updated)
+		//      4. Find all existing template statements in page (to be updated)
+		//      5. Find all templates that might be used (in current page, and via all its categories)
+		//      6. Build an index: Property -> Template(s) -> Parameter name(s)
+		//      7. Loop over each fact and:
+		//          8. Update all existing fact statements on page
+		//          9. Update in all existing templates, based on index
+		//         10. Add to any relevant templates as new template calls
+		//         11. If neither of 8-10 was done, add as new fact statements
+		//     12. Add category tags (if template with category has not been added yet).
+		// 	   13. Write updated article
+		// ---------------------------------------------------------------------------------------------
+
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			/* @var $wikiPage RDFIOWikiPage */
 
