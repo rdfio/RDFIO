@@ -130,8 +130,8 @@ EOT;
 
 
 		$oldTemplateCalls = array(
-			'Country' => $tplCallCountry,
-			'Geographical region' => $tplCallGeoRegion,
+			'Country' => array( 'calltext' => $tplCallCountry ),
+			'Geographical region' => array( 'calltext' => $tplCallGeoRegion ),
 		);
 
 		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
@@ -139,6 +139,30 @@ EOT;
 		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
 
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
+	}
+
+
+	public function testAddNewExplicitFact() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000000|]].
+EOT;
+
+		$fact = array(
+			'p' => 'Has second city',
+			'o' => 'Gothenburg',
+		);
+
+		$expectedOutput = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000000|]].
+[[Has second city::Gothenburg]]
+EOT;
+		$newWikiText = $this->invokeMethod( $smwWriter, 'addNewExplicitFact', array( $fact, $oldWikiText ) );
+
+		$this->assertEquals( $expectedOutput, $newWikiText );
 	}
 
 

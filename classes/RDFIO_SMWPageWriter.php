@@ -57,14 +57,14 @@ class RDFIOSMWPageWriter {
 			//  5. Find all templates that might be used (in current page, and via all its categories)
 			// ----------------------------------------------------------------------
 			$newCategories = $wikiPage->getCategories();
-			$tplsForCats = $this->getTemplatesForCategories( $newCategories );
+			$tplsForNewCats = $this->getTemplatesForCategories( $newCategories );
 
 			// Collect old and new template names in one array
 			$allTemplateNames = [];
 			foreach ( $oldTemplateCalls as $tplName => $tplInfo ) {
 				$allTemplateNames[] = $tplName;
 			}
-			$allTemplateNames = array_merge( $allTemplateNames, $tplsForCats );
+			$allTemplateNames = array_merge( $allTemplateNames, $tplsForNewCats );
 
 			// ----------------------------------------------------------------------
 			//  6. Build an index: Property -> Template(s) -> Parameter name(s)
@@ -88,27 +88,37 @@ class RDFIOSMWPageWriter {
 			//  7. Loop over each fact and:
 			// ----------------------------------------------------------------------
 			foreach ( $wikiPage->getFacts() as $fact ) {
+				$wikiTextUpdatedWithFact = $newWikiText;
 				// ----------------------------------------------------------------------
 				//  8. Update all existing fact statements on page
 				// ----------------------------------------------------------------------
-				$newWikiText = $this->updateExplicitFactsInText( $fact, $newWikiText );
+				$wikiTextUpdatedWithFact = $this->updateExplicitFactsInText( $fact, $wikiTextUpdatedWithFact );
 
 				// ----------------------------------------------------------------------
 				//  9. Update in all existing template calls, based on index
 				// ----------------------------------------------------------------------
-				$newWikiText = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $newWikiText );
+				$wikiTextUpdatedWithFact = $this->updateTemplateCalls( $fact, $propTplIndex, $oldTemplateCalls, $wikiTextUpdatedWithFact );
 
 				// ----------------------------------------------------------------------
-				// 10. Add via any relevant templates as new template calls
+				// 10. If the fact is not updated yet, write via any relevant templates as new template calls
 				// ----------------------------------------------------------------------
+				//if ( $wikiTextUpdatedWithFact === $newWikiText ) {
+				//	$wikiTextUpdatedWithFact = $this->addViaNewTemplateCalls( $wikiTextUpdatedWithFact );
+				//}
 
 				// ----------------------------------------------------------------------
 				// 11. If neither of 8-10 was done, add as new fact statements
 				// ----------------------------------------------------------------------
+				if ( $wikiTextUpdatedWithFact === $newWikiText ) {
+					$wikiTextUpdatedWithFact = $this->addNewExplicitFact( $fact, $wikiTextUpdatedWithFact );
+				}
 
 				// ----------------------------------------------------------------------
 				// 12. Update any URI-type objects with an Equivalent URI fact.
 				// ----------------------------------------------------------------------
+
+				// Update main wiki text variable with changes for fact
+				$newWikiText = $wikiTextUpdatedWithFact;
 			}
 
 
@@ -206,6 +216,21 @@ class RDFIOSMWPageWriter {
 				}
 			}
 		}
+
+		return $wikiText;
+	}
+
+	/**
+	 * @param array $fact
+	 * @param string $wikiText
+	 * @return string $wikiText
+	 */
+	private function addNewExplicitFact( $fact, $wikiText ) {
+		$p = $fact['p'];
+		$o = $fact['o'];
+
+		$newFactText = "\n" . '[[' . $p . '::' . $o . ']]';
+		$wikiText .= $newFactText;
 
 		return $wikiText;
 	}
