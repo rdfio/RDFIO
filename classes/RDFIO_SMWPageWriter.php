@@ -15,23 +15,19 @@ class RDFIOSMWPageWriter {
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			/* @var $wikiPage RDFIOWikiPage */
 
-			$oldWikiCont = $this->getTextForPage( $wikiTitle );
-			$newWikiCont = $oldWikiCont; // using new variable to separate extraction from editing
+			$oldWikiText = $this->getTextForPage( $wikiTitle );
+			$newWikiText = $oldWikiText; // using new variable to separate extraction from editing
 
-			$oldTemplates = array();
-			if ( Title::newFromText( $wikiTitle )->exists() && $oldWikiCont !== '' ) {
-				$oldTemplates = $this->extractTemplateCalls( $oldWikiCont );
-			}
+			$oldTemplates = $this->extractTemplateCalls( $oldWikiText );
 
 			$newCategories = $wikiPage->getCategories();
-
 			$tplsForCats = $this->getTemplatesForCategories( $newCategories );
 			$newTplCalls = '';
 			foreach ( $tplsForCats as $tplName => $callText ) {
 				$oldTemplates[$tplName]['templateCallText'] = $callText; // FIXME: Kind of silly
 				$newTplCalls .= $callText . "\n";
 			}
-			$newWikiCont .= $newTplCalls;
+			$newWikiText .= $newTplCalls;
 
 			if ( !empty( $oldTemplates ) ) {
 				// Extract the wikitext from each template
@@ -63,19 +59,14 @@ class RDFIOSMWPageWriter {
 				}
 			}
 
-			// Put existing template calls into an array for updating more than one fact
-			foreach ( $oldTemplates as $tplName => $array ) {
-				$updatedTplCalls[$tplName] = $array['templateCallText'];
-			}
-
 			// Add Facts
-			$newWikiCont = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $updatedTplCalls, $oldTemplates, $newWikiCont );
+			$newWikiText = $this->addNewFactsToWikiText( $wikiPage->getFacts(), $oldTemplates, $newWikiText );
 
 			// Add Categories
-			$newWikiCont = $this->addNewCategoriesToWikiText( $newCategories, $newWikiCont );
+			$newWikiText = $this->addNewCategoriesToWikiText( $newCategories, $newWikiText );
 
 			// Write to wiki
-			$this->writeToArticle( $wikiTitle, $newWikiCont, 'Update by RDFIO' );
+			$this->writeToArticle( $wikiTitle, $newWikiText, 'Update by RDFIO' );
 		}
 	}
 
@@ -87,7 +78,7 @@ class RDFIOSMWPageWriter {
 	 * @param string $wikiText
 	 * @return string $wikiText
 	 */
-	private function addNewFactsToWikiText( $facts, $updatedTplCalls, $oldTemplates, $wikiText ) {
+	private function addNewFactsToWikiText( $facts, $oldTemplates, $wikiText ) {
 		$oldProperties = $this->extractProperties( $wikiText );
 
 		$newPropsAsText = "\n";
@@ -135,7 +126,7 @@ class RDFIOSMWPageWriter {
 			} else if ( $occursInATpl ) {
 				// Code to update/add property to template call(s)
 				foreach ( $tplsWithProp as $idx => $tplName ) {
-					$oldTplCall = $updatedTplCalls[$tplName];  // use temp value as may be updated more than once
+					$oldTplCall = $oldTemplates[$tplName]['templateCallText'];  // use temp value as may be updated more than once
 					$param = $oldTemplates[$tplName]['properties'][$predTitleWikified];
 					$oldVal = null;
 					$hasOldVal = array_key_exists( 'value', $oldTemplates[$tplName]['parameters'][$param] );
