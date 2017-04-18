@@ -79,9 +79,13 @@ The capital of Sweden is [[Has capital::Stockholm]], which has
 a population of [[Has population::10000001|]].
 EOT;
 
+		$oldFacts = array(
+			'Has capital' => array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
+			'Has population' => array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000|]]' ),
+		);
 		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
 
-		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldWikiText ) );
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldFacts, $oldWikiText ) );
 
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
 	}
@@ -97,9 +101,14 @@ EOT;
 [[Category:Country]]
 EOT;
 
+		$oldFacts = array(
+			'Has capital' => array( 'property' => 'Has capital', 'value' => 'Stockholm', 'wikitext' => '[[Has capital::Stockholm]]' ),
+			'Has population' => array( 'property' => 'Has population', 'value' => '10000000', 'wikitext' => '[[Has population::10000000]]' ),
+			'Equivalent URI' => array( 'property' => 'Equivalent URI', 'value' => 'http://example.org/onto/Sweden', 'wikitext' => '[[Equivalent URI::http://example.org/onto/Sweden]]' ),
+		);
 		$newFact = array( 'p' => 'Equivalent URI', 'o' => 'http://example.org/onto/Sweden' );
 
-		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldWikiText ) );
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldFacts, $oldWikiText ) );
 
 		$this->assertEquals( $oldWikiText, $updatedWikiText );
 	}
@@ -154,7 +163,8 @@ EOT;
 
 		$newFact = array( 'p' => 'Has population', 'o' => '10000001' );
 
-		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
+		$out = $this->invokeMethod( $smwWriter, 'updateTemplateCalls', array( $newFact, $propTplIndex, $oldTemplateCalls, $oldWikiText ) );
+		$updatedWikiText = $out[0];
 
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
 	}
