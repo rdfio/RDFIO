@@ -350,19 +350,26 @@ class RDFIOSMWPageWriter {
 	/**
 	 *
 	 * @param RDFIOWikiPage $wikiPage
-	 * @return array $templates
+	 * @return array $templateNames
 	 */
 	private function getTemplatesForCategories( $categories ) {
-		$templates = array();
+		$templateNames = array();
 		foreach ( $categories as $cat ) {
 			$catPageText = $this->getTextForPage( $cat, NS_CATEGORY );
-			preg_match( '/\[\[Has template::Template:(.*)\]\]/', $catPageText, $matches ); // get Has template property, if exists
-			if ( !empty( $matches ) ) {
-				$tplName = $matches[1];
-				$calltext = '{{' . $tplName . '}}'; // Add template call to page wikitext - {{templatename}}
-				$templates[$tplName] = $calltext;
-			}
+			$tplNamesForCat = $this->extractTplNameFromHasTemplateFact( $catPageText );
+			$templateNames = array_merge( $templateNames, $tplNamesForCat );
 		}
-		return $templates;
+		return $templateNames;
+	}
+
+	/**
+	 * Extract template names from facts of the form [[Has template::Template:...]]
+	 * @param string $wikiText
+	 * @return array
+	 */
+	private function extractTplNameFromHasTemplateFact( $wikiText ) {
+		preg_match_all( '/\[\[Has template::Template:([^\|\]]+)(\|[^\|\]]*)?\]\]/', $wikiText, $matches ); // get Has template property, if exists
+		$templateNames = $matches[1];
+		return $templateNames;
 	}
 }

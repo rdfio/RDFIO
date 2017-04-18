@@ -125,7 +125,7 @@ EOT;
 	public function testAddNewCategoriesToWikiText() {
 		$smwWriter = new RDFIOSMWPageWriter();
 
-		$oldWikiContent = <<<EOT
+		$wikiContent = <<<EOT
 The capital of Sweden (which is [[Category:Country|a country]]) is [[Has capital::Stockholm|Sthlm]], which has
 a population of [[Has population::10000000|ten million]].
 [[Category:Country in Europe|]]
@@ -141,12 +141,33 @@ a population of [[Has population::10000000|ten million]].
 [[Category:Geographical region in Europe]]
 EOT;
 
-		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategoriesToWikiText', array( $newCategories, $oldWikiContent ) );
+		$newWikiContent = $this->invokeMethod( $smwWriter, 'addNewCategoriesToWikiText', array( $newCategories, $wikiContent ) );
 
 		$this->assertEquals( $expectedWikiContent, $newWikiContent );
 	}
 
-	/**
+	public function testExtractTplNameFromHasTemplateFact() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$wikiContent = <<<EOT
+Some text here.
+[[Has template::Template:Country|]]
+[[Has template::Template:Geographical region]]
+[[Has template::Template:European country|Country in Europe]]
+EOT;
+
+		$expectedTplNames = array(
+			'Country',
+			'Geographical region',
+			'European country',
+		);
+
+		$tplNames = $this->invokeMethod( $smwWriter, 'extractTplNameFromHasTemplateFact', array( $wikiContent ) );
+
+		$this->assertArrayEquals( $expectedTplNames, $tplNames, true, true );
+	}
+
+		/**
 	 * Call protected/private method of a class.
 	 *
 	 * @param object &$object    Instantiated object that we will run method on.
