@@ -86,6 +86,24 @@ EOT;
 		$this->assertEquals( $expectedWikiText, $updatedWikiText );
 	}
 
+	public function testUpdateExplicitFactsInTextExistingEquivURI() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+[[Has capital::Stockholm]]
+[[Has population::10000000]]
+
+[[Equivalent URI::http://example.org/onto/Sweden]]
+[[Category:Country]]
+EOT;
+
+		$newFact = array( 'p' => 'Equivalent URI', 'o' => 'http://example.org/onto/Sweden' );
+
+		$updatedWikiText = $this->invokeMethod( $smwWriter, 'updateExplicitFactsInText', array( $newFact, $oldWikiText ) );
+
+		$this->assertEquals( $oldWikiText, $updatedWikiText );
+	}
+
 	/**
 	 *
 	 */
@@ -163,6 +181,26 @@ EOT;
 		$newWikiText = $this->invokeMethod( $smwWriter, 'addNewExplicitFact', array( $fact, $oldWikiText ) );
 
 		$this->assertEquals( $expectedOutput, $newWikiText );
+	}
+
+
+
+	public function testAddNewExplicitFactDontDuplicate() {
+		$smwWriter = new RDFIOSMWPageWriter();
+
+		$oldWikiText = <<<EOT
+The capital of Sweden is [[Has capital::Stockholm]], which has
+a population of [[Has population::10000000|]].
+EOT;
+
+		$fact = array(
+			'p' => 'Has population',
+			'o' => '10000000',
+		);
+
+		$newWikiText = $this->invokeMethod( $smwWriter, 'addNewExplicitFact', array( $fact, $oldWikiText ) );
+
+		$this->assertEquals( $oldWikiText, $newWikiText );
 	}
 
 

@@ -46,7 +46,6 @@ class RDFIOSMWPageWriter {
 			// ----------------------------------------------------------------------
 			//  3. Find all existing fact statements in page (to be updated)
 			// ----------------------------------------------------------------------
-			$oldFacts = $this->extractFacts( $oldWikiText );
 
 			// ----------------------------------------------------------------------
 			//  4. Find all existing template statements in page (to be updated)
@@ -165,9 +164,11 @@ class RDFIOSMWPageWriter {
 		$prop = $fact['p'];
 		$newVal = $fact['o'];
 
+		$propWikified = $this->getWikifiedTitle( $prop );
+
 		$oldFacts = $this->extractFacts( $wikiText );
-		if ( array_key_exists( $prop, $oldFacts ) ) {
-			$oldVal = $oldFacts[$prop]['value'];
+		if ( array_key_exists( $propWikified, $oldFacts ) ) {
+			$oldVal = $oldFacts[$propWikified]['value'];
 			$wikiText = str_replace( $oldVal, $newVal, $wikiText );
 		}
 		return $wikiText;
@@ -211,8 +212,11 @@ class RDFIOSMWPageWriter {
 
 		$pWikified = $this->getWikifiedTitle( $p );
 
-		$newFactText = "\n" . '[[' . $pWikified . '::' . $o . ']]';
-		$wikiText .= $newFactText;
+		$oldFacts = $this->extractFacts( $wikiText );
+		if ( !array_key_exists( $pWikified, $oldFacts ) ) {
+			$newFactText = "\n" . '[[' . $pWikified . '::' . $o . ']]';
+			$wikiText .= $newFactText;
+		}
 
 		return $wikiText;
 	}
