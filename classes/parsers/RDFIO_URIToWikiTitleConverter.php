@@ -75,7 +75,7 @@ class RDFIOURIToTitleConverter {
 	 * Strategy 2: Use configured properties to get the title
 	 */
 	function applyGlobalSettingForPropertiesToUseAsWikiTitle( $uri ) {
-		global $rdfiogPropertiesToUseAsWikiTitle;
+		global $rogTitleProperties;
 
 		$wikiPageTitle = '';
 
@@ -88,7 +88,7 @@ class RDFIOURIToTitleConverter {
 			foreach ( $index as $subject => $properties ) {
 				if ( $subject === $uri ) {
 					foreach ( $properties as $property => $object ) {
-						if ( in_array( $property, $rdfiogPropertiesToUseAsWikiTitle ) ) {
+						if ( in_array( $property, $rogTitleProperties ) ) {
 							$wikiPageTitle = $object[0];
 						}
 					}
@@ -112,14 +112,14 @@ class RDFIOURIToTitleConverter {
 	 * imported data)
 	 */
 	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
-		global $rdfiogBaseURIs;
+		global $rogBaseURIs;
 		
 		$nsPrefixes = $this->arc2NSPrefixes;
 		$wikiPageTitle = '';
 
 		// The same, but according to mappings from LocalSettings.php
-		if ( is_array( $rdfiogBaseURIs ) ) {
-			$nsPrefixes = array_merge( $nsPrefixes, $rdfiogBaseURIs );
+		if ( is_array( $rogBaseURIs ) ) {
+			$nsPrefixes = array_merge( $nsPrefixes, $rogBaseURIs );
 		}
 
 		// Collect all the inputs for abbreviation, and apply:
@@ -154,11 +154,11 @@ class RDFIOURIToTitleConverter {
 	/////// HELPER METHODS ///////
 
 	/**
-	 * Just tell if $rdfiogPropertiesToUseAsWikiTitle is set or not.
+	 * Just tell if $rogTitleProperties is set or not.
 	 */
 	function globalSettingForPropertiesToUseAsWikiTitleExists() {
-		global $rdfiogPropertiesToUseAsWikiTitle;
-		return isset( $rdfiogPropertiesToUseAsWikiTitle );
+		global $rogTitleProperties;
+		return isset( $rogTitleProperties );
 	}
 	
 	/**
@@ -166,8 +166,8 @@ class RDFIOURIToTitleConverter {
 	 * possible candidates for wiki page title names.
 	 */
 	function setglobalSettingForPropertiesToUseAsWikiTitleToDefault() {
-		global $rdfiogPropertiesToUseAsWikiTitle;
-		$rdfiogPropertiesToUseAsWikiTitle = array(
+		global $rogTitleProperties;
+		$rogTitleProperties = array(
 			'http://semantic-mediawiki.org/swivt/1.0#page', // Suggestion for new property
 			'http://www.w3.org/2000/01/rdf-schema#label',
 			'http://purl.org/dc/terms/title',
@@ -243,7 +243,7 @@ class RDFIOURIToTitleConverter {
 	 * @return array
 	 */
 	public function splitURI( $uri ) {
-		global $rdfiogBaseURIs;
+		global $rogBaseURIs;
 		/* ADAPTED FROM ARC2 WITH SOME MODIFICATIONS
 		 * the following namespaces may lead to conflated URIs,
 		 * we have to set the split position manually
@@ -254,8 +254,8 @@ class RDFIOURIToTitleConverter {
 		        'http://www.w3.org/2005/Atom',
 		        'http://www.w3.org/1999/xhtml',
 			);
-			if ( $rdfiogBaseURIs != '' ) {
-				$specials = array_merge( $specials, $rdfiogBaseURIs );
+			if ( $rogBaseURIs != '' ) {
+				$specials = array_merge( $specials, $rogBaseURIs );
 			}
 			foreach ( $specials as $ns ) {
 				if ( strpos( $uri, $ns ) === 0 ) {

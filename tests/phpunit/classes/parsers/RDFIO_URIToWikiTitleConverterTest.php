@@ -50,7 +50,7 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	 * @covers RDFIOURIToTitleConverter::applyGlobalSettingForPropertiesToUseAsWikiTitle
 	 */
 	public function testApplyGlobalSettingForPropertiesToUseAsWikiTitleWorksWithCorrectSettings() {
-		$GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
+		$GLOBALS['rogTitleProperties'] = array(
 			'http://semantic-mediawiki.org/swivt/1.0#page',
 			'http://www.w3.org/2000/01/rdf-schema#label',
 			'http://purl.org/dc/elements/1.1/title',
@@ -65,7 +65,7 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	}
 
 	public function testApplyGlobalSettingForPropertiesToUseAsWikiTitleDoesNotWorkWithWrongSetting() {
-		$GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = array(
+		$GLOBALS['rogTitleProperties'] = array(
 			'http://semantic-mediawiki.org/swivt/1.0#page',
 			'http://purl.org/dc/elements/1.1/title',
 			'http://www.w3.org/2004/02/skos/core#preferredLabel',
@@ -83,7 +83,7 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	 * @covers RDFIOURIToTitleConverter::abbreviateParserNSPrefixes
 	 */
 	public function testShortenURINamespaceToAliasInSourceRDF() {
-		global $rdfiogBaseURIs;
+		global $rogBaseURIs;
 
 		$title = $this->uriToWikiTitleConverter->shortenURINamespaceToAliasInSourceRDF( 'http://www.countries.fake.org/onto/Canada' );
 		$this->assertEquals( 'countries:Canada', $title );
@@ -118,14 +118,14 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	 * @covers RDFIOURIToTitleConverter::globalSettingForPropertiesToUseAsWikiTitleExists
 	 */
 	public function testGlobalSettingForPropertiesToUseAsWikiTitleExistsReturnsTrueOnExists() {
-		global $rdfiogPropertiesToUseAsWikiTitle;
+		global $rogTitleProperties;
 		$uriToWikiTitleConverter = new RDFIOURIToTitleConverter( array(), array(), array() );
-		$rdfiogPropertiesToUseAsWikiTitle = array();
+		$rogTitleProperties = array();
 		$this->assertTrue( $uriToWikiTitleConverter->globalSettingForPropertiesToUseAsWikiTitleExists() );
 
 		// A normal unset only destroys the local variable binding, so we have to do like
 		// this inseta
-		$GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = null;
+		$GLOBALS['rogTitleProperties'] = null;
 		$this->assertFalse( $uriToWikiTitleConverter->globalSettingForPropertiesToUseAsWikiTitleExists() );
 	}
 
@@ -133,11 +133,11 @@ class RDFIOURIToTitleConverterTest extends MediaWikiTestCase {
 	 * @covers RDFIOURIToTitleConverter::globalSettingForPropertiesToUseAsWikiTitleExists
 	 */
 	public function testGlobalSettingForPropertiesToUseAsWikiTitleExistsReturnsFalseOnDOesntExist() {
-		global $rdfiogPropertiesToUseAsWikiTitle;
+		global $rogTitleProperties;
 		$uriToWikiTitleConverter = new RDFIOURIToTitleConverter( array(), array(), array() );
 		// A normal unset only destroys the local variable binding, so we have to do like
 		// this inseta
-		$GLOBALS['rdfiogPropertiesToUseAsWikiTitle'] = null;
+		$GLOBALS['rogTitleProperties'] = null;
 		$this->assertFalse( $uriToWikiTitleConverter->globalSettingForPropertiesToUseAsWikiTitleExists() );
 	}
 

@@ -182,21 +182,21 @@ class SPARQLEndpoint extends SpecialPage {
 	function handleRequestData() {
 		global $wgOut,
 			   $wgRequest,
-			   $rdfiogQueryByEquivURI,
-			   $rdfiogOutputEquivURIs;
+			   $rogQueryByEquivURI,
+			   $rogOutputEquivURIs;
 
 		$requestData = new RDFIOSPARQLRequestData();
 
 		$requestData->query = $wgRequest->getText( 'query' );
 
-		if ( $rdfiogQueryByEquivURI != '' ) {
-			$requestData->querybyequivuri = $rdfiogQueryByEquivURI;
+		if ( $rogQueryByEquivURI != '' ) {
+			$requestData->querybyequivuri = $rogQueryByEquivURI;
 		} else {
 			$requestData->querybyequivuri = $wgRequest->getBool( 'equivuri_q' );
 		}
 
-		if ( $rdfiogOutputEquivURIs != '' ) {
-			$requestData->outputequivuris = $rdfiogOutputEquivURIs;
+		if ( $rogOutputEquivURIs != '' ) {
+			$requestData->outputequivuris = $rogOutputEquivURIs;
 		} else {
 			$requestData->outputequivuris = $wgRequest->getBool( 'equivuri_o' );
 		}
@@ -321,11 +321,11 @@ class SPARQLEndpoint extends SpecialPage {
 	 * (in which case this check will not be done).
 	 */
 	function wrongEditTokenDetected() {
-		global $rdfiogAllowRemoteEdit, $wgRequest;
-		if ( $rdfiogAllowRemoteEdit == '' ) {
-			$rdfiogAllowRemoteEdit = false;
+		global $rogAllowRemoteEdit, $wgRequest;
+		if ( $rogAllowRemoteEdit == '' ) {
+			$rogAllowRemoteEdit = false;
 		}
-		return ( !$rdfiogAllowRemoteEdit &&
+		return ( !$rogAllowRemoteEdit &&
 			!$this->user->editTokenIsCorrect( $wgRequest->getText( 'token' ) ) );
 	}
 
@@ -334,13 +334,13 @@ class SPARQLEndpoint extends SpecialPage {
 	 * of exceptions to that, by showing error messages etc
 	 */
 	function checkAllowDelete() {
-		global $wgRequest, $wgUser, $wgOut, $rdfiogAllowRemoteEdit;
+		global $wgRequest, $wgUser, $wgOut, $rogAllowRemoteEdit;
 		if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) &&
-			!$rdfiogAllowRemoteEdit
+			!$rogAllowRemoteEdit
 		) {
 			die( 'Cross-site request forgery detected!' );
 		} else {
-			if ( $this->user->hasDeleteAccess() || $rdfiogAllowRemoteEdit ) {
+			if ( $this->user->hasDeleteAccess() || $rogAllowRemoteEdit ) {
 				return true;
 			} else {
 				$errortitle = "Permission error";
