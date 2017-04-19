@@ -187,8 +187,6 @@ class RDFIOSMWPageWriter {
 		$prop = $fact['p'];
 		$newVal = $fact['o'];
 
-		$propFoundInTplCall = false;
-
 		if ( array_key_exists( $prop, $propTplIndex ) ) {
 			foreach ( $propTplIndex[$prop] as $tplName => $paramName ) {
 				$oldTplCallText = $oldTemplateCalls[$tplName]['calltext'];

@@ -23,11 +23,12 @@ class RDFIORDFImporter {
 		$namespaces = $arc2rdfxmlparser->nsp;
 
 		$this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
-		return $output = array(
+		$output = array(
 			'triples' => $triples,
 			'tripleIndex' => $tripleIndex,
 			'namespaces' => $namespaces
 		);
+		return $output;
 	}
 
 	/**
@@ -54,11 +55,12 @@ class RDFIORDFImporter {
 		 */
 
 		$this->importFromArc2Data( $triples, $tripleIndex, $namespaces );
-		return $output = array(
+		$output = array(
 			'triples' => $triples,
 			'tripleIndex' => $tripleIndex,
 			'namespaces' => $namespaces
 		);
+		return $output;
 	}
 
 	/**
@@ -67,7 +69,8 @@ class RDFIORDFImporter {
 	 */
 	public function importTriples( $triples ) {
 		$this->importFromArc2Data( $triples );
-		return $output = array( 'triples' => $triples );
+		$output = array( 'triples' => $triples );
+		return $output;
 	}
 
 	/**
@@ -78,8 +81,6 @@ class RDFIORDFImporter {
 	 * @return array $triples
 	 */
 	private function importFromArc2Data( $triples, $tripleIndex = "", $namespaces = "" ) {
-		global $wgOut;
-
 		// Parse data from ARC2 triples to custom data structure holding wiki pages
 		$arc2towikiconverter = new RDFIOARC2ToWikiConverter();
 		$wikiPages = $arc2towikiconverter->convert( $triples, $tripleIndex, $namespaces );
@@ -88,7 +89,8 @@ class RDFIORDFImporter {
 		$smwPageWriter = new RDFIOSMWPageWriter();
 		$smwPageWriter->import( $wikiPages );
 
-		return $output = array( 'triples' => $triples );
+		$output = array( 'triples' => $triples );
+		return $output;
 	}
 
 	function addDataSource( $dataSourceUrl, $importType ) {

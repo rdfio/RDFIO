@@ -35,9 +35,7 @@ class RDFIOURIToTitleConverter {
 	 * @return string $wikiTitle
 	 */
 	public function convert( $uriToConvert ) {
-		global $wgOut;
-
-		// Define the conversion functions to try, in 
+		// Define the conversion functions to try, in
 		// specified order (the first one first).
 		// You'll find them defined further below in this file.
 		$convStrategies = array(
@@ -208,8 +206,6 @@ class RDFIOURIToTitleConverter {
 		if ( $localpart === '' ) {
 			$abbreviatedUri = $basepart;
 		} elseif ( RDFIOUtils::isURI( $basepart ) ) {
-			// FIXME: Shouldn't the above check the local part instead??
-
 			// Change ARC:s default "random string", to indicate more clearly that
 			// it lacks title
 			$abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
@@ -301,7 +297,7 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 	 */
 	function convert( $propertyURI ) {
 		$propertyTitle = '';
-		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, $isProperty=true);
+		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, true);
 		if ( $existingPropTitle != "" ) {
 			// If the URI had an existing title, use that
 			$propertyTitle = $existingPropTitle;

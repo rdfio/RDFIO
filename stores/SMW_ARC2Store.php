@@ -77,8 +77,8 @@ class SMWARC2Store extends SMWSQLStore3 {
 		}
 		$sparqlUpdateText .= "}\n";
 
-		wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Remove debug code?
-		$response = $this->executeArc2Query( $sparqlUpdateText );
+		wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText );
+		$this->executeArc2Query( $sparqlUpdateText );
 		parent::updateData( $data );
 	}
 
@@ -136,17 +136,6 @@ class SMWARC2Store extends SMWSQLStore3 {
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Convert '<' and '>' to '&lt;' and '&gt;' instead
-	 * @param string $instring
-	 * @return string $outstring
-	 */
-	private function unhtmlify( $instring ) {
-		$outstring = str_replace( '<', '&lt;', $instring );
-		$outstring = str_replace( '>', '&gt;', $outstring );
-		return $outstring;
 	}
 
 	/**

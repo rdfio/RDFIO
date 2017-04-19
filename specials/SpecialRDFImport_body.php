@@ -75,7 +75,8 @@ class RDFImport extends SpecialPage {
 				break;
 		}
 
-		return $output = array( 'triples' => $triples );
+		$output = array( 'triples' => $triples );
+		return $output;
 	}
 
 	/**

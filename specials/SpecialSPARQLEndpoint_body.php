@@ -180,8 +180,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * in class variables
 	 */
 	function handleRequestData() {
-		global $wgOut,
-			   $wgRequest,
+		global $wgRequest,
 			   $rogQueryByEquivURI,
 			   $rogOutputEquivURIs;
 
@@ -407,7 +406,7 @@ class SPARQLEndpoint extends SpecialPage {
 			$html .= "<tr>";
 			foreach ( $variables as $variable ) {
 				$value = $row[$variable];
-				$valueType = $row[$variable . ' type'];
+				//$valueType = $row[$variable . ' type'];
 				$html .= "<td style=\"font-size:9px!important;white-space:nowrap!important;\">" . $value . "</td>";
 			}
 			$html .= "</tr>";
@@ -468,9 +467,8 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @return array $triples
 	 */
 	function complementTriplesWithEquivURIs( $triples, $propUrisFilter = '' ) {
-		$variables = array( 's', 'p', 'o' );
-		$newtriples = array();
-		foreach ( $triples as $tripleid => $triple ) {
+		$newTriples = array();
+		foreach ( $triples as $triple ) {
 			// Subject
 			$subjEquivUris = array( $triple['s'] );
 			if ( $triple['s_type'] === 'uri' ) {
@@ -514,12 +512,12 @@ class SPARQLEndpoint extends SpecialPage {
 							'p' => $propEquivUri,
 							'o' => $objEquivUri
 						);
-						$newtriples[] = $newtriple;
+						$newTriples[] = $newtriple;
 					}
 				}
 			}
 		}
-		return $newtriples;
+		return $newTriples;
 	}
 
 	/**
@@ -806,6 +804,7 @@ Output Equivalent
 	 * @return string $query
 	 */
 	function getQuery() {
+		global $wgRequest;
 		$query = $wgRequest->getText( 'query' );
 		return $query;
 	}
