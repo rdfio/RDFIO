@@ -102,7 +102,7 @@ class RDFIORDFImporter {
 
 	function showImportedTriples( $importedTriples ) {
 		$output = "";
-		$style_css = <<<EOD
+		$styleCss = <<<EOD
 	    	    table .rdfio- th {
 	    	        font-weight: bold;
 	    	        padding: 2px 4px;
@@ -112,8 +112,7 @@ class RDFIORDFImporter {
 	    	        font-size: 11px;
 	    	    }
 EOD;
-		$output .= "<style>$style_css</style>";
-		//$wgOut->addInlineStyle($style_css);
+		$output .= "<style>$styleCss</style>";
 		$output .= RDFIOUtils::formatSuccessMessageHTML( "Success!", "Successfully imported the triples shown below!" );
 		$output .= "<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>";
 

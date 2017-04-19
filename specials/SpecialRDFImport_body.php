@@ -159,7 +159,7 @@ class RDFImport extends SpecialPage {
 	 * @return string
 	 */
 	public function getExampleTurtleData() {
-		$example_data = <<<EOT
+		$exampleData = <<<EOT
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\\n\
 @prefix cd: <http://www.recshop.fake/cd#> .\\n\
 @prefix countries: <http://www.countries.org/onto/> .\\n\
@@ -188,7 +188,7 @@ countries:USA\\n\
 countries:Albums\\n\
 	rdfs:subClassOf countries:MediaCollections .';
 EOT;
-		return $example_data;
+		return $exampleData;
 	}
 
 	/**
@@ -199,7 +199,7 @@ EOT;
 	 * @return string $htmlFormContent
 	 */
 	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
-		$textfieldHiddenContent = '';
+		$textfieldHiddenHTML = '';
 		$urlChecked = ( $requestData->importSource === 'url' );
 		$textfieldChecked = ( $requestData->importSource === 'textfield' );
 
@@ -208,11 +208,11 @@ EOT;
 			$urlChecked = true;
 		}
 		if ( !$textfieldChecked ) {
-			$textfieldHiddenContent = 'style="display: none"';
+			$textfieldHiddenHTML = 'style="display: none"';
 		}
 
 		$urlCheckedContent = $urlChecked ? 'checked="true"' : '';
-		$textfieldCheckedContent = $textfieldChecked ? 'checked="true"' : '';
+		$textfieldCheckedHTML = $textfieldChecked ? 'checked="true"' : '';
 
 		// Create the HTML form for RDF/XML Import
 		$htmlFormContent = '<script type="text/javascript">
@@ -234,7 +234,7 @@ EOT;
 								<td colspan="3">
 								Action:
 								<input type="radio" name="importsrc" value="url" ' . $urlCheckedContent . ' onclick="javascript:showUrlFields();" />Import RDF from URL,
-								<input type="radio" name="importsrc" value="textfield" ' . $textfieldCheckedContent . ' onclick="javascript:showDataFields();" />Paste RDF
+								<input type="radio" name="importsrc" value="textfield" ' . $textfieldCheckedHTML . ' onclick="javascript:showDataFields();" />Paste RDF
 								</td>
 							</tr>
 						</tbody>
@@ -246,7 +246,7 @@ EOT;
 						<a href="#" onClick="addSourcesToMenu();">Use previous source</a>
 					</div>
 						
-					<div id="datafields" ' . $textfieldHiddenContent . '>
+					<div id="datafields" ' . $textfieldHiddenHTML . '>
 						<table style="border: none"><tbody>
 							<tr>
 								<td colspan="3">Data to import:</td>

@@ -24,26 +24,26 @@ class BatchImportRDF extends Maintenance {
 	}
 
 	public function execute() {
-		$indata_file = $this->getOption( 'indata', '' );
+		$indataFile = $this->getOption( 'indata', '' );
 		$chunksize = intval( $this->getOption( 'chunksize', 0 ) );
 		$chunksleep = floatval( $this->getOption( 'chunksleep', 0.0 ) );
 		$offset = intval( $this->getOption( 'offset', 0 ) );
 		$verbose = $this->getOption( 'verbose', false );
 
-		echo( "Starting import from file: $indata_file\n" );
+		echo( "Starting import from file: $indataFile\n" );
 		if ( $offset > 0 ) {
 			echo( "Starting with offset $offset ...\n" );
 		}
 
 		$rdfImporter = new RDFIORDFImporter();
-		$indata_fh = fopen( $indata_file, 'r' );
+		$indataFileHandle = fopen( $indataFile, 'r' );
 
 		$lineinchunk = 1;
 		$chunkindex = 1;
 		$lineindex = 0;
 		$totalimported = 0;
 		$importdata = '';
-		while ( $line = fgets( $indata_fh ) ) {
+		while ( $line = fgets( $indataFileHandle ) ) {
 			if ( $lineindex >= $offset ) {
 				if ( $chunksize > 0 && $lineinchunk == 1 ) {
 					if ( $verbose ) {
@@ -82,7 +82,7 @@ class BatchImportRDF extends Maintenance {
 		}
 		// Import any remaining stuff, or all the stuff, if chunksize = 0
 		$rdfImporter->importTurtle( $importdata );
-		fclose( $indata_fh );
+		fclose( $indataFileHandle );
 		echo( "Finished importing everything ($totalimported triples in total)!\n" );
 	}
 }

@@ -19,8 +19,8 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	 */
 	public function convert( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
 		// Instatiate wiki title converters (converting from URI and related RDF data to Wiki Title)
-		$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
-		$uriToPropertyTitleConverter = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+		$uriToTitleConv = new RDFIOURIToWikiTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
+		$uriToPropTitleConv = new RDFIOURIToPropertyTitleConverter( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes );
 
 		/*
 		 * The main loop, doing the convertion of triples into 
@@ -35,36 +35,36 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 			$objectType = $triple['o_type'];
 
 			// Convert URI:s to wiki titles
-			$wikiPageTitle = $uriToWikiTitleConverter->convert( $subjectURI );
+			$wikiPageTitle = $uriToTitleConv->convert( $subjectURI );
 
 			if ( $propertyURI === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' ) {
 
 				// Add categorization of page
-				$categoryPageTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
-				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
+				$catPageTitle = $uriToTitleConv->convert( $objectUriOrValue );
+				$catPageTitleWithNS = 'Category:' . $catPageTitle;
 				// Add data for the subject page
-				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $categoryPageTitleWithNamespace ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $catPageTitleWithNS ); // TODO: Use i18n:ed NS
 				// Add data for the category page
-				$this->addDataToPage( $categoryPageTitleWithNamespace, $objectUriOrValue ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $catPageTitleWithNS, $objectUriOrValue ); // TODO: Use i18n:ed NS
 
 			} else if ( $propertyURI === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
 
 				// Add categorization of page
-				$categoryPageTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
-				$categoryPageTitleWithNamespace = 'Category:' . $categoryPageTitle;
-				$wikiPageTitleWithNamespace = 'Category:' . $wikiPageTitle;
+				$catPageTitle = $uriToTitleConv->convert( $objectUriOrValue );
+				$catPageTitleWithNS = 'Category:' . $catPageTitle;
+				$pageTitleWithNS = 'Category:' . $wikiPageTitle;
 
 				// Add data for the subject page
-				$this->addDataToPage( $wikiPageTitleWithNamespace, $subjectURI, $fact = null, $categoryPageTitleWithNamespace );
+				$this->addDataToPage( $pageTitleWithNS, $subjectURI, $fact = null, $catPageTitleWithNS );
 
 				// Add data for the category page
-				$this->addDataToPage( $categoryPageTitleWithNamespace, $objectUriOrValue );
+				$this->addDataToPage( $catPageTitleWithNS, $objectUriOrValue );
 
 			} else {
 				// Separate handling for properties
-				$propertyTitle = $uriToPropertyTitleConverter->convert( $propertyURI );
+				$propertyTitle = $uriToPropTitleConv->convert( $propertyURI );
 				// Add the property namespace to property title
-				$propertyTitleWithNamespace = 'Property:' . $propertyTitle; // TODO: Use i18n:ed NS
+				$propTitleWithNS = 'Property:' . $propertyTitle; // TODO: Use i18n:ed NS
 
 				/*
 				 * Decide whether to create a page for the linked "object" or not,
@@ -76,7 +76,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 						// @TODO: $objectType also decide data type of the property like these:
 						//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes
 						//        ?
-						$objectTitle = $uriToWikiTitleConverter->convert( $objectUriOrValue );
+						$objectTitle = $uriToTitleConv->convert( $objectUriOrValue );
 						$this->addDataToPage( $objectTitle, $objectUriOrValue );
 						break;
 					case 'literal':
@@ -91,7 +91,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 				// Add data to class variables
 				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact );
-				$this->addDataToPage( $propertyTitleWithNamespace, $propertyURI );
+				$this->addDataToPage( $propTitleWithNS, $propertyURI );
 			}
 		}
 

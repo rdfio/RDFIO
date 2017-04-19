@@ -204,9 +204,9 @@ class SPARQLEndpoint extends SpecialPage {
 		$requestData->outputtype = $wgRequest->getText( 'output' );
 		if ( $requestData->query !== '' ) {
 			// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
-			$requestDataAsSparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $requestData->query );
+			$reqDataSparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $requestData->query );
 			// Parse the SPARQL query string into array structure
-			$this->sparqlparser->parse( $requestDataAsSparqlPlus, '' );
+			$this->sparqlparser->parse( $reqDataSparqlPlus, '' );
 
 			// Handle errors
 			$errors = $this->sparqlparser->getErrors();

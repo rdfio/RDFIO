@@ -40,7 +40,7 @@ class RDFIOURIToTitleConverter {
 		// Define the conversion functions to try, in 
 		// specified order (the first one first).
 		// You'll find them defined further below in this file.
-		$uriToWikiTitleConversionStrategies = array(
+		$convStrategies = array(
 			'getExistingTitleForURI',
 			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
 			'shortenURINamespaceToAliasInSourceRDF',
@@ -49,8 +49,8 @@ class RDFIOURIToTitleConverter {
 
 		$wikiPageTitle = '';
 
-		foreach ($uriToWikiTitleConversionStrategies as $currentStrategy ) {
-			$wikiPageTitle = $this->$currentStrategy( $uriToConvert );	
+		foreach ($convStrategies as $currStrategy ) {
+			$wikiPageTitle = $this->$currStrategy( $uriToConvert );
 			if ($wikiPageTitle != null) {
 				return $wikiPageTitle;
 			}
@@ -259,9 +259,9 @@ class RDFIOURIToTitleConverter {
 			}
 			foreach ( $specials as $ns ) {
 				if ( strpos( $uri, $ns ) === 0 ) {
-					$local_part = substr( $uri, strlen( $ns ) );
-					if ( !preg_match( '/^[\/\#]/', $local_part ) ) {
-						return array( $ns, $local_part );
+					$localPart = substr( $uri, strlen( $ns ) );
+					if ( !preg_match( '/^[\/\#]/', $localPart ) ) {
+						return array( $ns, $localPart );
 					}
 				}
 			}
@@ -306,8 +306,8 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 			// If the URI had an existing title, use that
 			$propertyTitle = $existingPropTitle;
 		} else {
-			$uriToWikiTitleConverter = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
-			$propertyTitle = $uriToWikiTitleConverter->convert( $propertyURI );
+			$uriToTitleConv = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
+			$propertyTitle = $uriToTitleConv->convert( $propertyURI );
 		}
 		$propertyTitle = RDFIOUtils::cleanWikiTitle( $propertyTitle );
 		return $propertyTitle;

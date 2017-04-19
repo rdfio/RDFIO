@@ -32,10 +32,10 @@ class RDFIOARC2StoreWrapper {
 		} else {
 			$equivUriUri = $this->getEquivURIURI();
 		}
-		$q = "SELECT ?equivUri WHERE { <$uri> <$equivUriUri> ?equivUri }";
-		$rs = $store->query( $q );
+		$query = "SELECT ?equivUri WHERE { <$uri> <$equivUriUri> ?equivUri }";
+		$results = $store->query( $query );
 		if ( !$store->getErrors() ) {
-			$equivUris = $rs['result']['rows'];
+			$equivUris = $results['result']['rows'];
 			foreach ( $equivUris as $equivUriId => $equivUri ) {
 				$equivUris[$equivUriId] = $equivUri['equivUri'];
 			}
@@ -60,10 +60,10 @@ class RDFIOARC2StoreWrapper {
 		} else {
 			$equivUriUri = $this->getEquivURIURI();
 		}
-		$q = "SELECT ?uri WHERE { ?uri <$equivUriUri> <$equivUri> }";
-		$rs = $store->query( $q );
+		$query = "SELECT ?uri WHERE { ?uri <$equivUriUri> <$equivUri> }";
+		$results = $store->query( $query );
 		if ( !$store->getErrors() ) {
-			$rows = $rs['result']['rows'];
+			$rows = $results['result']['rows'];
 			if ( count( $rows ) > 0 ) {
 				$row = $rows[0];
 				$uri = $row['uri'];
@@ -84,10 +84,10 @@ class RDFIOARC2StoreWrapper {
 	 */
 	public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
 		$uriEncoded = str_replace( ' ', '%20', $uri );
-		$wikiTitleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
-		$wikiTitleResolverUriDecoded = SMWExporter::getInstance()->decodeURI( $wikiTitleResolverUri );
+		$titleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
+		$titleResolverUriDec = SMWExporter::getInstance()->decodeURI( $titleResolverUri );
 
-		$uriParts = explode( '/', rtrim( $wikiTitleResolverUriDecoded, '/' ) );
+		$uriParts = explode( '/', rtrim( $titleResolverUriDec, '/' ) );
 		$wikiTitle = str_replace( '_', ' ', array_pop( $uriParts ) );
 		if ( $isProperty ) {
 			$wikiTitle = str_replace( 'Property:', '', $wikiTitle );

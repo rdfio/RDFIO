@@ -28,8 +28,8 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 * @param $subject
 	 */
 	public function deleteSubject( Title $subject ) {
-		$subject_uri = SMWExporter::getInstance()->expandURI( $this->getURI( $subject ) );
-		$this->removeDataForURI( $subject_uri );
+		$subjectUri = SMWExporter::getInstance()->expandURI( $this->getURI( $subject ) );
+		$this->removeDataForURI( $subjectUri );
 
 		return parent::deleteSubject( $subject ); // Also update via SQLStore3
 	}
