@@ -73,6 +73,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				$objectTitle = '';
 				switch ( $objectType ) {
 					case 'uri':
+					case 'bnode':
 						// @TODO: $objectType also decide data type of the property like these:
 						//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes
 						//        ?
