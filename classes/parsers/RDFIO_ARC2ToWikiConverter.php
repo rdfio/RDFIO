@@ -83,7 +83,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 						$objectTitle = $objectUriOrValue;
 						break;
 					default:
-						throw new RDFIOARC2ToWikiConverterException( "Error in ARC2ToWikiConverter: Unknown type of object (" . $objectUriOrValue . ") in triple! (not 'uri' nor 'literal')!" );
+						throw new RDFIOARC2ToWikiConverterException( 'Error in ARC2ToWikiConverter: Unknown type ("' . $objectType . '") of object ("' . $objectUriOrValue . '") in triple! (not "uri" nor "literal")!' );
 				}
 
 				// Create a fact array
