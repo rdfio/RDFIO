@@ -73,6 +73,12 @@ Dependencies
 - [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) 2.4.x
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2)
 
+Known limitations
+-----------------
+
+- RDFIO does not yet support anonymous / blank nodes.
+- RDFIO does not yet support all the features of [SMW's vocabulary import](https://www.semantic-mediawiki.org/wiki/Help:Import_vocabulary).
+
 Bugs, new feature request and contact information
 -------------------------------------------------
 
