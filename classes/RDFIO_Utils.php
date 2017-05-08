@@ -51,6 +51,14 @@ class RDFIOUtils {
 		return $successHtml;
 	}
 
+	static function formatInfoMessageHTML( $title, $message ) {
+		$successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #9999FF; background-color: #DDDDFF;">
+				<h3>' . $title . '</h3>
+				<p>' . $message . '</p>
+								</div>';
+		return $successHtml;
+	}
+
 	static function inString( $needle, $haystack ) {
 		return strpos( $needle, $haystack ) != false;
 	}
@@ -74,6 +82,12 @@ class RDFIOUtils {
 	static function showSuccessMessage( $title, $message ) {
 		global $wgOut;
 		$successMsgHtml = self::formatSuccessMessageHTML( $title, $message );
+		$wgOut->addHTML( $successMsgHtml );
+	}
+
+	static function showInfoMessage( $title, $message ) {
+		global $wgOut;
+		$successMsgHtml = self::formatInfoMessageHTML( $title, $message );
 		$wgOut->addHTML( $successMsgHtml );
 	}
 

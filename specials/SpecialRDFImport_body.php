@@ -24,6 +24,7 @@ class RDFImport extends SpecialPage {
 				if ( $triples ) {
 					$rdfImporter = new RDFIORDFImporter();
 					$wgOut->addHTML( $this->getHTMLForm( $requestData ) );
+					$wgOut->addHTML( RDFIOUtils::showInfoMessage('RDF Format info', 'The format used in the import was "' . $requestData->dataFormat . '".'));
 					$wgOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
@@ -278,7 +279,7 @@ EOT;
 	}
 
 	/**
-	 * Generate the javascriptcode used in the main HTML form for
+	 * Generate the javascript code used in the main HTML form for
 	 * loading example data into the main textarea
 	 * also set the dataformat to the correct one
 	 * @return string $exampleDataJs
