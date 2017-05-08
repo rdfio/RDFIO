@@ -261,7 +261,7 @@ EOT;
 								<td>
 									<select id="dataformat" name="dataformat">
 										<option value="turtle" selected="selected">Turtle</option>
-										<option value="rdfxml">RDF/XML</option>
+										<!-- option value="rdfxml">RDF/XML</option -->
 									</select>
 								</td>
 								<td style="text-align: right; font-size: 10px;">
