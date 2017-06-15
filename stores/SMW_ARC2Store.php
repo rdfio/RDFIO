@@ -110,21 +110,10 @@ class SMWARC2Store extends SMWSQLStore3 {
 	}
 
 	/**
-	 * Insert new pages into endpoint. Used to import data.
-	 * @param $title
-	 */
-	private function insertData( Title $title, $pageid ) {
-		$newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-		$newpage->setValues( $title->getDBkey(), $title->getNamespace(), $pageid );
-		$semdata = $this->getSemanticData( $newpage );
-		$this->updateData( $semdata );
-	}
-
-	/**
 	 * Communicates with ARC2 RDF Store
 	 * @param $requestString
 	 */
-	private function executeArc2Query( $requestString ) {
+	public function executeArc2Query( $requestString ) {
 
 		$q = $requestString;
 		$rs = $this->arc2store->query( $q );
@@ -136,6 +125,17 @@ class SMWARC2Store extends SMWSQLStore3 {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Insert new pages into endpoint. Used to import data.
+	 * @param $title
+	 */
+	private function insertData( Title $title, $pageid ) {
+		$newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
+		$newpage->setValues( $title->getDBkey(), $title->getNamespace(), $pageid );
+		$semdata = $this->getSemanticData( $newpage );
+		$this->updateData( $semdata );
 	}
 
 	/**
