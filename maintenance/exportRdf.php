@@ -52,21 +52,21 @@ class BatchExportRDF extends Maintenance {
 			}
 
 			$rdf = $ser->getSerializedTriples( $triples );
+
 			if ( !$ser->getErrors() ) {
 				fputs( $outFile, $rdf );
 			} else {
 				foreach( $ser->getErrors() as $err ) {
 					echo( 'ARC2 serializer error: ' . $err );
 				}
+				die('Exited RDF Export script due to previous errors.');
 			}
 
 			$offset += $limit;
 		}
 
 
-		// Close file
 		fclose( $outFile );
-
 	}
 }
 
