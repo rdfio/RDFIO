@@ -276,33 +276,29 @@ class SPARQLEndpoint extends SpecialPage {
 	 * of exceptions to that, by showing error messages etc
 	 */
 	private function checkAllowInsert() {
-		$wikiOut = $this->getOutput();
-
-		if ( $this->wrongEditTokenDetected() ) {
-			$wikiOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error", "Cross-site request forgery detected!" ) );
-			return false;
-		} else {
-			if ( $this->user->hasWriteAccess() ) {
-				return true;
-			} else {
-				$wikiOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
-				return false;
-			}
-		}
-	}
-
-	/**
-	 * Detect whether the edit token is not correct, even though remote editing is not permitted
-	 * (in which case this check will not be done).
-	 */
-	private function wrongEditTokenDetected() {
 		global $rogAllowRemoteEdit;
-		$request = $this->getRequest();
-		if ( $rogAllowRemoteEdit == '' ) {
-			$rogAllowRemoteEdit = false;
+
+		if ( !isset( $rogAllowRemoteEdit ) ) {
+			$this->errorMsg( '$rogAllowRemoteEdit variable not set, so insert not allowed.');
+			return false;
 		}
-		return ( !$rogAllowRemoteEdit &&
-			!$this->user->editTokenIsCorrect( $request->getText( 'token' ) ) );
+
+		if ( !$rogAllowRemoteEdit ) {
+			$this->errorMsg( '$rogAllowRemoteEdit set to false, so insert not allowed.');
+			return false;
+		}
+
+		if ( !$this->user->editTokenIsCorrect( $this->getRequest()->getText( 'token' ) ) ) {
+			$this->errorMsg( 'Cross-site request forgery detected! ');
+			return false;
+		}
+
+		if ( $this->user->hasWriteAccess() ) {
+			return true;
+		}
+
+		$this->errorMsg( 'The current user lacks access either to edit or create pages (or both) in this wiki');
+		return false;
 	}
 
 	/**
