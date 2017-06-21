@@ -35,7 +35,7 @@ class RDFIOUtils {
 	 * @param string $message
 	 * @return string $errorhtml
 	 */
-	static function formatErrorHTML( $title, $message ) {
+	static function fmtErrorMsgHTML( $title, $message ) {
 		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
 				<h3>' . $title . '</h3>
 				<p>' . $message . '</p>
@@ -43,7 +43,7 @@ class RDFIOUtils {
 		return $errorHtml;
 	}
 
-	static function formatSuccessMessageHTML( $title, $message ) {
+	static function fmtSuccessMsgHTML( $title, $message ) {
 		$successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #99FF99; background-color: #DDFFDD;">
 				<h3>' . $title . '</h3>
 				<p>' . $message . '</p>
@@ -51,7 +51,7 @@ class RDFIOUtils {
 		return $successHtml;
 	}
 
-	static function formatInfoMessageHTML( $title, $message ) {
+	static function fmtInfoMsgHTML( $title, $message ) {
 		$successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #9999FF; background-color: #DDDDFF;">
 				<h3>' . $title . '</h3>
 				<p>' . $message . '</p>
@@ -75,19 +75,19 @@ class RDFIOUtils {
 
 	static function showErrorMessage( $title, $message ) {
 		global $wgOut;
-		$errorHtml = self::formatErrorHTML( $title, $message );
+		$errorHtml = self::fmtErrorMsgHTML( $title, $message );
 		$wgOut->addHTML( $errorHtml );
 	}
 
 	static function showSuccessMessage( $title, $message ) {
 		global $wgOut;
-		$successMsgHtml = self::formatSuccessMessageHTML( $title, $message );
+		$successMsgHtml = self::fmtSuccessMsgHTML( $title, $message );
 		$wgOut->addHTML( $successMsgHtml );
 	}
 
 	static function showInfoMessage( $title, $message ) {
 		global $wgOut;
-		$successMsgHtml = self::formatInfoMessageHTML( $title, $message );
+		$successMsgHtml = self::fmtInfoMsgHTML( $title, $message );
 		$wgOut->addHTML( $successMsgHtml );
 	}
 

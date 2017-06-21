@@ -105,7 +105,7 @@ class SPARQLImport extends SpecialPage {
 			$rdfImporter->importTriples( $importTriples );
 			$wgOut->addHTML( $rdfImporter->showImportedTriples( $importTriples ) );
 		} else {
-			RDFIOUtils::formatErrorHTML( "Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?" );
+			RDFIOUtils::fmtErrorMsgHTML( "Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?" );
 		}
 		return $output = array( 'externalSparqlUrl' => $externalSparqlUrl );
 	}

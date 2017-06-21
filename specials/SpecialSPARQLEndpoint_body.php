@@ -6,10 +6,7 @@ class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlendpoint;
 	protected $sparqlparser;
 	protected $storewrapper;
-
 	protected $user;
-
-	// TODO: Really keep the below ones as class variables?    
 
 	function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
@@ -23,7 +20,7 @@ class SPARQLEndpoint extends SpecialPage {
 	}
 
 	/**
-	 * The main function
+	 * Execute the SPARQL Endpoint Special page
 	 */
 	function execute( $par ) {
 		global $wgOut;
@@ -32,7 +29,7 @@ class SPARQLEndpoint extends SpecialPage {
 		try {
 			$this->requestdata = $this->handleRequestData();
 		} catch ( Exception $e ) {
-			$this->failMsg( $e->getMessage() );
+			$this->errorMsg( $e->getMessage() );
 		}
 
 		if ( $this->hasSparqlQuery() ) {
@@ -52,9 +49,9 @@ class SPARQLEndpoint extends SpecialPage {
 						try {
 							$this->importTriplesInQuery();
 						} catch ( MWException $e ) {
-							$this->failMsg( "ERROR: Could not perform import!" );
-							$this->failMsg( "Error message:" );
-							$this->failMsg( $e->getMessage() );
+							$this->errorMsg( "ERROR: Could not perform import!" );
+							$this->errorMsg( "Error message:" );
+							$this->errorMsg( $e->getMessage() );
 						}
 
 						$this->printHTMLForm();
@@ -63,7 +60,6 @@ class SPARQLEndpoint extends SpecialPage {
 						if ( $this->checkAllowDelete() ) {
 							$this->deleteTriplesInQuery();
 						}
-						// TODO Add a "successfully inserted/deleted" message here
 						$this->printHTMLForm();
 						break;
 					default:
@@ -74,7 +70,7 @@ class SPARQLEndpoint extends SpecialPage {
 								break;
 							case 'rdfxml':
 								if ( $this->requestdata->querytype != 'construct' ) {
-									$wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+									$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
 									$this->printHTMLForm();
 								} else {
 									$this->prepareCreatingDownloadableFile();
@@ -114,7 +110,6 @@ class SPARQLEndpoint extends SpecialPage {
 			if ( $this->requestdata->outputequivuris ) {
 
 				// FIXME: Why is this uncommented???
-				# $triples = $this->storewrapper->complementTriplesWithEquivURIsForProperties( $triples );
 				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
 			}
 			$output = $this->triplesToRDFXML( $triples );
@@ -125,7 +120,7 @@ class SPARQLEndpoint extends SpecialPage {
 			if ( count( $output ) > 0 ) {
 				$outputStructure = unserialize( $output );
 				if ( $this->requestdata->outputequivuris ) {
-					$outputStructure = $this->urisToEquivURIsInSparqlResults( $outputStructure );
+					$outputStructure = $this->toEquivURIsInSparqlResults( $outputStructure );
 				}
 
 				if ( $outputtype == 'htmltab' ) {
@@ -150,9 +145,12 @@ class SPARQLEndpoint extends SpecialPage {
 	function passSparqlToARC2AndGetAsPhpSerialization() {
 		# Make sure ARC2 returns a PHP serialization, so that we
 		# can do stuff with it programmatically
-		$this->setOutputTypeInPost( 'php_ser' );
+		$_POST['output'] = 'php_ser';
+
 		$this->sparqlendpoint->handleRequest();
-		$this->handleSPARQLErrors();
+		foreach ( $this->sparqlendpoint->getErrors() as $error ) {
+			$this->errorMsg( '<p>SPARQL Error: ' . $error . '</p>');
+		}
 		$output = $this->sparqlendpoint->getResult();
 		return $output;
 	}
@@ -261,7 +259,7 @@ class SPARQLEndpoint extends SpecialPage {
 		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
 		$query = $sparqlserializer->toString( $queryStructure );
 
-		$this->setQueryInPost( $query );
+		$_POST['query'] = $query;
 	}
 
 	/**
@@ -300,13 +298,13 @@ class SPARQLEndpoint extends SpecialPage {
 		global $wgOut;
 
 		if ( $this->wrongEditTokenDetected() ) {
-			$wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Error", "Cross-site request forgery detected!" ) );
+			$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error", "Cross-site request forgery detected!" ) );
 			return false;
 		} else {
 			if ( $this->user->hasWriteAccess() ) {
 				return true;
 			} else {
-				$wgOut->addHTML( RDFIOUtils::formatErrorHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
+				$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
 				return false;
 			}
 		}
@@ -341,7 +339,7 @@ class SPARQLEndpoint extends SpecialPage {
 			} else {
 				$errortitle = "Permission error";
 				$errormessage = "The current user lacks access either to edit or delete pages (or both) in this wiki.";
-				$wgOut->addHTML( RDFIOUtils::formatErrorHTML( $errortitle, $errormessage ) );
+				$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( $errortitle, $errormessage ) );
 				return false;
 			}
 		}
@@ -359,7 +357,7 @@ class SPARQLEndpoint extends SpecialPage {
 		wfResetOutputBuffers();
 		// Send headers telling that this is a special content type
 		// and potentially is to be downloaded as a file
-		$this->sendHeadersForOutputType( $this->requestdata->outputtype );
+		$this->setHeadersForOutputType( $this->requestdata->outputtype );
 	}
 
 	/**
@@ -428,45 +426,26 @@ class SPARQLEndpoint extends SpecialPage {
 	}
 
 	/**
-	 * Die and display current errors
-	 */
-	function handleSPARQLErrors() {
-		global $wgOut;
-		$sparqlEndpointErrors = $this->sparqlendpoint->getErrors();
-		if ( count( $sparqlEndpointErrors ) > 0 ) {
-			$errormessage = '';
-			if ( is_array( $sparqlEndpointErrors ) ) {
-				foreach ( $sparqlEndpointErrors as $sparqlEndpointError ) {
-					$errormessage .= "<p>$sparqlEndpointError</p>";
-				}
-			} else {
-				$errormessage = "<p>$sparqlEndpointErrors</p>";
-			}
-			$wgOut->addHTML( "SPARQL Error: " . $errormessage );
-		}
-	}
-
-	/**
-	 * Replace URI:s with an accompanying "Equivalent URI" with that one. If
-	 * there are móre than one Equivalent URI for a given URI, the others than
+	 * Replace URI:s with an accompanying "Equivalent URI" one. If
+	 * there are more than one Equivalent URI for a given URI, the others than
 	 * the first one will be ignored.
 	 * @param array $sparqlResult
 	 * @return array $sparqlResult
 	 */
-	function urisToEquivURIsInSparqlResults( $sparqlResult ) {
+	private function toEquivURIsInSparqlResults( $sparqlResult ) {
 		$rows = $sparqlResult['result']['rows'];
-		$sparqlVars = $sparqlResult['result']['variables'];
+		$vars = $sparqlResult['result']['variables'];
 		foreach ( $rows as $rowid => $row ) {
-			foreach ( $sparqlVars as $sparqlVar ) {
-				$typeKey = "$sparqlVar type";
+			foreach ( $vars as $var ) {
+				$typeKey = "$var type";
 				$type = $row[$typeKey];
-				$uri = $row[$sparqlVar];
+				$uri = $row[$var];
 				if ( $type === 'uri' ) {
 					$equivURIs = $this->storewrapper->getEquivURIsForURI( $uri );
 					if ( !RDFIOUtils::arrayEmpty( $equivURIs ) ) {
 						$equivURI = $equivURIs[0];
-						# Replace the URI with the Equivalent URI
-						$rows[$rowid][$sparqlVar] = $equivURI;
+						// Replace URI with the 'Equivalent URI'
+						$rows[$rowid][$var] = $equivURI;
 					}
 				}
 			}
@@ -476,44 +455,22 @@ class SPARQLEndpoint extends SpecialPage {
 		return $sparqlResult;
 	}
 
-	/**
-	 * Convert an ARC triple index array structure into RDF/XML
-	 * @param array $tripleindex
-	 * @return string $rdfxml
-	 */
-	function tripleIndexToRDFXML( $tripleindex ) {
-		$ser = ARC2::getRDFXMLSerializer(); // TODO: Choose format depending on user choice
-		// Serialize into RDF/XML, since it will contain
-		// all URIs in un-abbreviated form, so that they
-		// can easily be replaced by search-and-replace
-		$rdfxml = $ser->getSerializedIndex( $tripleindex );
-		$errors = $ser->getErrors();
-		foreach ( $errors as $error ) {
-			throw new MWException( "ARC Serializer Error: " . $error );
-		}
-		return $rdfxml;
-	}
 
 	/**
 	 * Convert an ARC triples array into RDF/XML
 	 * @param array $triples
 	 * @return string $rdfxml
 	 */
-	function triplesToRDFXML( $triples ) {
-		$ser = ARC2::getRDFXMLSerializer(); // TODO: Choose format depending on user choice
+	private function triplesToRDFXML( $triples ) {
+		$ser = ARC2::getRDFXMLSerializer();
 		// Serialize into RDF/XML, since it will contain
 		// all URIs in un-abbreviated form, so that they
 		// can easily be replaced by search-and-replace
 		$rdfxml = $ser->getSerializedTriples( $triples );
-		if ( $ser->getErrors() ) {
-			die( "ARC Serializer Error: " . $ser->getErrors() );
+		foreach ( $ser->getErrors() as $error ) {
+			die( 'ARC Serializer Error: ' . $error );
 		}
 		return $rdfxml;
-	}
-
-	function getPredicateVariableName() {
-		$predVar = $this->requestdata->query_parsed['vars'][1];
-		return $predVar;
 	}
 
 	/**
@@ -530,63 +487,48 @@ class SPARQLEndpoint extends SpecialPage {
 				'ask',
 				'describe',
 				# 'load',
-				# 'insert', // This is not needed, since it is done via SMWWriter instead
-				# 'delete', // This is not needed, since it is done via SMWWriter instead
-				# 'dump' /* dump is a special command for streaming SPOG export */
+				# 'insert', 				 // This is not needed, since it is done via SMWWriter instead
+				# 'delete', 				 // This is not needed, since it is done via SMWWriter instead
+				# 'dump'    				 // dump is a special command for streaming SPOG export
 			);
-		$epconfig['endpoint_timeout'] = 60; /* not implemented in ARC2 preview */
-		# 'endpoint_read_key' => '', /* optional */
-		# 'endpoint_write_key' => 'somekey', /* optional */
-		# 'endpoint_max_limit' => 250, /* optional */
-
+		$epconfig['endpoint_timeout'] = 60;  // not implemented in ARC2 preview
+		# 'endpoint_read_key' => '',         // optional
+		# 'endpoint_write_key' => 'somekey', // optional
+		# 'endpoint_max_limit' => 250,       // optional
 		return $epconfig;
 	}
 
 	/**
 	 * Set headers appropriate to the filetype specified in $outputtype
-	 * @param string $outputtype
+	 * @param string $outputType
 	 */
-	private function sendHeadersForOutputType( $outputtype ) {
+	private function setHeadersForOutputType( $outputType ) {
 		global $wgRequest;
-		// Provide a sane filename suggestion
-		$basefilename = 'SPARQLOutput_';
-		switch ( $outputtype ) {
-			case 'xml':
-				$wgRequest->response()->header( "Content-type: application/xml; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.xml' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-				break;
-			case 'rdfxml':
-				$wgRequest->response()->header( "Content-type: application/xml; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.rdf.xml' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-				break;
-			case 'json':
-				$wgRequest->response()->header( "Content-type: text/html; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.json.txt' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-				break;
-			case 'turtle':
-				$wgRequest->response()->header( "Content-type: text/html; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.turtle.txt' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-				break;
-			case 'htmltab':
-				// For HTML table we are taking care of the output earlier
-				# $wgRequest->response()->header( "Content-type: text/html; charset=utf-8" );
-				# $filename = urlencode( $basefilename . wfTimestampNow() . '.html' );
-				break;
-			case 'tsv':
-				$wgRequest->response()->header( "Content-type: text/html; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.tsv.txt' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-				break;
-			default:
-				$wgRequest->response()->header( "Content-type: application/xml; charset=utf-8" );
-				$filename = urlencode( $basefilename . wfTimestampNow() . '.xml' );
-				$wgRequest->response()->header( "Content-disposition: attachment;filename={$filename}" );
-		}
 
+		$contentTypeMap = array(
+			'xml'     => 'application/xml',
+			'rdfxml'  => 'application/xml',
+			'json'    => 'application/json',
+			'turtle'  => 'text/html',
+			'htmltab' => '', // Not applicable
+			'tsv'     => 'text/html'
+		);
+
+		$extensionMap = array(
+			'xml'     => '.xml',
+			'rdfxml'  => '_rdf.xml',
+			'json'    => '.json',
+			'turtle'  => '.ttl',
+			'htmltab' => '', // Not applicable
+			'tsv'     => '.tsv'
+		);
+
+		if ( $outputType != 'htmltab' ) { // For HTML table we are taking care of the output earlier
+			$wgRequest->response()->header( 'Content-type: ' . $contentTypeMap[$outputType] . '; charset=utf-8' );
+
+			$fileName = urlencode('sparql_output_' . wfTimestampNow() . $extensionMap[$outputType] );
+			$wgRequest->response()->header( 'Content-disposition: attachment;filename=' . $fileName );
+		}
 	}
 
 	/**
@@ -725,44 +667,21 @@ class SPARQLEndpoint extends SpecialPage {
 	}
 
 	/**
-	 * Get the query parameter from the request object
-	 * @return string $query
+	 * Add a formatted success message to the HTML output, with $message as message.
+	 * @param $message
 	 */
-	function getQuery() {
-		global $wgRequest;
-		$query = $wgRequest->getText( 'query' );
-		return $query;
+	private function successMsg( $message ) {
+		global $wgOut;
+		$wgOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
 	}
 
 	/**
-	 * Update the query variable in the $_POST object.
-	 * Useful for passing on parsing to ARC, since $_POST is what ARC reads
-	 * @param string $query
+	 * Add a formatted error message to the HTML output, with $message as message.
+	 * @param $message
 	 */
-	function setQueryInPost( $query ) {
-		// Set the query in $_POST, so that ARC will grab the modified query
-		$_POST['query'] = $query;
-	}
-
-	/**
-	 * Update the output (type) variable in the $_POST object.
-	 * Useful for passing on parsing to ARC, since $_POST is what ARC reads
-	 * @param string $type
-	 */
-	function setOutputTypeInPost( $type ) {
-		$_POST['output'] = $type;
-	}
-
-	function successMsg( $message ) {
+	private function errorMsg( $message ) {
 		global $wgOut;
-		$successHtml = RDFIOUtils::formatSuccessMessageHTML( "Success!", $message );
-		$wgOut->addHTML( $successHtml );
-	}
-
-	function failMsg( $message ) {
-		global $wgOut;
-		$errorHtml = RDFIOUtils::formatErrorHTML( "Error!", $message );
-		$wgOut->addHTML( $errorHtml );
+		$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
 	}
 
 }

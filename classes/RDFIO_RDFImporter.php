@@ -115,7 +115,7 @@ class RDFIORDFImporter {
 	    	    }
 EOD;
 		$output .= "<style>$styleCss</style>";
-		$output .= RDFIOUtils::formatSuccessMessageHTML( "Success!", "Successfully imported the triples shown below!" );
+		$output .= RDFIOUtils::fmtSuccessMsgHTML( "Success!", "Successfully imported the triples shown below!" );
 		$output .= "<table class=\"wikitable sortable rdfio-table\"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>";
 
 		foreach ( $importedTriples as $triple ) {
