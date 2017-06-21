@@ -23,11 +23,7 @@ class SPARQLEndpoint extends SpecialPage {
 		$out = $this->getOutput();
 
 		$this->setHeaders();
-		try {
-			$this->requestdata = $this->handleRequestData();
-		} catch ( Exception $e ) {
-			$this->errorMsg( $e->getMessage() );
-		}
+		$this->requestdata = $this->handleRequestData();
 
 		if ( $this->requestdata->query != '' ) {
 
@@ -54,7 +50,7 @@ class SPARQLEndpoint extends SpecialPage {
 						$this->printHTMLForm();
 						break;
 					case 'delete':
-						if ( $this->checkAllowDelete() ) {
+						if ( $this->allowDelete() ) {
 							$this->deleteTriplesInQuery();
 						}
 						$this->printHTMLForm();
@@ -182,8 +178,9 @@ class SPARQLEndpoint extends SpecialPage {
 
 			// Handle errors
 			$errors = $this->sparqlparser->getErrors();
-			foreach ( $errors as $error ) {
-				throw new MWException( "Error parsing SPARQL query: " . $error );
+			if ( $errors ) {
+				$this->errorMsgArr( $errors );
+				return null;
 			}
 
 			$reqData->queryInfos = $this->sparqlparser->getQueryInfos();
@@ -275,7 +272,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Check if writing to wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
 	 */
-	private function checkAllowInsert() {
+	private function allowInsert() {
 		global $rogAllowRemoteEdit;
 
 		if ( !isset( $rogAllowRemoteEdit ) ) {
@@ -305,22 +302,12 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Check if deleting from wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
 	 */
-	private function checkAllowDelete() {
-		global $wgRequest, $wgUser, $wgOut, $rogAllowRemoteEdit;
-		if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) &&
-			!$rogAllowRemoteEdit
-		) {
-			die( 'Cross-site request forgery detected!' );
-		} else {
-			if ( $this->user->hasDeleteAccess() || $rogAllowRemoteEdit ) {
-				return true;
-			} else {
-				$errortitle = "Permission error";
-				$errormessage = "The current user lacks access either to edit or delete pages (or both) in this wiki.";
-				$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( $errortitle, $errormessage ) );
-				return false;
-			}
+	private function allowDelete() {
+		if ( $this->allowInsert() && $this->user->hasDeleteAccess() ) {
+			return true;
 		}
+		$this->errorMsg( 'The current user lacks delete access');
+		return false;
 	}
 
 	/**
@@ -385,7 +372,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * After a query is parsed, import the parsed data to the wiki
 	 */
 	private function importTriplesInQuery() {
-		if ( $this->checkAllowInsert() ) {
+		if ( $this->allowInsert() ) {
 			$triples = $this->requestdata->queryInfos['query']['construct_triples'];
 
 			$rdfImporter = new RDFIORDFImporter();
@@ -649,8 +636,8 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param $message
 	 */
 	private function successMsg( $message ) {
-		global $wgOut;
-		$wgOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
+		$wOut = $this->getOutput();
+		$wOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
 	}
 
 	/**
@@ -658,8 +645,20 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param $message
 	 */
 	private function errorMsg( $message ) {
-		global $wgOut;
-		$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
+		$wOut = $this->getOutput();
+		$wOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
+	}
+
+	/**
+	 * Add a formatted error message to the HTML output, taking an array of messages
+	 * @param $messages array
+	 */
+	private function errorMsgArr( $messages ) {
+		$allMsgs = '';
+		foreach ( $messages as $msg ) {
+			$allMsgs .= '<p>' . $msg . '</p>';
+		}
+		$this->errorMsg( $allMsgs );
 	}
 
 }
