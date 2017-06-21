@@ -315,9 +315,9 @@ class SPARQLEndpoint extends SpecialPage {
 	 * rather than written to the current page
 	 */
 	private function prepareCreatingDownloadableFile() {
-		global $wgOut;
+		$wOut = $this->getOutput();
 		// Disable MediaWikis theming
-		$wgOut->disable();
+		$wOut->disable();
 		// Enables downloading as a stream, which is important for large dumps
 		wfResetOutputBuffers();
 		// Send headers telling that this is a special content type
@@ -329,9 +329,9 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Print out the HTML Form
 	 */
 	private function printHTMLForm() {
-		global $wgOut;
-		$wgOut->addScript( $this->getHTMLFormScript() );
-		$wgOut->addHTML( $this->getHTMLForm( $this->requestdata->query ) );
+		$wOut = $this->getOutput();
+		$wOut->addScript( $this->getHTMLFormScript() );
+		$wOut->addHTML( $this->getHTMLForm( $this->requestdata->query ) );
 	}
 
 	/**
@@ -468,7 +468,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param string $outputType
 	 */
 	private function setHeadersForOutputType( $outputType ) {
-		global $wgRequest;
+		$wRequest = $this->getRequest();
 
 		$contentTypeMap = array(
 			'xml'     => 'application/xml',
@@ -489,10 +489,10 @@ class SPARQLEndpoint extends SpecialPage {
 		);
 
 		if ( $outputType != 'htmltab' ) { // For HTML table we are taking care of the output earlier
-			$wgRequest->response()->header( 'Content-type: ' . $contentTypeMap[$outputType] . '; charset=utf-8' );
+			$wRequest->response()->header( 'Content-type: ' . $contentTypeMap[$outputType] . '; charset=utf-8' );
 
 			$fileName = urlencode('sparql_output_' . wfTimestampNow() . $extensionMap[$outputType] );
-			$wgRequest->response()->header( 'Content-disposition: attachment;filename=' . $fileName );
+			$wRequest->response()->header( 'Content-disposition: attachment;filename=' . $fileName );
 		}
 	}
 
@@ -502,7 +502,9 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @return string $htmlForm
 	 */
 	private function getHTMLForm( $query = '' ) {
-		global $wgArticlePath, $wgUser, $wgRequest;
+		global $wgArticlePath;
+		$wRequest = $this->getRequest();
+		$wUser = $this->getUser();
 
 		$uriResolverURI = SpecialPage::getTitleFor( 'URIResolver' )->getFullURL() . '/';
 
@@ -512,12 +514,12 @@ class SPARQLEndpoint extends SpecialPage {
 			$query = $defaultQuery;
 		}
 
-		$checkedEquivUriQ = $wgRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
-		$checkedEquivUriO = $wgRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
-		$checkedFilterVocab = $wgRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
+		$checkedEquivUriQ = $wRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
+		$checkedEquivUriO = $wRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
+		$checkedFilterVocab = $wRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
 
-		$selectedOutputHTML = $wgRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
-		$selectedOutputRDFXML = $wgRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
+		$selectedOutputHTML = $wRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
+		$selectedOutputRDFXML = $wRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
 
 		// Make the HTML format selected by default
 		if ( $selectedOutputRDFXML == '' ) {
@@ -604,7 +606,7 @@ class SPARQLEndpoint extends SpecialPage {
 	        </table>
 			</div>
 
-	        <input type="submit" value="Submit">' . Html::Hidden( 'token', $wgUser->getEditToken() ) . '
+	        <input type="submit" value="Submit">' . Html::Hidden( 'token', $wUser->getEditToken() ) . '
 	        </form>';
 		return $htmlForm;
 	}
