@@ -525,86 +525,75 @@ class SPARQLEndpoint extends SpecialPage {
 
 		$htmlForm = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:SPARQLEndpoint"
 	        name="createEditQuery">
-	        <div style="font-size: 10px">
-
-	        <table border="0"><tbody>
-	        <tr><td colspan="3">Enter SPARQL query:</td><tr>
-	        <tr><td colspan="3"><textarea cols="80" rows="9" name="query">' . $query . '</textarea></td></tr>
-	        <tr>
+	<div style="font-size: 10px">
+	<table border="0"><tbody>
+		<tr><td colspan="3">Enter SPARQL query:</td><tr>
+		<tr><td colspan="3"><textarea cols="80" rows="9" name="query">' . $query . '</textarea></td></tr>
+		<tr>
 	        <td style="vertical-align: top; border-right: 1px solid #ccc;">
-
-	        <table border="0" style="background: transparent; font-size: 11px;">
-	        <tr><td style="text-align: right">Query by Equivalent URIs:</td>
-	        <td>
-			<input type="checkbox" name="equivuri_q" value="1" ' . $checkedEquivUriQ . '/>
-	        </td></tr>
-	        </table>
-
+				<table border="0" style="background: transparent; font-size: 11px;">
+					<tr>
+						<td style="text-align: right">Query by Equivalent URIs:</td>
+						<td><input type="checkbox" name="equivuri_q" value="1" ' . $checkedEquivUriQ . '/></td>
+					</tr>
+				</table>
 	        </td>
 	        <td width="170" style="vertical-align: top; border-right: 1px solid #ccc;">
-
-	        <table border="0" style="font-size: 11px; background: transparent;">
-	        <tr><td style="text-align: right">Output Equivalent URIs:</td>
-	        <td>
-			<input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checkedEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/>
-	        </td></tr>
-	        </table>
-
+				<table border="0" style="font-size: 11px; background: transparent;">
+					<tr>
+						<td style="text-align: right">Output Equivalent URIs:</td>
+						<td><input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checkedEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/></td>
+					</tr>
+				</table>
 	        </td>
 	        <td width="260" style="vertical-align: top;">
-	        <table border="0" style="font-size: 11px; background: transparent;" >
-	        <tr><td style="text-align: right" width="180">Output format:</td>
-	        <td style="vertical-align: top">
-	        <select id="output" name="output" onChange="toggleDisplay(\'byontology\');" >
-	          <!-- <option value="" >default</option> -->
-	          <!-- <option value="json" >JSON</option> -->
-	          <!-- <option value="plain" >Plain</option> -->
-	          <!-- <option value="php_ser" >Serialized PHP</option> -->
-	          <!-- <option value="turtle" >Turtle</option> -->
-	          <option value="htmltab" ' . $selectedOutputHTML . '>HTML</option>
-	          <option value="xml" >XML Resultset</option>
-	          <option value="rdfxml" ' . $selectedOutputRDFXML . '>RDF/XML</option>
-	          <!-- <option value="infos" >Query Structure</option> -->
-	          <!-- <option value="tsv" >TSV</option> -->
-	        </select>
-	        </td></tr>
-	        <tr>
-	        <td colspan="2">
-	        <span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777;">(RDF/XML requires creating triples using <a href="http://www.w3.org/TR/rdf-sparql-query/#construct">CONSTRUCT</a>)</span>
+				<table border="0" style="font-size: 11px; background: transparent;" >
+				<tr><td style="text-align: right" width="180">Output format:</td>
+				<td style="vertical-align: top">
+				<select id="output" name="output" onChange="toggleDisplay(\'byontology\');" >
+				  <!-- <option value="" >default</option> -->
+				  <!-- <option value="json" >JSON</option> -->
+				  <!-- <option value="plain" >Plain</option> -->
+				  <!-- <option value="php_ser" >Serialized PHP</option> -->
+				  <!-- <option value="turtle" >Turtle</option> -->
+				  <option value="htmltab" ' . $selectedOutputHTML . '>HTML</option>
+				  <option value="xml" >XML Resultset</option>
+				  <option value="rdfxml" ' . $selectedOutputRDFXML . '>RDF/XML</option>
+				  <!-- <option value="infos" >Query Structure</option> -->
+				  <!-- <option value="tsv" >TSV</option> -->
+				</select>
+				</td></tr>
+				<tr>
+				<td colspan="2">
+				<span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777;">(RDF/XML requires creating triples using <a href="http://www.w3.org/TR/rdf-sparql-query/#construct">CONSTRUCT</a>)</span>
+				</td>
+				</table>
 	        </td>
-	        </table>
-
-	        </td>
-	        </tr>
-	        <tr>
+		</tr>
+		<tr>
 	        <td colspan="3">
-
-	        <div id="byontology" style="display: none; background: #ffd; border: 1px solid #ee7;">
-	        <table border="0" style="font-size: 11px; background: transparent;" >
-	        <tr><td style="text-align: right;">Filter by vocabulary:</td>
-	        <td>
-			<input type="checkbox" name="filtervocab" value="1" ' . $checkedFilterVocab . '/>
+				<div id="byontology" style="display: none; background: #ffd; border: 1px solid #ee7;">
+					<table border="0" style="font-size: 11px; background: transparent;" >
+						<tr><td style="text-align: right;">Filter by vocabulary:</td>
+							<td><input type="checkbox" name="filtervocab" value="1" ' . $checkedFilterVocab . '/></td>
+							<td style="text-align: right">Vocabulary URL:</td>
+							<td><input type="text" name="filtervocaburl" size="48" /></td>
+						</tr>
+						<tr>
+							<td>&#160;</td>
+							<td>&#160;</td>
+							<td>&#160;</td>
+							<td><span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777">Example: http://xmlns.com/foaf/spec/index.rdf</span></td>
+						</tr>
+					</table>
+				</div>
 	        </td>
-	        <td style="text-align: right">Vocabulary URL:</td>
-	        <td>
-			<input type="text" name="filtervocaburl" size="48" />
-	        </td></tr>
-	        <tr>
-	        <td>&#160;</td>
-	        <td>&#160;</td>
-	        <td>&#160;</td>
-	        <td>
-	        <span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777">Example: http://xmlns.com/foaf/spec/index.rdf</span>
-	        </td></tr>
-			</table>
-			</div>
-
-	        </td>
-	        </table>
-			</div>
-
-	        <input type="submit" value="Submit">' . Html::Hidden( 'token', $wUser->getEditToken() ) . '
-	        </form>';
+	    </tr>
+	</table>
+	</div>
+	<input type="submit" value="Submit">
+	<input type="hidden" name="token" value="' . $wUser->getEditToken() . '">
+</form>';
 		return $htmlForm;
 	}
 
