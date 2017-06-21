@@ -70,11 +70,7 @@ class SPARQLEndpoint extends SpecialPage {
 						switch ( $this->requestdata->outputtype ) {
 							case 'htmltab':
 								$this->printHTMLForm();
-								if ( $this->shouldShowQuery() ) { // TODO: Remove?
-									$this->printQueryStructure();
-								} else {
-									$this->executeNonEditSparqlQuery();
-								}
+								$this->executeNonEditSparqlQuery();
 								break;
 							case 'rdfxml':
 								if ( $this->requestdata->querytype != 'construct' ) {
@@ -349,14 +345,6 @@ class SPARQLEndpoint extends SpecialPage {
 				return false;
 			}
 		}
-	}
-
-	/**
-	 * Print out the datastructure of the query in preformatted text
-	 */
-	function printQueryStructure() {
-		global $wgOut;
-		$wgOut->addHTML( "<h3>Query structure</h3><pre>" . print_r( $this->requestdata->query_parsed, true ) . "</pre>" );
 	}
 
 	/**
