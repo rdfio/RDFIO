@@ -8,8 +8,8 @@
 class RDFIOUser {
 	protected $mwUser;
 
-	function __construct( $user ) {
-		$this->mwUser = $user;
+	function __construct( $mwUser ) {
+		$this->mwUser = $mwUser;
 	}
 
 	public function hasWriteAccess() {

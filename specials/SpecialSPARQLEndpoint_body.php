@@ -5,6 +5,7 @@ class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlparser;
 	protected $storewrapper;
 	protected $user;
+	protected $requestdata;
 
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
@@ -13,7 +14,6 @@ class SPARQLEndpoint extends SpecialPage {
 		$this->sparqlparser = ARC2::getSPARQLPlusParser();
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 		$this->user = new RDFIOUser( $this->getUser() );
-		$this->requestdata = null;
 	}
 
 	/**
@@ -33,15 +33,15 @@ class SPARQLEndpoint extends SpecialPage {
 
 			$this->ensureArc2StoreIsSetup();
 
-			if ( $this->requestdata->querybyequivuri ) {
+			if ( $this->requestdata->queryByEquivUris ) {
 				$this->urisToEquivURIsInQuery();
 			}
 
 
-			if ( $this->requestdata->querytype == '' ) {
+			if ( $this->requestdata->queryType == '' ) {
 				$out->addHTML( "<b>ERROR: Could not determine query type!</b><br>It seems you have a problem with your query!" );
 			} else {
-				switch ( $this->requestdata->querytype ) {
+				switch ( $this->requestdata->queryType ) {
 					case 'insert':
 						try {
 							$this->importTriplesInQuery();
@@ -60,13 +60,13 @@ class SPARQLEndpoint extends SpecialPage {
 						$this->printHTMLForm();
 						break;
 					default:
-						switch ( $this->requestdata->outputtype ) {
+						switch ( $this->requestdata->outputType ) {
 							case 'htmltab':
 								$this->printHTMLForm();
 								$this->executeNonEditSparqlQuery();
 								break;
 							case 'rdfxml':
-								if ( $this->requestdata->querytype != 'construct' ) {
+								if ( $this->requestdata->queryType != 'construct' ) {
 									$out->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
 									$this->printHTMLForm();
 								} else {
@@ -95,7 +95,7 @@ class SPARQLEndpoint extends SpecialPage {
 		$wikiOut = $this->getOutput();
 
 		$output = $this->passSparqlToARC2AndGetOutput();
-		$outputtype = $this->determineOutputType();
+		$outputtype = $this->outputTypeFromQueryType();
 
 		if ( $outputtype == 'rdfxml' ) {
 			# Here the results should be RDF/XML triples,
@@ -104,7 +104,7 @@ class SPARQLEndpoint extends SpecialPage {
 			$tripleindex = $outputStructure['result'];
 			$triples = ARC2::getTriplesFromIndex( $tripleindex );
 
-			if ( $this->requestdata->outputequivuris ) {
+			if ( $this->requestdata->outputEquivUris ) {
 
 				// FIXME: Why is this uncommented???
 				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
@@ -116,7 +116,7 @@ class SPARQLEndpoint extends SpecialPage {
 			// TODO: Add some kind of check that the output is really an object
 			if ( count( $output ) > 0 ) {
 				$outputStructure = unserialize( $output );
-				if ( $this->requestdata->outputequivuris ) {
+				if ( $this->requestdata->outputEquivUris ) {
 					$outputStructure = $this->toEquivURIsInSparqlResults( $outputStructure );
 				}
 
@@ -150,8 +150,8 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * Determine the output type of the SPARQL query
 	 */
-	private function determineOutputType() {
-		$outputtype = $this->requestdata->outputtype;
+	private function outputTypeFromQueryType() {
+		$outputtype = $this->requestdata->outputType;
 		if ( $outputtype == '' && $this->requestdata->querytype == 'construct' ) {
 			return 'rdfxml';
 		}
@@ -165,32 +165,20 @@ class SPARQLEndpoint extends SpecialPage {
 	private function handleRequestData() {
 		global $rogQueryByEquivURI,
 			   $rogOutputEquivURIs;
-
 		$request = $this->getRequest();
 
-		$requestDataObj = new RDFIOSPARQLRequestData();
-		$requestDataObj->query = $request->getText( 'query' );
+		$reqData = new RDFIOSPARQLRequestData();
+		$reqData->query = $request->getText( 'query' );
+		$reqData->queryByEquivUris = isset( $rogQueryByEquivURI ) ? $rogQueryByEquivURI : $request->getBool( 'equivuri_q' );
+		$reqData->outputEquivUris = isset( $rogOutputEquivURIs ) ? $rogOutputEquivURIs : $request->getBool( 'equivuri_o' );
+		$reqData->outputType = $request->getText( 'output' );
 
-		if ( $rogQueryByEquivURI != '' ) {
-			$requestDataObj->querybyequivuri = $rogQueryByEquivURI;
-		} else {
-			$requestDataObj->querybyequivuri = $request->getBool( 'equivuri_q' );
-		}
-
-		if ( $rogOutputEquivURIs != '' ) {
-			$requestDataObj->outputequivuris = $rogOutputEquivURIs;
-		} else {
-			$requestDataObj->outputequivuris = $request->getBool( 'equivuri_o' );
-		}
-
-		$requestDataObj->outputtype = $request->getText( 'output' );
-		if ( $requestDataObj->query !== '' ) {
-
+		if ( $reqData->query !== '' ) {
 			// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
-			$reqDataSparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $requestDataObj->query );
+			$querySparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $reqData->query );
 
 			// Parse the SPARQL query string into array structure
-			$this->sparqlparser->parse( $reqDataSparqlPlus, '' );
+			$this->sparqlparser->parse( $querySparqlPlus, '' );
 
 			// Handle errors
 			$errors = $this->sparqlparser->getErrors();
@@ -198,12 +186,12 @@ class SPARQLEndpoint extends SpecialPage {
 				throw new MWException( "Error parsing SPARQL query: " . $error );
 			}
 
-			$requestDataObj->query_parsed = $this->sparqlparser->getQueryInfos();
-			if ( array_key_exists( 'query', $requestDataObj->query_parsed ) ) {
-				$requestDataObj->querytype = $requestDataObj->query_parsed['query']['type'];
+			$reqData->queryInfos = $this->sparqlparser->getQueryInfos();
+			if ( array_key_exists( 'query', $reqData->queryInfos ) ) {
+				$reqData->queryType = $reqData->queryInfos['query']['type'];
 			}
 		}
-		return $requestDataObj;
+		return $reqData;
 	}
 
 	/**
@@ -219,7 +207,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
 	private function urisToEquivURIsInQuery() {
-		$queryStructure = $this->requestdata->query_parsed;
+		$queryStructure = $this->requestdata->queryInfos;
 		$triple = $queryStructure['query']['pattern']['patterns'][0]['patterns'][0];
 		$subj = $triple['s'];
 		$prop = $triple['p'];
@@ -351,7 +339,7 @@ class SPARQLEndpoint extends SpecialPage {
 		wfResetOutputBuffers();
 		// Send headers telling that this is a special content type
 		// and potentially is to be downloaded as a file
-		$this->setHeadersForOutputType( $this->requestdata->outputtype );
+		$this->setHeadersForOutputType( $this->requestdata->outputType );
 	}
 
 	/**
@@ -402,7 +390,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 */
 	private function importTriplesInQuery() {
 		if ( $this->checkAllowInsert() ) {
-			$triples = $this->requestdata->query_parsed['query']['construct_triples'];
+			$triples = $this->requestdata->queryInfos['query']['construct_triples'];
 
 			$rdfImporter = new RDFIORDFImporter();
 			$rdfImporter->importTriples( $triples );
@@ -414,7 +402,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * After a query is parsed, delete the parsed data from the wiki
 	 */
 	private function deleteTriplesInQuery() {
-		$triples = $this->requestdata->query_parsed['query']['construct_triples'];
+		$triples = $this->requestdata->queryInfos['query']['construct_triples'];
 		$rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
 		$rdfImporter->executeDelete();
 	}
@@ -681,12 +669,12 @@ class SPARQLEndpoint extends SpecialPage {
 }
 
 class RDFIOSPARQLRequestData {
-	function __construct() {
-		$this->query = '';
-		$this->querytype = '';
-		$this->querybyequivuri = false;
-		$this->outputequivuris = false;
-		$this->outputtype = '';
-		$this->query_parsed = array();
-	}
+	public $query;
+	public $queryType;
+	public $queryByEquivUris = false;
+	public $outputEquivUris = false;
+	public $outputType;
+	public $queryInfos = array();
+
+	function __construct() {}
 }
