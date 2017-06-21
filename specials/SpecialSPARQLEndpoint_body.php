@@ -34,7 +34,7 @@ class SPARQLEndpoint extends SpecialPage {
 			}
 
 
-			if ( $this->requestdata->queryType == '' ) {
+			if ( !isset( $this->requestdata->queryType ) || $this->requestdata->queryType == '' ) {
 				$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
 			} else {
 				switch ( $this->requestdata->queryType ) {
