@@ -658,7 +658,6 @@ class SPARQLEndpoint extends SpecialPage {
 
 	        </td>
 	        <td width="260" style="vertical-align: top;">
-Output Equivalent
 	        <table border="0" style="font-size: 11px; background: transparent;" >
 	        <tr><td style="text-align: right" width="180">Output format:</td>
 	        <td style="vertical-align: top">
