@@ -10,10 +10,11 @@ class SPARQLEndpoint extends SpecialPage {
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
 		# Set up some stuff
-		$this->sparqlendpoint = ARC2::getStoreEndpoint( $this->getSPARQLEndpointConfig() );
-		$this->sparqlparser = ARC2::getSPARQLPlusParser();
+		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig() );
+		$this->sparqlparser = new ARC2_SPARQLPlusParser();
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 		$this->user = new RDFIOUser( $this->getUser() );
+		$this->arc2 = new ARC2_Class;
 	}
 
 	/**
@@ -96,7 +97,7 @@ class SPARQLEndpoint extends SpecialPage {
 			# not just plain XML SPARQL result set
 			$outputStructure = unserialize( $output );
 			$tripleindex = $outputStructure['result'];
-			$triples = ARC2::getTriplesFromIndex( $tripleindex );
+			$triples = $this->arc2->toTriples( $tripleindex );
 
 			if ( $this->requestdata->outputEquivUris ) {
 
@@ -424,7 +425,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @return string $rdfxml
 	 */
 	private function triplesToRDFXML( $triples ) {
-		$ser = ARC2::getRDFXMLSerializer();
+		$ser = new ARC2_RDFXMLSerializer();
 		// Serialize into RDF/XML, since it will contain
 		// all URIs in un-abbreviated form, so that they
 		// can easily be replaced by search-and-replace
@@ -501,11 +502,10 @@ class SPARQLEndpoint extends SpecialPage {
 	 */
 	private function getHTMLForm( $query = '' ) {
 		global $wgArticlePath;
+
 		$wRequest = $this->getRequest();
 		$wUser = $this->getUser();
-
 		$uriResolverURI = SpecialPage::getTitleFor( 'URIResolver' )->getFullURL() . '/';
-
 		$defaultQuery = "@PREFIX w : <$uriResolverURI> .\n\nSELECT *\nWHERE { ?s ?p ?o }\nLIMIT 25";
 
 		if ( $query == '' ) {
@@ -515,7 +515,6 @@ class SPARQLEndpoint extends SpecialPage {
 		$checkedEquivUriQ = $wRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
 		$checkedEquivUriO = $wRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
 		$checkedFilterVocab = $wRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
-
 		$selectedOutputHTML = $wRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
 		$selectedOutputRDFXML = $wRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
 
