@@ -5,7 +5,7 @@ class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlendpointconfig;
 	protected $sparqlendpoint;
 	protected $sparqlparser;
-	protected $store;
+	protected $storewrapper;
 
 	protected $user;
 
@@ -17,7 +17,7 @@ class SPARQLEndpoint extends SpecialPage {
 		$this->sparqlendpointconfig = $this->getSPARQLEndpointConfig();
 		$this->sparqlendpoint = ARC2::getStoreEndpoint( $this->sparqlendpointconfig );
 		$this->sparqlparser = ARC2::getSPARQLPlusParser();
-		$this->store = new RDFIOARC2StoreWrapper();
+		$this->storewrapper = new RDFIOARC2StoreWrapper();
 		$this->user = new RDFIOUser();
 		$this->requestdata = null;
 	}
@@ -116,9 +116,10 @@ class SPARQLEndpoint extends SpecialPage {
 			$triples = ARC2::getTriplesFromIndex( $tripleindex );
 
 			if ( $this->requestdata->outputequivuris ) {
+
 				// FIXME: Why is this uncommented???
-				# $triples = $this->complementTriplesWithEquivURIsForProperties( $triples );
-				$triples = $this->complementTriplesWithEquivURIs( $triples );
+				# $triples = $this->storewrapper->complementTriplesWithEquivURIsForProperties( $triples );
+				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
 			}
 			$output = $this->triplesToRDFXML( $triples );
 			# Using echo instead of $wgOut->addHTML() here, since output format is not HTML
@@ -277,9 +278,9 @@ class SPARQLEndpoint extends SpecialPage {
 	 */
 	function createEquivURITriple( $uri, $varname, $isproperty = false ) {
 		if ( $isproperty ) {
-			$equivuriuri = $this->store->getEquivPropertyURIURI();
+			$equivuriuri = $this->storewrapper->getEquivPropertyURIURI();
 		} else {
-			$equivuriuri = $this->store->getEquivURIURI();
+			$equivuriuri = $this->storewrapper->getEquivURIURI();
 		}
 		$equivuritriple = array(
 			'type' => 'triple',
@@ -458,69 +459,6 @@ class SPARQLEndpoint extends SpecialPage {
 	}
 
 	/**
-	 * For all property URIs and all subject and objects which have URIs,
-	 * add triples using equivalent uris for these URIs (in all combinations
-	 * thereof). If $p_uris_filter is set, allow only triples with properties
-	 * included in this filter array
-	 * @param array $triples
-	 * @param array $propUrisFilter
-	 * @return array $triples
-	 */
-	function complementTriplesWithEquivURIs( $triples, $propUrisFilter = '' ) {
-		$newTriples = array();
-		foreach ( $triples as $triple ) {
-			// Subject
-			$subjEquivUris = array( $triple['s'] );
-			if ( $triple['s_type'] === 'uri' ) {
-				$subjUri = $triple['s'];
-				$subjEquivUrisTmp = $this->store->getEquivURIsForURI( $subjUri );
-				if ( count( $subjEquivUrisTmp ) > 0 ) {
-					$subjEquivUris = $subjEquivUrisTmp;
-				}
-			}
-
-			// Property
-			$propertyuri = $triple['p'];
-			$propEquivUris = array( $triple['p'] );
-			$propEquivUrisTmp = $this->store->getEquivURIsForURI( $propertyuri, true );
-			if ( count( $propEquivUrisTmp ) > 0 ) {
-				if ( $propUrisFilter != '' ) {
-					// Only include URIs that occur in the filter
-					$propEquivUrisTmp = array_intersect( $propEquivUrisTmp, $propUrisFilter );
-				}
-				if ( $propEquivUrisTmp != '' ) {
-					$propEquivUris = $propEquivUrisTmp;
-				}
-			}
-
-			// Object
-			$objEquivUris = array( $triple['o'] );
-			if ( $triple['o_type'] === 'uri' ) {
-				$objUri = $triple['o'];
-				$objEquivUrisTmp = $this->store->getEquivURIsForURI( $objUri );
-				if ( count( $objEquivUrisTmp ) > 0 ) {
-					$objEquivUris = $objEquivUrisTmp;
-				}
-			}
-
-			// Generate triples
-			foreach ( $subjEquivUris as $subjEquivUri ) {
-				foreach ( $propEquivUris as $propEquivUri ) {
-					foreach ( $objEquivUris as $objEquivUri ) {
-						$newtriple = array(
-							's' => $subjEquivUri,
-							'p' => $propEquivUri,
-							'o' => $objEquivUri
-						);
-						$newTriples[] = $newtriple;
-					}
-				}
-			}
-		}
-		return $newTriples;
-	}
-
-	/**
 	 * Replace URI:s with an accompanying "Equivalent URI" with that one. If
 	 * there are móre than one Equivalent URI for a given URI, the others than
 	 * the first one will be ignored.
@@ -536,7 +474,7 @@ class SPARQLEndpoint extends SpecialPage {
 				$type = $row[$typeKey];
 				$uri = $row[$sparqlVar];
 				if ( $type === 'uri' ) {
-					$equivURIs = $this->store->getEquivURIsForURI( $uri );
+					$equivURIs = $this->storewrapper->getEquivURIsForURI( $uri );
 					if ( !RDFIOUtils::arrayEmpty( $equivURIs ) ) {
 						$equivURI = $equivURIs[0];
 						# Replace the URI with the Equivalent URI

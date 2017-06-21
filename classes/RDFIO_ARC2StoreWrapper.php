@@ -18,6 +18,72 @@ class RDFIOARC2StoreWrapper {
 	}
 
 	/**
+	 * For all property URIs and all subject and objects which have URIs, add
+	 * triples using equivalent uris for these URIs (in all combinations
+	 * thereof). If $propUrisFilter is set, allow only triples with properties
+	 * included in this filter array.
+	 * @param array $triples
+	 * @param array $propUrisFilter
+	 * @return array $triples
+	 */
+	function complementTriplesWithEquivURIs( $triples, $propUrisFilter = '' ) {
+		$newTriples = array();
+
+		foreach ( $triples as $triple ) {
+			// Subject
+			$subjEquivUris = array( $triple['s'] );
+			if ( $triple['s_type'] === 'uri' ) {
+				$subjUri = $triple['s'];
+				$subjEquivUrisTmp = $this->getEquivURIsForURI( $subjUri );
+				if ( count( $subjEquivUrisTmp ) > 0 ) {
+					$subjEquivUris = $subjEquivUrisTmp;
+				}
+			}
+
+			// Property
+			$propertyuri = $triple['p'];
+			$propEquivUris = array( $triple['p'] );
+			$propEquivUrisTmp = $this->getEquivURIsForURI( $propertyuri, true );
+
+
+			if ( count( $propEquivUrisTmp ) > 0 ) {
+				if ( $propUrisFilter != '' ) {
+					// Only include URIs that occur in the filter
+					$propEquivUrisTmp = array_intersect( $propEquivUrisTmp, $propUrisFilter );
+				}
+				if ( $propEquivUrisTmp != '' ) {
+					$propEquivUris = $propEquivUrisTmp;
+				}
+			}
+
+			// Object
+			$objEquivUris = array( $triple['o'] );
+			if ( $triple['o_type'] === 'uri' ) {
+				$objUri = $triple['o'];
+				$objEquivUrisTmp = $this->getEquivURIsForURI( $objUri );
+				if ( count( $objEquivUrisTmp ) > 0 ) {
+					$objEquivUris = $objEquivUrisTmp;
+				}
+			}
+
+			// Generate triples
+			foreach ( $subjEquivUris as $subjEquivUri ) {
+				foreach ( $propEquivUris as $propEquivUri ) {
+					foreach ( $objEquivUris as $objEquivUri ) {
+						$newtriple = array(
+							's' => $subjEquivUri,
+							'p' => $propEquivUri,
+							'o' => $objEquivUri
+						);
+						$newTriples[] = $newtriple;
+					}
+				}
+			}
+		}
+		return $newTriples;
+	}
+
+	/**
 	 * For a given RDF URI, return it's corresponding equivalend URIs
 	 * as defined in wiki articles by the Equivalent URI property
 	 * @param string $uri
