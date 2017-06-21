@@ -11,6 +11,9 @@ class RDFIOARC2StoreWrapper {
 	protected $arcStore;
 	protected $uriResolverUrl;
 
+	const EQUIV_URI = 'http://www.w3.org/2002/07/owl#sameAs';
+	const EQUIV_PROPERTY_URI = 'http://www.w3.org/2002/07/owl#equivalentProperty';
+
 	function __construct() {
 		global $smwgARC2StoreConfig;
 		$this->arcStore = ARC2::getStore( $smwgARC2StoreConfig );
@@ -94,9 +97,9 @@ class RDFIOARC2StoreWrapper {
 		$equivUris = array();
 		$store = $this->arcStore;
 		if ( $isProperty ) {
-			$equivUriUri = $this->getEquivPropertyURIURI();
+			$equivUriUri = self::EQUIV_PROPERTY_URI;
 		} else {
-			$equivUriUri = $this->getEquivURIURI();
+			$equivUriUri = self::EQUIV_URI;
 		}
 		$query = "SELECT ?equivUri WHERE { <$uri> <$equivUriUri> ?equivUri }";
 		$results = $store->query( $query );
@@ -122,9 +125,9 @@ class RDFIOARC2StoreWrapper {
 		$uri = '';
 		$store = $this->arcStore;
 		if ( $isProperty ) {
-			$equivUriUri = $this->getEquivPropertyURIURI();
+			$equivUriUri = self::EQUIV_PROPERTY_URI;
 		} else {
-			$equivUriUri = $this->getEquivURIURI();
+			$equivUriUri = self::EQUIV_URI;
 		}
 		$query = "SELECT ?uri WHERE { ?uri <$equivUriUri> <$equivUri> }";
 		$results = $store->query( $query );
@@ -186,7 +189,7 @@ class RDFIOARC2StoreWrapper {
 	 */
 	public static function getEquivURIURI() {
 		// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
-		return 'http://www.w3.org/2002/07/owl#sameAs';
+		return self::EQUIV_URI;
 	}
 
 	/**
@@ -195,7 +198,7 @@ class RDFIOARC2StoreWrapper {
 	 * @return string
 	 */
 	public static function getEquivPropertyURIURI() {
-		return 'http://www.w3.org/2002/07/owl#equivalentProperty';
+		return self::EQUIV_PROPERTY_URI;
 	}
 
 }

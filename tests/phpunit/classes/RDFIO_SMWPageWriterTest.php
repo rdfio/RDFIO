@@ -386,7 +386,7 @@ EOT;
 		$this->assertArrayEquals( $expectedTplNames, $tplNames, true, true );
 	}
 
-		/**
+	/**
 	 * Call protected/private method of a class.
 	 *
 	 * @param object &$object    Instantiated object that we will run method on.
