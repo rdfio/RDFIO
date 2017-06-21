@@ -35,16 +35,14 @@ class SPARQLEndpoint extends SpecialPage {
 
 
 			if ( $this->requestdata->queryType == '' ) {
-				$out->addHTML( "<b>ERROR: Could not determine query type!</b><br>It seems you have a problem with your query!" );
+				$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
 			} else {
 				switch ( $this->requestdata->queryType ) {
 					case 'insert':
 						try {
 							$this->importTriplesInQuery();
 						} catch ( MWException $e ) {
-							$this->errorMsg( "ERROR: Could not perform import!" );
-							$this->errorMsg( "Error message:" );
-							$this->errorMsg( $e->getMessage() );
+							$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
 						}
 
 						$this->printHTMLForm();
@@ -63,7 +61,7 @@ class SPARQLEndpoint extends SpecialPage {
 								break;
 							case 'rdfxml':
 								if ( $this->requestdata->queryType != 'construct' ) {
-									$out->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+									$this->errorMsg( 'RDF/XML requires a CONSTRUCT statement' );
 									$this->printHTMLForm();
 								} else {
 									$this->prepareCreatingDownloadableFile();
@@ -125,7 +123,7 @@ class SPARQLEndpoint extends SpecialPage {
 					echo $output;
 				}
 			} else {
-				$wikiOut->setHTML( "ERROR: No results from SPARQL query!" );
+				$this->errorMsg( 'No results from SPARQL query!' );
 			}
 		}
 	}
@@ -136,8 +134,9 @@ class SPARQLEndpoint extends SpecialPage {
 		$_POST['output'] = 'php_ser';
 
 		$this->sparqlendpoint->handleRequest();
-		foreach ( $this->sparqlendpoint->getErrors() as $error ) {
-			$this->errorMsg( '<p>SPARQL Error: ' . $error . '</p>');
+		if ( $this->sparqlendpoint->getErrors() ) {
+			$this->errorMsgArr( $this->sparqlendpoint->getErrors );
+			return null;
 		}
 
 		return $this->sparqlendpoint->getResult();
@@ -176,10 +175,8 @@ class SPARQLEndpoint extends SpecialPage {
 			// Parse the SPARQL query string into array structure
 			$this->sparqlparser->parse( $querySparqlPlus, '' );
 
-			// Handle errors
-			$errors = $this->sparqlparser->getErrors();
-			if ( $errors ) {
-				$this->errorMsgArr( $errors );
+			if ( $this->sparqlparser->getErrors() ) {
+				$this->errorMsgArr( $this->sparqlparser->getErrors() );
 				return null;
 			}
 
@@ -432,8 +429,9 @@ class SPARQLEndpoint extends SpecialPage {
 		// all URIs in un-abbreviated form, so that they
 		// can easily be replaced by search-and-replace
 		$rdfxml = $ser->getSerializedTriples( $triples );
-		foreach ( $ser->getErrors() as $error ) {
-			die( 'ARC Serializer Error: ' . $error );
+		if ( $ser->getErrors() ) {
+			$this->errorMsgArr( $ser->getErrors() );
+			return null;
 		}
 		return $rdfxml;
 	}
