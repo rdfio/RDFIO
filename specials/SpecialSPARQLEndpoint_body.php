@@ -1,29 +1,26 @@
 <?php
 
 class SPARQLEndpoint extends SpecialPage {
-
-	protected $sparqlendpointconfig;
 	protected $sparqlendpoint;
 	protected $sparqlparser;
 	protected $storewrapper;
 	protected $user;
 
-	function __construct() {
+	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
 		# Set up some stuff
-		$this->sparqlendpointconfig = $this->getSPARQLEndpointConfig();
-		$this->sparqlendpoint = ARC2::getStoreEndpoint( $this->sparqlendpointconfig );
+		$this->sparqlendpoint = ARC2::getStoreEndpoint( $this->getSPARQLEndpointConfig() );
 		$this->sparqlparser = ARC2::getSPARQLPlusParser();
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
-		$this->user = new RDFIOUser();
+		$this->user = new RDFIOUser( $this->getUser() );
 		$this->requestdata = null;
 	}
 
 	/**
 	 * Execute the SPARQL Endpoint Special page
 	 */
-	function execute( $par ) {
-		global $wgOut;
+	public function execute( $par ) {
+		$out = $this->getOutput();
 
 		$this->setHeaders();
 		try {
@@ -32,9 +29,9 @@ class SPARQLEndpoint extends SpecialPage {
 			$this->errorMsg( $e->getMessage() );
 		}
 
-		if ( $this->hasSparqlQuery() ) {
+		if ( $this->requestdata->query != '' ) {
 
-			$this->ensureSparqlEndpointInstalled();
+			$this->ensureArc2StoreIsSetup();
 
 			if ( $this->requestdata->querybyequivuri ) {
 				$this->urisToEquivURIsInQuery();
@@ -42,7 +39,7 @@ class SPARQLEndpoint extends SpecialPage {
 
 
 			if ( $this->requestdata->querytype == '' ) {
-				$wgOut->addHTML( "<b>ERROR: Could not determine query type!</b><br>It seems you have a problem with your query!" );
+				$out->addHTML( "<b>ERROR: Could not determine query type!</b><br>It seems you have a problem with your query!" );
 			} else {
 				switch ( $this->requestdata->querytype ) {
 					case 'insert':
@@ -70,7 +67,7 @@ class SPARQLEndpoint extends SpecialPage {
 								break;
 							case 'rdfxml':
 								if ( $this->requestdata->querytype != 'construct' ) {
-									$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
+									$out->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Invalid choice", "RDF/XML can only be used with CONSTRUCT, if constructing triples" ) );
 									$this->printHTMLForm();
 								} else {
 									$this->prepareCreatingDownloadableFile();
@@ -94,10 +91,10 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Execute method for SPARQL queries that only queries and returns results, but
 	 * does not modify, add or delete triples.
 	 */
-	function executeNonEditSparqlQuery() {
-		global $wgOut;
+	private function executeNonEditSparqlQuery() {
+		$wikiOut = $this->getOutput();
 
-		$output = $this->passSparqlToARC2AndGetAsPhpSerialization();
+		$output = $this->passSparqlToARC2AndGetOutput();
 		$outputtype = $this->determineOutputType();
 
 		if ( $outputtype == 'rdfxml' ) {
@@ -113,7 +110,7 @@ class SPARQLEndpoint extends SpecialPage {
 				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
 			}
 			$output = $this->triplesToRDFXML( $triples );
-			# Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+			// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
 			echo $output;
 		} else {
 			// TODO: Add some kind of check that the output is really an object
@@ -125,80 +122,73 @@ class SPARQLEndpoint extends SpecialPage {
 
 				if ( $outputtype == 'htmltab' ) {
 					$output = $this->sparqlResultToHTML( $outputStructure );
-					$wgOut->addHTML( $output );
+					$wikiOut->addHTML( $output );
 				} else {
-					# Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+					// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
 					$output = $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputStructure );
 					echo $output;
 				}
 			} else {
-				$wgOut->setHTML( "ERROR: No results from SPARQL query!" );
+				$wikiOut->setHTML( "ERROR: No results from SPARQL query!" );
 			}
 		}
 	}
 
-	function shouldShowQuery() {
-		global $wgRequest;
-		return $wgRequest->getBool( 'showquery', false );
-	}
-
-	function passSparqlToARC2AndGetAsPhpSerialization() {
-		# Make sure ARC2 returns a PHP serialization, so that we
-		# can do stuff with it programmatically
+	private function passSparqlToARC2AndGetOutput() {
+		// Make sure ARC2 returns a PHP serialization, so that we
+		// can do stuff with it programmatically
 		$_POST['output'] = 'php_ser';
 
 		$this->sparqlendpoint->handleRequest();
 		foreach ( $this->sparqlendpoint->getErrors() as $error ) {
 			$this->errorMsg( '<p>SPARQL Error: ' . $error . '</p>');
 		}
-		$output = $this->sparqlendpoint->getResult();
-		return $output;
+
+		return $this->sparqlendpoint->getResult();
 	}
 
 	/**
 	 * Determine the output type of the SPARQL query
 	 */
-	function determineOutputType() {
+	private function determineOutputType() {
 		$outputtype = $this->requestdata->outputtype;
 		if ( $outputtype == '' && $this->requestdata->querytype == 'construct' ) {
-			$outputtype = 'rdfxml';
+			return 'rdfxml';
 		}
 		return $outputtype;
-	}
-
-	function hasSparqlQuery() {
-		return ( $this->requestdata->query != '' );
 	}
 
 	/**
 	 * Take care of data from the request object and store
 	 * in class variables
 	 */
-	function handleRequestData() {
-		global $wgRequest,
-			   $rogQueryByEquivURI,
+	private function handleRequestData() {
+		global $rogQueryByEquivURI,
 			   $rogOutputEquivURIs;
 
-		$requestData = new RDFIOSPARQLRequestData();
+		$request = $this->getRequest();
 
-		$requestData->query = $wgRequest->getText( 'query' );
+		$requestDataObj = new RDFIOSPARQLRequestData();
+		$requestDataObj->query = $request->getText( 'query' );
 
 		if ( $rogQueryByEquivURI != '' ) {
-			$requestData->querybyequivuri = $rogQueryByEquivURI;
+			$requestDataObj->querybyequivuri = $rogQueryByEquivURI;
 		} else {
-			$requestData->querybyequivuri = $wgRequest->getBool( 'equivuri_q' );
+			$requestDataObj->querybyequivuri = $request->getBool( 'equivuri_q' );
 		}
 
 		if ( $rogOutputEquivURIs != '' ) {
-			$requestData->outputequivuris = $rogOutputEquivURIs;
+			$requestDataObj->outputequivuris = $rogOutputEquivURIs;
 		} else {
-			$requestData->outputequivuris = $wgRequest->getBool( 'equivuri_o' );
+			$requestDataObj->outputequivuris = $request->getBool( 'equivuri_o' );
 		}
 
-		$requestData->outputtype = $wgRequest->getText( 'output' );
-		if ( $requestData->query !== '' ) {
+		$requestDataObj->outputtype = $request->getText( 'output' );
+		if ( $requestDataObj->query !== '' ) {
+
 			// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
-			$reqDataSparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $requestData->query );
+			$reqDataSparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $requestDataObj->query );
+
 			// Parse the SPARQL query string into array structure
 			$this->sparqlparser->parse( $reqDataSparqlPlus, '' );
 
@@ -208,24 +198,27 @@ class SPARQLEndpoint extends SpecialPage {
 				throw new MWException( "Error parsing SPARQL query: " . $error );
 			}
 
-			$requestData->query_parsed = $this->sparqlparser->getQueryInfos();
-			if ( array_key_exists( 'query', $requestData->query_parsed ) ) {
-				$requestData->querytype = $requestData->query_parsed['query']['type'];
+			$requestDataObj->query_parsed = $this->sparqlparser->getQueryInfos();
+			if ( array_key_exists( 'query', $requestDataObj->query_parsed ) ) {
+				$requestDataObj->querytype = $requestDataObj->query_parsed['query']['type'];
 			}
 		}
-		return $requestData;
+		return $requestDataObj;
 	}
 
-	function ensureSparqlEndpointInstalled() {
+	/**
+	 * Set up the ARC2 database tables, if not already done
+	 */
+	private function ensureArc2StoreIsSetup() {
 		if ( !$this->sparqlendpoint->isSetUp() ) {
-			$this->sparqlendpoint->setUp(); /* create MySQL tables */
+			$this->sparqlendpoint->setUp();
 		}
 	}
 
 	/**
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
-	function urisToEquivURIsInQuery() {
+	private function urisToEquivURIsInQuery() {
 		$queryStructure = $this->requestdata->query_parsed;
 		$triple = $queryStructure['query']['pattern']['patterns'][0]['patterns'][0];
 		$subj = $triple['s'];
@@ -270,7 +263,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param boolean $isproperty
 	 * @return array $equivuritriple
 	 */
-	function createEquivURITriple( $uri, $varname, $isproperty = false ) {
+	private function createEquivURITriple( $uri, $varname, $isproperty = false ) {
 		if ( $isproperty ) {
 			$equivuriuri = $this->storewrapper->getEquivPropertyURIURI();
 		} else {
@@ -294,17 +287,17 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Check if writing to wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
 	 */
-	function checkAllowInsert() {
-		global $wgOut;
+	private function checkAllowInsert() {
+		$wikiOut = $this->getOutput();
 
 		if ( $this->wrongEditTokenDetected() ) {
-			$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error", "Cross-site request forgery detected!" ) );
+			$wikiOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error", "Cross-site request forgery detected!" ) );
 			return false;
 		} else {
 			if ( $this->user->hasWriteAccess() ) {
 				return true;
 			} else {
-				$wgOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
+				$wikiOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Permission error", "The current user lacks access either to edit or create pages (or both) in this wiki." ) );
 				return false;
 			}
 		}
@@ -314,20 +307,21 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Detect whether the edit token is not correct, even though remote editing is not permitted
 	 * (in which case this check will not be done).
 	 */
-	function wrongEditTokenDetected() {
-		global $rogAllowRemoteEdit, $wgRequest;
+	private function wrongEditTokenDetected() {
+		global $rogAllowRemoteEdit;
+		$request = $this->getRequest();
 		if ( $rogAllowRemoteEdit == '' ) {
 			$rogAllowRemoteEdit = false;
 		}
 		return ( !$rogAllowRemoteEdit &&
-			!$this->user->editTokenIsCorrect( $wgRequest->getText( 'token' ) ) );
+			!$this->user->editTokenIsCorrect( $request->getText( 'token' ) ) );
 	}
 
 	/**
 	 * Check if deleting from wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
 	 */
-	function checkAllowDelete() {
+	private function checkAllowDelete() {
 		global $wgRequest, $wgUser, $wgOut, $rogAllowRemoteEdit;
 		if ( !$wgUser->matchEditToken( $wgRequest->getText( 'token' ) ) &&
 			!$rogAllowRemoteEdit
@@ -349,7 +343,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Do preparations for getting outputted data as a downloadable file
 	 * rather than written to the current page
 	 */
-	function prepareCreatingDownloadableFile() {
+	private function prepareCreatingDownloadableFile() {
 		global $wgOut;
 		// Disable MediaWikis theming
 		$wgOut->disable();
@@ -363,7 +357,7 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * Print out the HTML Form
 	 */
-	function printHTMLForm() {
+	private function printHTMLForm() {
 		global $wgOut;
 		$wgOut->addScript( $this->getHTMLFormScript() );
 		$wgOut->addHTML( $this->getHTMLForm( $this->requestdata->query ) );
@@ -375,38 +369,38 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param string $output
 	 * @return string $html
 	 */
-	function sparqlResultToHTML( $resultStructure ) {
-		$html = "";
-		$html = "<h3>Result:</h3><div style='font-size: 11px;'>" . $html . "</div>";
-		$html .= "<table class=\"wikitable sortable\">";
-		$result = $resultStructure['result'];
-		$variables = $result['variables'];
+	private function sparqlResultToHTML( $resultStructure ) {
+		$html = '<h3>Result:</h3><div style="font-size: 11px;">' . $html . '</div>';
+		$html .= '<table class="wikitable sortable">';
 
-		$html .= "<tr>";
-		foreach ( $variables as $variable ) {
-			$html .= "<th width='34%''>$variable</th>";
+		$result = $resultStructure['result'];
+		$vars = $result['variables'];
+
+		$html .= '<tr>';
+		foreach ( $vars as $var ) {
+			$html .= '<th width="34%">' . $var . '</th>';
 		}
-		$html .= "</tr>";
+		$html .= '</tr>';
 
 		$rows = $result['rows'];
 		foreach ( $rows as $row ) {
 			$html .= "<tr>";
-			foreach ( $variables as $variable ) {
-				$value = $row[$variable];
+			foreach ( $vars as $var ) {
+				$val = $row[$var];
 				//$valueType = $row[$variable . ' type'];
-				$html .= "<td style=\"font-size:9px!important;white-space:nowrap!important;\">" . $value . "</td>";
+				$html .= '<td style="font-size:9px!important;white-space:nowrap!important;">' . $val . '</td>';
 			}
-			$html .= "</tr>";
+			$html .= '</tr>';
 		}
 
-		$html .= "</table>";
+		$html .= '</table>';
 		return $html;
 	}
 
 	/**
 	 * After a query is parsed, import the parsed data to the wiki
 	 */
-	function importTriplesInQuery() {
+	private function importTriplesInQuery() {
 		if ( $this->checkAllowInsert() ) {
 			$triples = $this->requestdata->query_parsed['query']['construct_triples'];
 
@@ -419,7 +413,7 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * After a query is parsed, delete the parsed data from the wiki
 	 */
-	function deleteTriplesInQuery() {
+	private function deleteTriplesInQuery() {
 		$triples = $this->requestdata->query_parsed['query']['construct_triples'];
 		$rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
 		$rdfImporter->executeDelete();

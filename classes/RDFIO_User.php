@@ -8,9 +8,8 @@
 class RDFIOUser {
 	protected $mwUser;
 
-	function __construct() {
-		global $wgUser;
-		$this->mwUser = $wgUser;
+	function __construct( $user ) {
+		$this->mwUser = $user;
 	}
 
 	public function hasWriteAccess() {
