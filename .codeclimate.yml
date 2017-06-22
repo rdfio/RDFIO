@@ -1,3 +1,3 @@
-# Don't include vendored code in static code analysis
 exclude_paths:
-    - "**/vendor/"
+    - "**/vendor/"     # We don't take responsibility for vendored code as long as it works
+    - "RDFIO.i18n.php" # The i18n file contains mostly just strings, which looks like repeated code, but isn't
