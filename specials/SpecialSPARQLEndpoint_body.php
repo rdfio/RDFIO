@@ -4,7 +4,6 @@ class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlendpoint;
 	protected $storewrapper;
 	protected $user;
-	protected $options;
 
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
@@ -22,44 +21,44 @@ class SPARQLEndpoint extends SpecialPage {
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;
 
 		$this->setHeaders();
-		$this->options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
+		$options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
 
-		if ( $this->options->query == '' ) {
-			$this->printHTMLForm();
+		if ( $options->query == '' ) {
+			$this->printHTMLForm( $options );
 			return;
 		}
 
 		$this->ensureArc2StoreIsSetup();
 
-		if ( $this->options->queryByEquivUris ) {
-			$this->urisToEquivURIsInQuery();
+		if ( $options->queryByEquivUris ) {
+			$this->urisToEquivURIsInQuery( $options );
 		}
 
-		if ( in_array( $this->options->queryType, array('select', 'construct') ) ) {
-			$this->executeReadOnlyQuery( $this->options->queryType, $this->options->outputType );
+		if ( in_array( $options->queryType, array('select', 'construct') ) ) {
+			$this->executeReadOnlyQuery( $options );
 			return;
 		}
 
-		if ( $this->options->queryType == 'insert' ) {
+		if ( $options->queryType == 'insert' ) {
 			try {
-				$this->importTriplesInQuery();
+				$this->importTriplesInQuery( $options );
 			} catch ( MWException $e ) {
 				$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
 			}
-			$this->printHTMLForm();
+			$this->printHTMLForm( $options );
 			return;
 		}
 
-		if ( $this->options->queryType == 'delete' ) {
+		if ( $options->queryType == 'delete' ) {
 			if ( $this->allowDelete() ) {
-				$this->deleteTriplesInQuery();
+				$this->deleteTriplesInQuery( $options );
 			}
-			$this->printHTMLForm();
+			$this->printHTMLForm( $options );
 			return;
 		}
 
 		$this->errorMsg('Invalid query type (Valid ones are SELECT, CONSTRUCT, INSERT and DELETE), or combination of query type and output format, try another combination!');
-		$this->printHTMLForm();
+		$this->printHTMLForm( $options );
 		return;
 	}
 
@@ -67,7 +66,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Execute method for SPARQL queries that only queries and returns results, but
 	 * does not modify, add or delete triples.
 	 */
-	private function executeReadOnlyQuery( $queryType, $outputType ) {
+	private function executeReadOnlyQuery( $options ) {
 		$wikiOut = $this->getOutput();
 
 		$outputSer = $this->passSparqlToARC2AndGetSerializedOutput();
@@ -78,49 +77,49 @@ class SPARQLEndpoint extends SpecialPage {
 		}
 
 		$outputArr = unserialize( $outputSer );
-		if ( $this->options->outputEquivUris ) {
+		if ( $options->outputEquivUris ) {
 			$outputArr = $this->toEquivURIsInSparqlResults( $outputArr );
 		}
 
-		if ( $queryType == 'select' ) {
-			if ( $outputType == 'htmltab' ) {
+		if ( $options->queryType == 'select' ) {
+			if ( $options->outputType == 'htmltab' ) {
 				$resultHtml = $this->sparqlResultToHTML( $outputArr );
-				$this->printHTMLForm();
+				$this->printHTMLForm( $options );
 				$wikiOut->addHTML( $resultHtml );
 				return;
 			}
 
-			if ( $outputType == 'xml' ) {
-				$this->prepareCreatingDownloadableFile();
+			if ( $options->outputType == 'xml' ) {
+				$this->prepareCreatingDownloadableFile( $options );
 				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
 				echo $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputArr );
 				return;
 			}
 
 			$this->errorMsg( 'Invalid Output type for SELECT query' );
-			$this->printHTMLForm();
+			$this->printHTMLForm( $options );
 			return;
 		}
 
-		if ( $queryType == 'construct' ) {
-			if ( $outputType == 'rdfxml' ) {
+		if ( $options->queryType == 'construct' ) {
+			if ( $options->outputType == 'rdfxml' ) {
 				// Here the results should be RDF/XML triples,
 				// not just plain XML SPARQL result set
 				$tripleindex = $outputArr['result'];
 				$triples = $this->arc2->toTriples( $tripleindex );
 
-				if ( $this->options->outputEquivUris ) {
+				if ( $options->outputEquivUris ) {
 					$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
 				}
 
-				$this->prepareCreatingDownloadableFile();
+				$this->prepareCreatingDownloadableFile( $options );
 				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
 				echo $this->triplesToRDFXML( $triples );
 				return;
 
 			}
 			$this->errorMsg( 'Invalid Output type for CONSTRUCT query' );
-			$this->printHTMLForm();
+			$this->printHTMLForm( $options );
 			return;
 		}
 	}
@@ -202,8 +201,8 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
-	private function urisToEquivURIsInQuery() {
-		$queryInfo = $this->options->queryInfos;
+	private function urisToEquivURIsInQuery( $options ) {
+		$queryInfo = $options->queryInfos;
 		$triple = $queryInfo['query']['pattern']['patterns'][0]['patterns'][0];
 
 		if ( $triple['s_type'] === 'uri' ) {
@@ -311,7 +310,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Do preparations for getting outputted data as a downloadable file
 	 * rather than written to the current page
 	 */
-	private function prepareCreatingDownloadableFile() {
+	private function prepareCreatingDownloadableFile( $options ) {
 		$wOut = $this->getOutput();
 		// Disable MediaWikis theming
 		$wOut->disable();
@@ -319,16 +318,16 @@ class SPARQLEndpoint extends SpecialPage {
 		wfResetOutputBuffers();
 		// Send headers telling that this is a special content type
 		// and potentially is to be downloaded as a file
-		$this->setHeadersForOutputType( $this->options->outputType );
+		$this->setHeadersForOutputType( $options->outputType );
 	}
 
 	/**
 	 * Print out the HTML Form
 	 */
-	private function printHTMLForm() {
+	private function printHTMLForm( $options ) {
 		$wOut = $this->getOutput();
 		$wOut->addScript( $this->getHTMLFormScript() );
-		$wOut->addHTML( $this->getHTMLForm( $this->options->query ) );
+		$wOut->addHTML( $this->getHTMLForm( $options->query ) );
 	}
 
 	/**
@@ -338,6 +337,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @return string $html
 	 */
 	private function sparqlResultToHTML( $resultStructure ) {
+		$html = '';
 		$html = '<h3>Result:</h3><div style="font-size: 11px;">' . $html . '</div>';
 		$html .= '<table class="wikitable sortable">';
 
@@ -368,9 +368,9 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * After a query is parsed, import the parsed data to the wiki
 	 */
-	private function importTriplesInQuery() {
+	private function importTriplesInQuery( $options ) {
 		if ( $this->allowInsert() ) {
-			$triples = $this->options->queryInfos['query']['construct_triples'];
+			$triples = $options->queryInfos['query']['construct_triples'];
 
 			$rdfImporter = new RDFIORDFImporter();
 			$rdfImporter->importTriples( $triples );
@@ -381,8 +381,8 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * After a query is parsed, delete the parsed data from the wiki
 	 */
-	private function deleteTriplesInQuery() {
-		$triples = $this->options->queryInfos['query']['construct_triples'];
+	private function deleteTriplesInQuery( $options ) {
+		$triples = $options->queryInfos['query']['construct_triples'];
 		$rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
 		$rdfImporter->executeDelete();
 	}
@@ -403,7 +403,12 @@ class SPARQLEndpoint extends SpecialPage {
 				$type = $row[$typeKey];
 				$uri = $row[$var];
 				if ( $type === 'uri' ) {
-					$equivURIs = $this->storewrapper->getEquivURIsForURI( $uri );
+					try {
+						$equivURIs = $this->storewrapper->getEquivURIsForURI( $uri );
+					} catch ( RDFIOARC2StoreWrapperException $e ) {
+						$this->errorMsg( $e );
+						return;
+					}
 					if ( !RDFIOUtils::arrayEmpty( $equivURIs ) ) {
 						$equivURI = $equivURIs[0];
 						// Replace URI with the 'Equivalent URI'
