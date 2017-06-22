@@ -12,30 +12,15 @@ class RDFIOSMWPageWriter {
 	 */
 	public function import( $wikiPages ) {
 
-		// ---------------------------------------------------------------------------------------------
-		// Overview of intended process
-		// ---------------------------------------------------------------------------------------------
-		//  1. Loop over wiki pages
-		//      2. Get the old wiki text for current page
-		//      3. Find all existing fact statements in page (to be updated)
-		//      4. Find all existing template statements in page (to be updated)
-		//      5. Find all templates that might be used (in current page, and via all its categories)
-		//      6. Build an index: Property -> Template(s) -> Parameter name(s)
-		//      7. Loop over each fact and:
-		//          8. Update all existing fact statements on page
-		//          9. Update in all existing templates, based on index
-		//         10. Add to any relevant templates as new template calls
-		//         11. If neither of 8-10 was done, add as new fact statements
-		//         12. Update any URI-type objects with an Equivalent URI fact.
-		//     13. Add category tags (if template with category has not been added yet).
-		//     14. Write updated article
-		// ---------------------------------------------------------------------------------------------
-
 		// ----------------------------------------------------------------------
 		//  1. Loop over wiki pages
 		// ----------------------------------------------------------------------
 		foreach ( $wikiPages as $wikiTitle => $wikiPage ) {
 			/* @var $wikiPage RDFIOWikiPage */
+
+			if ( $wikiTitle == '' ) {
+				throw new MWException( 'Could not import page: Title is empty!' );
+			}
 
 			// ----------------------------------------------------------------------
 			//  3. Find all existing fact statements in page (to be updated)
@@ -337,6 +322,7 @@ class RDFIOSMWPageWriter {
 	private function getTextForPage( $title, $wikiNamespace = NS_MAIN ) {
 		$wikiText = '';
 		$titleObj = Title::newFromText( $title, $wikiNamespace );
+
 		$pageObj = WikiPage::factory( $titleObj );
 		$content = $pageObj->getContent();
 		if ( $content !== null ) {

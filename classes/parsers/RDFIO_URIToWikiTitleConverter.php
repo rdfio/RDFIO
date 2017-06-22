@@ -42,7 +42,8 @@ class RDFIOURIToTitleConverter {
 			'getExistingTitleForURI',
 			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
 			'shortenURINamespaceToAliasInSourceRDF',
-			'extractLocalPartFromURI'
+			'extractLocalPartFromURI',
+			'useValueAsIs'
 		);
 
 		$wikiPageTitle = '';
@@ -147,6 +148,13 @@ class RDFIOURIToTitleConverter {
 		} else {
 			return null;
 		}	
+	}
+
+	/**
+	 * Strategy 5: Just use the value as is, as if it was a literal value
+	 */
+	function useValueAsIs( $uriToConvert ) {
+		return $uriToConvert;
 	}
 
 	/////// HELPER METHODS ///////
