@@ -24,58 +24,78 @@ class SPARQLEndpoint extends SpecialPage {
 		$this->setHeaders();
 		$this->options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
 
-		if ( $this->options->query != '' ) {
-			$this->ensureArc2StoreIsSetup();
-
-			if ( $this->options->queryByEquivUris ) {
-				$this->urisToEquivURIsInQuery();
-			}
-
-			if ( !isset( $this->options->queryType ) || $this->options->queryType == '' ) {
-				$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
-			} else {
-				switch ( $this->options->queryType ) {
-					case 'insert':
-						try {
-							$this->importTriplesInQuery();
-						} catch ( MWException $e ) {
-							$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
-						}
-
-						$this->printHTMLForm();
-						break;
-					case 'delete':
-						if ( $this->allowDelete() ) {
-							$this->deleteTriplesInQuery();
-						}
-						$this->printHTMLForm();
-						break;
-					default:
-						switch ( $this->options->outputType ) {
-							case 'htmltab':
-								$this->printHTMLForm();
-								$this->executeNonEditSparqlQuery();
-								break;
-							case 'rdfxml':
-								if ( $this->options->queryType != 'construct' ) {
-									$this->errorMsg( 'RDF/XML requires a CONSTRUCT statement' );
-									$this->printHTMLForm();
-								} else {
-									$this->prepareCreatingDownloadableFile();
-									$this->executeNonEditSparqlQuery();
-								}
-								break;
-							case 'xml':
-								$this->prepareCreatingDownloadableFile();
-								$this->executeNonEditSparqlQuery();
-								break;
-						}
-				}
-			}
-
-		} else { // SPARQL query is empty
+		if ( $this->options->query == '' ) {
 			$this->printHTMLForm();
+			return;
 		}
+
+		$this->ensureArc2StoreIsSetup();
+
+		if ( $this->options->queryByEquivUris ) {
+			$this->urisToEquivURIsInQuery();
+		}
+
+		if ( !isset( $this->options->queryType ) || $this->options->queryType == '' ) {
+			$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
+			return;
+		}
+
+		if ( $this->options->queryType == 'select' ) {
+			if ( $this->options->outputType == 'htmltab' ) {
+				$this->printHTMLForm();
+				$this->executeNonEditSparqlQuery();
+				return;
+			}
+
+			if ( $this->options->outputType == 'xml' ) {
+				$this->prepareCreatingDownloadableFile();
+				$this->executeNonEditSparqlQuery();
+				return;
+			}
+
+			if ( $this->options->outputType == 'rdfxml' ) {
+				$this->errorMsg('RDF/XML output does not work with SELECT queries, but requires a CONSTRUCT query.');
+				$this->printHTMLForm();
+				return;
+			}
+
+			$this->errorMsg('Invalid output format for SELECT statement! Try another output format.');
+			$this->printHTMLForm();
+			return;
+		}
+
+		if ( $this->options->queryType == 'construct' ) {
+			if ( $this->options->outputType != 'rdfxml' ) {
+				$this->errorMsg( 'Invalid output format: CONSTRUCT requires RDF/XML as output' );
+				$this->printHTMLForm();
+				return;
+			}
+			$this->prepareCreatingDownloadableFile();
+			$this->executeNonEditSparqlQuery();
+			return;
+		}
+
+		if ( $this->options->queryType == 'insert' ) {
+			try {
+				$this->importTriplesInQuery();
+			} catch ( MWException $e ) {
+				$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
+			}
+			$this->printHTMLForm();
+			return;
+		}
+
+		if ( $this->options->queryType == 'delete' ) {
+			if ( $this->allowDelete() ) {
+				$this->deleteTriplesInQuery();
+			}
+			$this->printHTMLForm();
+			return;
+		}
+
+		$this->errorMsg('Invalid query type (Valid ones are SELECT, CONSTRUCT, INSERT and DELETE), or combination of query type and output format, try another combination!');
+		$this->printHTMLForm();
+		return;
 	}
 
 	/**
@@ -167,9 +187,12 @@ class SPARQLEndpoint extends SpecialPage {
 		$seOptions->outputType = $request->getText( 'output' );
 
 		if ( $seOptions->query != '' ) {
-			list( $queryInfos, $queryType ) = $this->extractQueryInfosAndType( $seOptions->query );
-			$seOptions->queryInfos = $queryInfos;
-			$seOptions->queryType = $queryType;
+			$result = $this->extractQueryInfosAndType( $seOptions->query );
+			if ( $result == null ) {
+				return null;
+			}
+			$seOptions->queryInfos = $result[0];
+			$seOptions->queryType = $result[1];
 		}
 
 		return $seOptions;
