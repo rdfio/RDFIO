@@ -6,7 +6,6 @@ class SPARQLEndpoint extends SpecialPage {
 
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
-		# Set up some stuff
 		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 	}
@@ -26,7 +25,9 @@ class SPARQLEndpoint extends SpecialPage {
 			return;
 		}
 
-		$this->ensureArc2StoreIsSetup();
+		if ( !$this->sparqlendpoint->isSetUp() ) {
+			$this->sparqlendpoint->setUp();
+		}
 
 		if ( $options->queryByEquivUris ) {
 			$this->urisToEquivURIsInQuery( $options );
@@ -194,15 +195,6 @@ class SPARQLEndpoint extends SpecialPage {
 			$queryType = $queryInfos['query']['type'];
 		}
 		return array( $queryInfos, $queryType );
-	}
-
-	/**
-	 * Set up the ARC2 database tables, if not already done
-	 */
-	private function ensureArc2StoreIsSetup() {
-		if ( !$this->sparqlendpoint->isSetUp() ) {
-			$this->sparqlendpoint->setUp();
-		}
 	}
 
 	/**
@@ -422,7 +414,7 @@ class SPARQLEndpoint extends SpecialPage {
 				}
 			}
 		}
-		# Put back the modified rows into the results structure
+		// Put back the modified rows into the results structure
 		$sparqlResult['result']['rows'] = $rows;
 		return $sparqlResult;
 	}
@@ -459,15 +451,15 @@ class SPARQLEndpoint extends SpecialPage {
 				'construct',
 				'ask',
 				'describe',
-				# 'load',
-				# 'insert', 				 // This is not needed, since it is done via SMWWriter instead
-				# 'delete', 				 // This is not needed, since it is done via SMWWriter instead
-				# 'dump'    				 // dump is a special command for streaming SPOG export
+				// 'load',
+				// 'insert', 				  // This is not needed, since it is done via SMWWriter instead
+				// 'delete', 				  // This is not needed, since it is done via SMWWriter instead
+				// 'dump'    				  // dump is a special command for streaming SPOG export
 			);
-		$epconfig['endpoint_timeout'] = 60;  // not implemented in ARC2 preview
-		# 'endpoint_read_key' => '',         // optional
-		# 'endpoint_write_key' => 'somekey', // optional
-		# 'endpoint_max_limit' => 250,       // optional
+		$epconfig['endpoint_timeout'] = 60;   // not implemented in ARC2 preview
+		// 'endpoint_read_key' => '',         // optional
+		// 'endpoint_write_key' => 'somekey', // optional
+		// 'endpoint_max_limit' => 250,       // optional
 		return $epconfig;
 	}
 
@@ -551,15 +543,15 @@ class SPARQLEndpoint extends SpecialPage {
 			$query = $defaultQuery;
 		}
 
-		$checkedEquivUriQ = $wRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
-		$checkedEquivUriO = $wRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
-		$checkedFilterVocab = $wRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
-		$selectedOutputHTML = $wRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
-		$selectedOutputRDFXML = $wRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
+		$chkEquivUriQ = $wRequest->getBool( 'equivuri_q', false ) == 1 ? ' checked="true" ' : '';
+		$chkEquivUriO = $wRequest->getBool( 'equivuri_o', false ) == 1 ? ' checked="true" ' : '';
+		$chkFilterVocab = $wRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
+		$selOutputHTML = $wRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
+		$selOutputRDFXML = $wRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
 
 		// Make the HTML format selected by default
-		if ( $selectedOutputRDFXML == '' ) {
-			$selectedOutputHTML = ' selected="selected" ';
+		if ( $selOutputRDFXML == '' ) {
+			$selOutputHTML = ' selected="selected" ';
 		}
 
 		$htmlForm = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:SPARQLEndpoint"
@@ -573,7 +565,7 @@ class SPARQLEndpoint extends SpecialPage {
 				<table border="0" style="background: transparent; font-size: 11px;">
 					<tr>
 						<td style="text-align: right">Query by Equivalent URIs:</td>
-						<td><input type="checkbox" name="equivuri_q" value="1" ' . $checkedEquivUriQ . '/></td>
+						<td><input type="checkbox" name="equivuri_q" value="1" ' . $chkEquivUriQ . '/></td>
 					</tr>
 				</table>
 	        </td>
@@ -581,7 +573,7 @@ class SPARQLEndpoint extends SpecialPage {
 				<table border="0" style="font-size: 11px; background: transparent;">
 					<tr>
 						<td style="text-align: right">Output Equivalent URIs:</td>
-						<td><input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $checkedEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/></td>
+						<td><input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $chkEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/></td>
 					</tr>
 				</table>
 	        </td>
@@ -595,9 +587,9 @@ class SPARQLEndpoint extends SpecialPage {
 				  <!-- <option value="plain" >Plain</option> -->
 				  <!-- <option value="php_ser" >Serialized PHP</option> -->
 				  <!-- <option value="turtle" >Turtle</option> -->
-				  <option value="htmltab" ' . $selectedOutputHTML . '>HTML</option>
+				  <option value="htmltab" ' . $selOutputHTML . '>HTML</option>
 				  <option value="xml" >XML Resultset</option>
-				  <option value="rdfxml" ' . $selectedOutputRDFXML . '>RDF/XML</option>
+				  <option value="rdfxml" ' . $selOutputRDFXML . '>RDF/XML</option>
 				  <!-- <option value="infos" >Query Structure</option> -->
 				  <!-- <option value="tsv" >TSV</option> -->
 				</select>
@@ -614,7 +606,7 @@ class SPARQLEndpoint extends SpecialPage {
 				<div id="byontology" style="display: none; background: #ffd; border: 1px solid #ee7;">
 					<table border="0" style="font-size: 11px; background: transparent;" >
 						<tr><td style="text-align: right;">Filter by vocabulary:</td>
-							<td><input type="checkbox" name="filtervocab" value="1" ' . $checkedFilterVocab . '/></td>
+							<td><input type="checkbox" name="filtervocab" value="1" ' . $chkFilterVocab . '/></td>
 							<td style="text-align: right">Vocabulary URL:</td>
 							<td><input type="text" name="filtervocaburl" size="48" /></td>
 						</tr>
