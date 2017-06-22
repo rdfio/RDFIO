@@ -187,7 +187,7 @@ class RDFIOARC2StoreWrapper {
 	 * Get SMWs internal URI for corresponding to the "Equivalent URI" property
 	 * @return string
 	 */
-	public static function getEquivURIURI() {
+	public function getEquivURIURI() {
 		// return $this->getURIResolverURI() . 'Property-3AEquivalent_URI';
 		return self::EQUIV_URI;
 	}
@@ -197,7 +197,7 @@ class RDFIOARC2StoreWrapper {
 	 * for property pages
 	 * @return string
 	 */
-	public static function getEquivPropertyURIURI() {
+	public function getEquivPropertyURIURI() {
 		return self::EQUIV_PROPERTY_URI;
 	}
 

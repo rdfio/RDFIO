@@ -207,20 +207,20 @@ class SPARQLEndpoint extends SpecialPage {
 		if ( $triple['s_type'] === 'uri' ) {
 			$triple['s'] = 's';
 			$triple['s_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['s'], 's' );
+			$newTriple = $this->createEquivURITriple( $triple['s'], 's', $this->storewrapper->getEquivURIURI() );
 			// TODO: Shouldn't the new triple replace the old one, not just be added?
 			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
 		if ( $triple['p_type'] === 'uri' ) {
 			$triple['p'] = 'p';
 			$triple['p_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['p'], 'p', true );
+			$newTriple = $this->createEquivURITriple( $triple['p'], 'p', $this->storewrapper->getEquivPropertyURIURI() );
 			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
 		if ( $triple['o_type'] === 'uri' ) {
 			$triple['o'] = 'o';
 			$triple['o_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['o'], 'o' );
+			$newTriple = $this->createEquivURITriple( $triple['o'], 'o', $this->storewrapper->getEquivURIURI() );
 			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
 
@@ -242,16 +242,11 @@ class SPARQLEndpoint extends SpecialPage {
 	 * @param boolean $isproperty
 	 * @return array $equivuritriple
 	 */
-	private function createEquivURITriple( $uri, $varname, $isproperty = false ) {
-		if ( $isproperty ) {
-			$equivuriuri = $this->storewrapper->getEquivPropertyURIURI();
-		} else {
-			$equivuriuri = $this->storewrapper->getEquivURIURI();
-		}
+	private function createEquivURITriple( $uri, $varname, $equivUriUri ) {
 		$equivuritriple = array(
 			'type' => 'triple',
 			's' => $varname,
-			'p' => $equivuriuri,
+			'p' => $equivUriUri,
 			'o' => $uri,
 			's_type' => 'var',
 			'p_type' => 'uri',
