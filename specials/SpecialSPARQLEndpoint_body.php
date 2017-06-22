@@ -202,39 +202,36 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
 	private function urisToEquivURIsInQuery() {
-		$queryStructure = $this->requestdata->queryInfos;
-		$triple = $queryStructure['query']['pattern']['patterns'][0]['patterns'][0];
-		$subj = $triple['s'];
-		$prop = $triple['p'];
-		$obj = $triple['o'];
-		$subjType = $triple['s_type'];
-		$propType = $triple['p_type'];
-		$objType = $triple['o_type'];
-		if ( $subjType === 'uri' ) {
+		$queryInfo = $this->requestdata->queryInfos;
+		$triple = $queryInfo['query']['pattern']['patterns'][0]['patterns'][0];
+
+		if ( $triple['s_type'] === 'uri' ) {
 			$triple['s'] = 's';
 			$triple['s_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $subj, 's' );
+			$newTriple = $this->createEquivURITriple( $triple['s'], 's' );
 			// TODO: Shouldn't the new triple replace the old one, not just be added?
-			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
-		if ( $propType === 'uri' ) {
+		if ( $triple['p_type'] === 'uri' ) {
 			$triple['p'] = 'p';
 			$triple['p_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $prop, 'p', true );
-			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$newTriple = $this->createEquivURITriple( $triple['p'], 'p', true );
+			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
-		if ( $objType === 'uri' ) {
+		if ( $triple['o_type'] === 'uri' ) {
 			$triple['o'] = 'o';
 			$triple['o_type'] = 'var';
-			$newtriple = $this->createEquivURITriple( $obj, 'o' );
-			$queryStructure['query']['pattern']['patterns'][0]['patterns'][] = $newtriple;
+			$newTriple = $this->createEquivURITriple( $triple['o'], 'o' );
+			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
 		}
+
 		// restore the first triple into its original location
-		$queryStructure['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
+		$queryInfo['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
 		require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
 		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
-		$query = $sparqlserializer->toString( $queryStructure );
+		$query = $sparqlserializer->toString( $queryInfo );
 
+		// Modify the $_POST variable directly, so that ARC2 can pick up the modified query
 		$_POST['query'] = $query;
 	}
 
