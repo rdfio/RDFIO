@@ -35,43 +35,8 @@ class SPARQLEndpoint extends SpecialPage {
 			$this->urisToEquivURIsInQuery();
 		}
 
-		if ( !isset( $this->options->queryType ) || $this->options->queryType == '' ) {
-			$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
-			return;
-		}
-
-		if ( $this->options->queryType == 'select' ) {
-			if ( $this->options->outputType == 'htmltab' ) {
-				$this->printHTMLForm();
-				$this->executeNonEditSparqlQuery();
-				return;
-			}
-
-			if ( $this->options->outputType == 'xml' ) {
-				$this->prepareCreatingDownloadableFile();
-				$this->executeNonEditSparqlQuery();
-				return;
-			}
-
-			if ( $this->options->outputType == 'rdfxml' ) {
-				$this->errorMsg('RDF/XML output does not work with SELECT queries, but requires a CONSTRUCT query.');
-				$this->printHTMLForm();
-				return;
-			}
-
-			$this->errorMsg('Invalid output format for SELECT statement! Try another output format.');
-			$this->printHTMLForm();
-			return;
-		}
-
-		if ( $this->options->queryType == 'construct' ) {
-			if ( $this->options->outputType != 'rdfxml' ) {
-				$this->errorMsg( 'Invalid output format: CONSTRUCT requires RDF/XML as output' );
-				$this->printHTMLForm();
-				return;
-			}
-			$this->prepareCreatingDownloadableFile();
-			$this->executeNonEditSparqlQuery();
+		if ( in_array( $this->options->queryType, array('select', 'construct') ) ) {
+			$this->executeReadOnlyQuery( $this->options->queryType, $this->options->outputType );
 			return;
 		}
 
@@ -102,50 +67,65 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Execute method for SPARQL queries that only queries and returns results, but
 	 * does not modify, add or delete triples.
 	 */
-	private function executeNonEditSparqlQuery() {
+	private function executeReadOnlyQuery( $queryType, $outputType ) {
 		$wikiOut = $this->getOutput();
 
-		$output = $this->passSparqlToARC2AndGetOutput();
-		$outputtype = $this->outputTypeFromQueryType();
+		$outputSer = $this->passSparqlToARC2AndGetSerializedOutput();
 
-		if ( $outputtype == 'rdfxml' ) {
-			# Here the results should be RDF/XML triples,
-			# not just plain XML SPARQL result set
-			$outputStructure = unserialize( $output );
-			$tripleindex = $outputStructure['result'];
-			$triples = $this->arc2->toTriples( $tripleindex );
+		if ( $outputSer == '' ) {
+			$this->errorMsg( 'No results from SPARQL query!' );
+			return;
+		}
 
-			if ( $this->options->outputEquivUris ) {
+		$outputArr = unserialize( $outputSer );
+		if ( $this->options->outputEquivUris ) {
+			$outputArr = $this->toEquivURIsInSparqlResults( $outputArr );
+		}
 
-				// FIXME: Why is this uncommented???
-				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
+		if ( $queryType == 'select' ) {
+			if ( $outputType == 'htmltab' ) {
+				$resultHtml = $this->sparqlResultToHTML( $outputArr );
+				$this->printHTMLForm();
+				$wikiOut->addHTML( $resultHtml );
+				return;
 			}
-			$output = $this->triplesToRDFXML( $triples );
-			// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
-			echo $output;
-		} else {
-			// TODO: Add some kind of check that the output is really an object
-			if ( count( $output ) > 0 ) {
-				$outputStructure = unserialize( $output );
+
+			if ( $outputType == 'xml' ) {
+				$this->prepareCreatingDownloadableFile();
+				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+				echo $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputArr );
+				return;
+			}
+
+			$this->errorMsg( 'Invalid Output type for SELECT query' );
+			$this->printHTMLForm();
+			return;
+		}
+
+		if ( $queryType == 'construct' ) {
+			if ( $outputType == 'rdfxml' ) {
+				// Here the results should be RDF/XML triples,
+				// not just plain XML SPARQL result set
+				$tripleindex = $outputArr['result'];
+				$triples = $this->arc2->toTriples( $tripleindex );
+
 				if ( $this->options->outputEquivUris ) {
-					$outputStructure = $this->toEquivURIsInSparqlResults( $outputStructure );
+					$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
 				}
 
-				if ( $outputtype == 'htmltab' ) {
-					$output = $this->sparqlResultToHTML( $outputStructure );
-					$wikiOut->addHTML( $output );
-				} else {
-					// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
-					$output = $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputStructure );
-					echo $output;
-				}
-			} else {
-				$this->errorMsg( 'No results from SPARQL query!' );
+				$this->prepareCreatingDownloadableFile();
+				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+				echo $this->triplesToRDFXML( $triples );
+				return;
+
 			}
+			$this->errorMsg( 'Invalid Output type for CONSTRUCT query' );
+			$this->printHTMLForm();
+			return;
 		}
 	}
 
-	private function passSparqlToARC2AndGetOutput() {
+	private function passSparqlToARC2AndGetSerializedOutput() {
 		// Make sure ARC2 returns a PHP serialization, so that we
 		// can do stuff with it programmatically
 		$_POST['output'] = 'php_ser';
@@ -157,17 +137,6 @@ class SPARQLEndpoint extends SpecialPage {
 		}
 
 		return $this->sparqlendpoint->getResult();
-	}
-
-	/**
-	 * Determine the output type of the SPARQL query
-	 */
-	private function outputTypeFromQueryType() {
-		$outputtype = $this->options->outputType;
-		if ( $outputtype == '' && $this->options->querytype == 'construct' ) {
-			return 'rdfxml';
-		}
-		return $outputtype;
 	}
 
 	/**
