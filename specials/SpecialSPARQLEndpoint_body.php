@@ -192,36 +192,52 @@ class SPARQLEndpoint extends SpecialPage {
 	 */
 	private function urisToEquivURIsInQuery( $options ) {
 		$queryInfo = $options->queryInfos;
-		$triple = $queryInfo['query']['pattern']['patterns'][0]['patterns'][0];
+		$patterns = $queryInfo['query']['pattern']['patterns'][0]['patterns'];
 
-		if ( $triple['s_type'] === 'uri' ) {
-			$triple['s'] = 's';
-			$triple['s_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['s'], 's', $this->storewrapper->getEquivURIURI() );
-			// TODO: Shouldn't the new triple replace the old one, not just be added?
-			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
-		}
-		if ( $triple['p_type'] === 'uri' ) {
-			$triple['p'] = 'p';
-			$triple['p_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['p'], 'p', $this->storewrapper->getEquivPropertyURIURI() );
-			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
-		}
-		if ( $triple['o_type'] === 'uri' ) {
-			$triple['o'] = 'o';
-			$triple['o_type'] = 'var';
-			$newTriple = $this->createEquivURITriple( $triple['o'], 'o', $this->storewrapper->getEquivURIURI() );
-			$queryInfo['query']['pattern']['patterns'][0]['patterns'][] = $newTriple;
-		}
-
-		// restore the first triple into its original location
-		$queryInfo['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
+		$patterns = $this->extendQueryPatternsWithEquivUriLinks( $patterns );
+		$queryInfo['query']['pattern']['patterns'][0]['patterns'] = $patterns;
 
 		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( array(), $this );
 		$query = $sparqlserializer->toString( $queryInfo );
 
 		// Modify the $_POST variable directly, so that ARC2 can pick up the modified query
 		$_POST['query'] = $query;
+	}
+
+	/**
+	 * Extend the patterns in the SPARQL query so that every time an URI is found,
+	 * that place in the pattern is replaced by a temporary SPARQL variable
+	 * which is then linked with an Equivalent URI property to its equivalent URI.
+	 * @param $patterns
+	 * @return array
+	 */
+	private function extendQueryPatternsWithEquivUriLinks( $patterns ) {
+		$i = 0;
+		foreach ( $patterns as $pattern ) {
+			$equivUriUris = array(
+				's' => $this->storewrapper->getEquivURIURI(),
+				'p' => $this->storewrapper->getEquivPropertyURIURI(),
+				'o' => $this->storewrapper->getEquivURIURI()
+			);
+			foreach ( array( 's', 'p', 'o' ) as $varType ) {
+				if ( $pattern[$varType . '_type'] === 'uri' ) {
+					$tempVar = 'rdfio_var_' . $i . '_' . $varType;
+
+					// Add new Equivalent URI triple
+					$newTriple = $this->createEquivURITriple( $pattern[$varType], $tempVar, $equivUriUris[$varType] );
+					$patterns[] = $newTriple;
+
+					// Replace the existing URI with a variable, so the Equiv URI link works
+					$pattern[$varType] = $tempVar;
+					$pattern[$varType . '_type'] = 'var';
+				}
+
+				// Put back the pattern in patterns array, since foreach does not edit in place
+				$patterns[$i] = $pattern;
+			}
+			$i++;
+		}
+		return $patterns;
 	}
 
 	/**
