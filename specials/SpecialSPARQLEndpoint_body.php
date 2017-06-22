@@ -42,11 +42,7 @@ class SPARQLEndpoint extends SpecialPage {
 					$this->printHTMLForm( $options );
 					return;
 				}
-				try {
-					$this->importTriplesInQuery( $options );
-				} catch ( MWException $e ) {
-					$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
-				}
+				$this->importTriplesInQuery( $options );
 				$this->printHTMLForm( $options );
 				return;
 			case 'delete':
@@ -357,11 +353,14 @@ class SPARQLEndpoint extends SpecialPage {
 	 * After a query is parsed, import the parsed data to the wiki
 	 */
 	private function importTriplesInQuery( $options ) {
-		$triples = $options->queryInfos['query']['construct_triples'];
-
 		$rdfImporter = new RDFIORDFImporter();
-		$rdfImporter->importTriples( $triples );
-		$this->successMsg( "Successfully imported the triples!" );
+		$triples = $options->queryInfos['query']['construct_triples'];
+		try {
+			$rdfImporter->importTriples( $triples );
+			$this->successMsg( 'Successfully imported the triples!' );
+		} catch ( MWException $e ) {
+			$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
+		}
 	}
 
 	/**
