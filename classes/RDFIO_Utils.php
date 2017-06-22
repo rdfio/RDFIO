@@ -63,10 +63,6 @@ class RDFIOUtils {
 		return strpos( $needle, $haystack ) != false;
 	}
 
-	static function arrayEmpty( $array ) {
-		return ( count( $array ) < 1 );
-	}
-
 	static function currentUserHasWriteAccess() {
 		global $wgUser;
 		$userRights = $wgUser->getRights();

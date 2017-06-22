@@ -18,7 +18,7 @@ class SPARQLEndpoint extends SpecialPage {
 
 		$this->setHeaders();
 		$options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
-		$user = new RDFIOUser( $this->getUser() );
+		$user = $this->getUser();
 
 		if ( $options->query == '' ) {
 			$this->printHTMLForm( $options );
@@ -280,12 +280,12 @@ class SPARQLEndpoint extends SpecialPage {
 			return false;
 		}
 
-		if ( !$user->editTokenIsCorrect( $this->getRequest()->getText( 'token' ) ) ) {
+		if ( !$user->matchEditToken( $this->getRequest()->getText( 'token' ) ) ) {
 			$this->errorMsg( 'Cross-site request forgery detected! ');
 			return false;
 		}
 
-		if ( $user->hasWriteAccess() ) {
+		if ( in_array( 'edit', $user->getRights() ) && in_array( 'createpage', $user->getRights() )) {
 			return true;
 		}
 
@@ -298,7 +298,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * of exceptions to that, by showing error messages etc
 	 */
 	private function allowDelete( $user ) {
-		if ( $this->allowInsert( $user ) && $user->hasDeleteAccess() ) {
+		if ( in_array( 'edit', $user->getRights() ) && in_array( 'delete', $user->getRights() ) ) {
 			return true;
 		}
 		$this->errorMsg( 'The current user lacks delete access');
@@ -406,7 +406,7 @@ class SPARQLEndpoint extends SpecialPage {
 						$this->errorMsg( $e );
 						return;
 					}
-					if ( !RDFIOUtils::arrayEmpty( $equivURIs ) ) {
+					if ( !empty( $equivURIs ) ) {
 						$equivURI = $equivURIs[0];
 						// Replace URI with the 'Equivalent URI'
 						$rows[$rowid][$var] = $equivURI;
