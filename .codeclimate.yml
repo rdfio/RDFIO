@@ -1,0 +1,3 @@
+# Don't include vendored code in static code analysis
+exclude_paths:
+    - "**/vendor/"

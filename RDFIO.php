@@ -54,7 +54,7 @@ $GLOBALS['wgAutoloadClasses']['RDFIOARC2ToWikiConverter'] = $rdfioDir . '/classe
 $GLOBALS['wgAutoloadClasses']['RDFIOURIToWikiTitleConverter'] = $rdfioDir . '/classes/parsers/RDFIO_URIToWikiTitleConverter.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_WikiPage.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOException'] = $rdfioDir . '/classes/RDFIO_Exception.php';
-$GLOBALS['wgAutoloadClasses']['ARC2_SPARQLSerializerPlugin'] = $rdfioDir . '/bundle/ARC2_SPARQLSerializerPlugin.php';
+$GLOBALS['wgAutoloadClasses']['ARC2_SPARQLSerializerPlugin'] = $rdfioDir . '/vendor/ARC2_SPARQLSerializerPlugin.php';
 
 /**************************
  *  ARC2 RDF Store config *
