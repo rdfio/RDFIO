@@ -2,43 +2,39 @@
 
 class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlendpoint;
-	protected $sparqlparser;
 	protected $storewrapper;
 	protected $user;
-	protected $requestdata;
+	protected $options;
 
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
 		# Set up some stuff
-		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig() );
-		$this->sparqlparser = new ARC2_SPARQLPlusParser();
+		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 		$this->user = new RDFIOUser( $this->getUser() );
-		$this->arc2 = new ARC2_Class;
+		$this->arc2 = new ARC2_Class( array(), $this );
 	}
 
 	/**
 	 * Execute the SPARQL Endpoint Special page
 	 */
 	public function execute( $par ) {
-		$out = $this->getOutput();
+		global $rogQueryByEquivURIs, $rogOutputEquivUris;
 
 		$this->setHeaders();
-		$this->requestdata = $this->handleRequestData();
+		$this->options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
 
-		if ( $this->requestdata->query != '' ) {
-
+		if ( $this->options->query != '' ) {
 			$this->ensureArc2StoreIsSetup();
 
-			if ( $this->requestdata->queryByEquivUris ) {
+			if ( $this->options->queryByEquivUris ) {
 				$this->urisToEquivURIsInQuery();
 			}
 
-
-			if ( !isset( $this->requestdata->queryType ) || $this->requestdata->queryType == '' ) {
+			if ( !isset( $this->options->queryType ) || $this->options->queryType == '' ) {
 				$this->errorMsg( 'Could not determine query type!<br>It seems you have a problem with your query!' );
 			} else {
-				switch ( $this->requestdata->queryType ) {
+				switch ( $this->options->queryType ) {
 					case 'insert':
 						try {
 							$this->importTriplesInQuery();
@@ -55,13 +51,13 @@ class SPARQLEndpoint extends SpecialPage {
 						$this->printHTMLForm();
 						break;
 					default:
-						switch ( $this->requestdata->outputType ) {
+						switch ( $this->options->outputType ) {
 							case 'htmltab':
 								$this->printHTMLForm();
 								$this->executeNonEditSparqlQuery();
 								break;
 							case 'rdfxml':
-								if ( $this->requestdata->queryType != 'construct' ) {
+								if ( $this->options->queryType != 'construct' ) {
 									$this->errorMsg( 'RDF/XML requires a CONSTRUCT statement' );
 									$this->printHTMLForm();
 								} else {
@@ -99,7 +95,7 @@ class SPARQLEndpoint extends SpecialPage {
 			$tripleindex = $outputStructure['result'];
 			$triples = $this->arc2->toTriples( $tripleindex );
 
-			if ( $this->requestdata->outputEquivUris ) {
+			if ( $this->options->outputEquivUris ) {
 
 				// FIXME: Why is this uncommented???
 				$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
@@ -111,7 +107,7 @@ class SPARQLEndpoint extends SpecialPage {
 			// TODO: Add some kind of check that the output is really an object
 			if ( count( $output ) > 0 ) {
 				$outputStructure = unserialize( $output );
-				if ( $this->requestdata->outputEquivUris ) {
+				if ( $this->options->outputEquivUris ) {
 					$outputStructure = $this->toEquivURIsInSparqlResults( $outputStructure );
 				}
 
@@ -147,46 +143,59 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Determine the output type of the SPARQL query
 	 */
 	private function outputTypeFromQueryType() {
-		$outputtype = $this->requestdata->outputType;
-		if ( $outputtype == '' && $this->requestdata->querytype == 'construct' ) {
+		$outputtype = $this->options->outputType;
+		if ( $outputtype == '' && $this->options->querytype == 'construct' ) {
 			return 'rdfxml';
 		}
 		return $outputtype;
 	}
 
 	/**
-	 * Take care of data from the request object and store
-	 * in class variables
+	 * Figure out options for the query, based on arguments in the request,and global settings variables
+	 * all taken as parameters.
+	 * @param request string
+	 * @param $queryByEquivURIs bool
+	 * @param $outputEquivURIs bool
+	 * @return $seOptions RDFIOSPARQLEndpointOptions
 	 */
-	private function handleRequestData() {
-		global $rogQueryByEquivURI,
-			   $rogOutputEquivURIs;
-		$request = $this->getRequest();
+	private function buildOptionsObj( $request, $queryByEquivURIs, $outputEquivURIs ) {
+		$seOptions = new RDFIOSPARQLEndpointOptions();
 
-		$reqData = new RDFIOSPARQLRequestData();
-		$reqData->query = $request->getText( 'query' );
-		$reqData->queryByEquivUris = isset( $rogQueryByEquivURI ) ? $rogQueryByEquivURI : $request->getBool( 'equivuri_q' );
-		$reqData->outputEquivUris = isset( $rogOutputEquivURIs ) ? $rogOutputEquivURIs : $request->getBool( 'equivuri_o' );
-		$reqData->outputType = $request->getText( 'output' );
+		$seOptions->query = $request->getText( 'query' );
+		$seOptions->queryByEquivUris = isset( $queryByEquivURIs ) ? $queryByEquivURIs : $request->getBool( 'equivuri_q' );
+		$seOptions->outputEquivUris = isset( $outputEquivURIs ) ? $outputEquivURIs : $request->getBool( 'equivuri_o' );
+		$seOptions->outputType = $request->getText( 'output' );
 
-		if ( $reqData->query !== '' ) {
-			// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
-			$querySparqlPlus = str_replace( "INSERT DATA", "INSERT INTO <>", $reqData->query );
-
-			// Parse the SPARQL query string into array structure
-			$this->sparqlparser->parse( $querySparqlPlus, '' );
-
-			if ( $this->sparqlparser->getErrors() ) {
-				$this->errorMsgArr( $this->sparqlparser->getErrors() );
-				return null;
-			}
-
-			$reqData->queryInfos = $this->sparqlparser->getQueryInfos();
-			if ( array_key_exists( 'query', $reqData->queryInfos ) ) {
-				$reqData->queryType = $reqData->queryInfos['query']['type'];
-			}
+		if ( $seOptions->query != '' ) {
+			list( $queryInfos, $queryType ) = $this->extractQueryInfosAndType( $seOptions->query );
+			$seOptions->queryInfos = $queryInfos;
+			$seOptions->queryType = $queryType;
 		}
-		return $reqData;
+
+		return $seOptions;
+	}
+
+	/**
+	 * Extract query information via ARC2's SPARQL (plus) parser
+	 * @param $query string
+	 * @return array
+	 */
+	private function extractQueryInfosAndType( $query ) {
+		// Convert Sparql Update syntax to ARC2's SPARQL+ syntax:
+		$querySparqlPlus = str_replace( 'INSERT DATA', 'INSERT INTO <>', $query );
+
+		$parser = new ARC2_SPARQLPlusParser( array(), $this );
+		$parser->parse( $querySparqlPlus, '' );
+		if ( $parser->getErrors() ) {
+			$this->errorMsgArr( $parser->getErrors() );
+			return null;
+		}
+
+		$queryInfos = $parser->getQueryInfos();
+		if ( array_key_exists( 'query', $queryInfos ) ) {
+			$queryType = $queryInfos['query']['type'];
+		}
+		return array( $queryInfos, $queryType );
 	}
 
 	/**
@@ -202,7 +211,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Modify the SPARQL pattern to allow querying using the original URI
 	 */
 	private function urisToEquivURIsInQuery() {
-		$queryInfo = $this->requestdata->queryInfos;
+		$queryInfo = $this->options->queryInfos;
 		$triple = $queryInfo['query']['pattern']['patterns'][0]['patterns'][0];
 
 		if ( $triple['s_type'] === 'uri' ) {
@@ -266,6 +275,7 @@ class SPARQLEndpoint extends SpecialPage {
 	/**
 	 * Check if writing to wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
+	 * @return bool
 	 */
 	private function allowInsert() {
 		global $rogAllowRemoteEdit;
@@ -317,7 +327,7 @@ class SPARQLEndpoint extends SpecialPage {
 		wfResetOutputBuffers();
 		// Send headers telling that this is a special content type
 		// and potentially is to be downloaded as a file
-		$this->setHeadersForOutputType( $this->requestdata->outputType );
+		$this->setHeadersForOutputType( $this->options->outputType );
 	}
 
 	/**
@@ -326,7 +336,7 @@ class SPARQLEndpoint extends SpecialPage {
 	private function printHTMLForm() {
 		$wOut = $this->getOutput();
 		$wOut->addScript( $this->getHTMLFormScript() );
-		$wOut->addHTML( $this->getHTMLForm( $this->requestdata->query ) );
+		$wOut->addHTML( $this->getHTMLForm( $this->options->query ) );
 	}
 
 	/**
@@ -368,7 +378,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 */
 	private function importTriplesInQuery() {
 		if ( $this->allowInsert() ) {
-			$triples = $this->requestdata->queryInfos['query']['construct_triples'];
+			$triples = $this->options->queryInfos['query']['construct_triples'];
 
 			$rdfImporter = new RDFIORDFImporter();
 			$rdfImporter->importTriples( $triples );
@@ -380,7 +390,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * After a query is parsed, delete the parsed data from the wiki
 	 */
 	private function deleteTriplesInQuery() {
-		$triples = $this->requestdata->queryInfos['query']['construct_triples'];
+		$triples = $this->options->queryInfos['query']['construct_triples'];
 		$rdfImporter = new RDFIOSMWBatchWriter( $triples, 'triples_array' );
 		$rdfImporter->executeDelete();
 	}
@@ -490,6 +500,36 @@ class SPARQLEndpoint extends SpecialPage {
 			$fileName = urlencode('sparql_output_' . wfTimestampNow() . $extensionMap[$outputType] );
 			$wRequest->response()->header( 'Content-disposition: attachment;filename=' . $fileName );
 		}
+	}
+
+	/**
+	 * Add a formatted success message to the HTML output, with $message as message.
+	 * @param $message
+	 */
+	private function successMsg( $message ) {
+		$wOut = $this->getOutput();
+		$wOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
+	}
+
+	/**
+	 * Add a formatted error message to the HTML output, with $message as message.
+	 * @param $message
+	 */
+	private function errorMsg( $message ) {
+		$wOut = $this->getOutput();
+		$wOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
+	}
+
+	/**
+	 * Add a formatted error message to the HTML output, taking an array of messages
+	 * @param $messages array
+	 */
+	private function errorMsgArr( $messages ) {
+		$allMsgs = '';
+		foreach ( $messages as $msg ) {
+			$allMsgs .= '<p>' . $msg . '</p>';
+		}
+		$this->errorMsg( $allMsgs );
 	}
 
 	/**
@@ -615,40 +655,9 @@ class SPARQLEndpoint extends SpecialPage {
 	 	</script>";
 		return $htmlFormScript;
 	}
-
-	/**
-	 * Add a formatted success message to the HTML output, with $message as message.
-	 * @param $message
-	 */
-	private function successMsg( $message ) {
-		$wOut = $this->getOutput();
-		$wOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
-	}
-
-	/**
-	 * Add a formatted error message to the HTML output, with $message as message.
-	 * @param $message
-	 */
-	private function errorMsg( $message ) {
-		$wOut = $this->getOutput();
-		$wOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
-	}
-
-	/**
-	 * Add a formatted error message to the HTML output, taking an array of messages
-	 * @param $messages array
-	 */
-	private function errorMsgArr( $messages ) {
-		$allMsgs = '';
-		foreach ( $messages as $msg ) {
-			$allMsgs .= '<p>' . $msg . '</p>';
-		}
-		$this->errorMsg( $allMsgs );
-	}
-
 }
 
-class RDFIOSPARQLRequestData {
+class RDFIOSPARQLEndpointOptions {
 	public $query;
 	public $queryType;
 	public $queryByEquivUris = false;
