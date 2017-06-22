@@ -7,6 +7,9 @@ class SPARQLEndpoint extends SpecialPage {
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
 		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
+		if ( !$this->sparqlendpoint->isSetUp() ) {
+			$this->sparqlendpoint->setUp();
+		}
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 	}
 
@@ -24,48 +27,39 @@ class SPARQLEndpoint extends SpecialPage {
 			$this->printHTMLForm( $options );
 			return;
 		}
-
-		if ( !$this->sparqlendpoint->isSetUp() ) {
-			$this->sparqlendpoint->setUp();
-		}
-
 		if ( $options->queryByEquivUris ) {
 			$this->urisToEquivURIsInQuery( $options );
 		}
 
-		if ( in_array( $options->queryType, array('select', 'construct') ) ) {
-			$this->executeReadOnlyQuery( $options );
-			return;
-		}
-
-		if ( $options->queryType == 'insert' ) {
-			if ( !$this->allowInsert( $user ) ) {
-				$this->errorMsg( 'Current user is not allowed to do INSERT statements.' );
+		switch ( $options->queryType ) {
+			case 'select':
+			case 'construct':
+				$this->executeReadOnlyQuery( $options );
+				return;
+			case 'insert':
+				if ( !$this->allowInsert( $user ) ) {
+					$this->errorMsg( 'Current user is not allowed to do INSERT statements.' );
+					$this->printHTMLForm( $options );
+					return;
+				}
+				try {
+					$this->importTriplesInQuery( $options );
+				} catch ( MWException $e ) {
+					$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
+				}
 				$this->printHTMLForm( $options );
 				return;
-			}
-
-			try {
-				$this->importTriplesInQuery( $options );
-			} catch ( MWException $e ) {
-				$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
-			}
-
-			$this->printHTMLForm( $options );
-			return;
-		}
-
-		if ( $options->queryType == 'delete' ) {
-			if ( $this->allowDelete() ) {
+			case 'delete':
+				if ( !$this->allowDelete( $user ) ) {
+					$this->errorMsg( 'Current user is not allowed to do DELETE statements.' );
+					$this->printHTMLForm( $options );
+				}
 				$this->deleteTriplesInQuery( $options );
-			}
-			$this->printHTMLForm( $options );
-			return;
+				$this->printHTMLForm( $options );
+				return;
 		}
-
 		$this->errorMsg('Invalid query type (Valid ones are SELECT, CONSTRUCT, INSERT and DELETE), or combination of query type and output format, try another combination!');
 		$this->printHTMLForm( $options );
-		return;
 	}
 
 	/**
