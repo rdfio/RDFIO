@@ -11,7 +11,6 @@ class SPARQLEndpoint extends SpecialPage {
 		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
 		$this->user = new RDFIOUser( $this->getUser() );
-		$this->arc2 = new ARC2_Class( array(), $this );
 	}
 
 	/**
@@ -106,7 +105,9 @@ class SPARQLEndpoint extends SpecialPage {
 				// Here the results should be RDF/XML triples,
 				// not just plain XML SPARQL result set
 				$tripleindex = $outputArr['result'];
-				$triples = $this->arc2->toTriples( $tripleindex );
+
+				$arc2 = new ARC2_Class( array(), $this );
+				$triples = $arc2->toTriples( $tripleindex );
 
 				if ( $options->outputEquivUris ) {
 					$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
