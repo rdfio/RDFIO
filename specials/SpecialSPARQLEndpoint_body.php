@@ -216,8 +216,8 @@ class SPARQLEndpoint extends SpecialPage {
 
 		// restore the first triple into its original location
 		$queryInfo['query']['pattern']['patterns'][0]['patterns'][0] = $triple;
-		require_once( __DIR__ . "/../bundle/ARC2_SPARQLSerializerPlugin.php" );
-		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( "<>", $this );
+
+		$sparqlserializer = new ARC2_SPARQLSerializerPlugin( array(), $this );
 		$query = $sparqlserializer->toString( $queryInfo );
 
 		// Modify the $_POST variable directly, so that ARC2 can pick up the modified query
