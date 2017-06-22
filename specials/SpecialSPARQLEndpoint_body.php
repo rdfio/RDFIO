@@ -3,14 +3,12 @@
 class SPARQLEndpoint extends SpecialPage {
 	protected $sparqlendpoint;
 	protected $storewrapper;
-	protected $user;
 
 	public function __construct() {
 		parent::__construct( 'SPARQLEndpoint' );
 		# Set up some stuff
 		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
 		$this->storewrapper = new RDFIOARC2StoreWrapper();
-		$this->user = new RDFIOUser( $this->getUser() );
 	}
 
 	/**
@@ -21,6 +19,7 @@ class SPARQLEndpoint extends SpecialPage {
 
 		$this->setHeaders();
 		$options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
+		$user = new RDFIOUser( $this->getUser() );
 
 		if ( $options->query == '' ) {
 			$this->printHTMLForm( $options );
@@ -39,11 +38,18 @@ class SPARQLEndpoint extends SpecialPage {
 		}
 
 		if ( $options->queryType == 'insert' ) {
+			if ( !$this->allowInsert( $user ) ) {
+				$this->errorMsg( 'Current user is not allowed to do INSERT statements.' );
+				$this->printHTMLForm( $options );
+				return;
+			}
+
 			try {
 				$this->importTriplesInQuery( $options );
 			} catch ( MWException $e ) {
 				$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
 			}
+
 			$this->printHTMLForm( $options );
 			return;
 		}
@@ -269,7 +275,7 @@ class SPARQLEndpoint extends SpecialPage {
 	 * of exceptions to that, by showing error messages etc
 	 * @return bool
 	 */
-	private function allowInsert() {
+	private function allowInsert( $user ) {
 		global $rogAllowRemoteEdit;
 
 		if ( !isset( $rogAllowRemoteEdit ) ) {
@@ -282,12 +288,12 @@ class SPARQLEndpoint extends SpecialPage {
 			return false;
 		}
 
-		if ( !$this->user->editTokenIsCorrect( $this->getRequest()->getText( 'token' ) ) ) {
+		if ( !$user->editTokenIsCorrect( $this->getRequest()->getText( 'token' ) ) ) {
 			$this->errorMsg( 'Cross-site request forgery detected! ');
 			return false;
 		}
 
-		if ( $this->user->hasWriteAccess() ) {
+		if ( $user->hasWriteAccess() ) {
 			return true;
 		}
 
@@ -299,8 +305,8 @@ class SPARQLEndpoint extends SpecialPage {
 	 * Check if deleting from wiki is allowed, and handle a number
 	 * of exceptions to that, by showing error messages etc
 	 */
-	private function allowDelete() {
-		if ( $this->allowInsert() && $this->user->hasDeleteAccess() ) {
+	private function allowDelete( $user ) {
+		if ( $this->allowInsert( $user ) && $user->hasDeleteAccess() ) {
 			return true;
 		}
 		$this->errorMsg( 'The current user lacks delete access');
@@ -370,13 +376,11 @@ class SPARQLEndpoint extends SpecialPage {
 	 * After a query is parsed, import the parsed data to the wiki
 	 */
 	private function importTriplesInQuery( $options ) {
-		if ( $this->allowInsert() ) {
-			$triples = $options->queryInfos['query']['construct_triples'];
+		$triples = $options->queryInfos['query']['construct_triples'];
 
-			$rdfImporter = new RDFIORDFImporter();
-			$rdfImporter->importTriples( $triples );
-			$this->successMsg( "Successfully imported the triples!" );
-		}
+		$rdfImporter = new RDFIORDFImporter();
+		$rdfImporter->importTriples( $triples );
+		$this->successMsg( "Successfully imported the triples!" );
 	}
 
 	/**
