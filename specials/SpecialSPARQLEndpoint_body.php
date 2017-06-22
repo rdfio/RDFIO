@@ -222,10 +222,20 @@ class SPARQLEndpoint extends SpecialPage {
 			foreach ( array( 's', 'p', 'o' ) as $varType ) {
 				if ( $pattern[$varType . '_type'] === 'uri' ) {
 					$tempVar = 'rdfio_var_' . $i . '_' . $varType;
+					$uri = $pattern[$varType];
 
-					// Add new Equivalent URI triple
-					$newTriple = $this->createEquivURITriple( $pattern[$varType], $tempVar, $equivUriUris[$varType] );
-					$patterns[] = $newTriple;
+					// Add new Equivalent URI triple, linking to the
+					$patterns[] = array(
+						'type' => 'triple',
+						's' => $tempVar,
+						'p' => $equivUriUris[$varType],
+						'o' => $uri,
+						's_type' => 'var',
+						'p_type' => 'uri',
+						'o_type' => 'uri',
+						'o_datatype' => '',
+						'o_lang' => ''
+					);
 
 					// Replace the existing URI with a variable, so the Equiv URI link works
 					$pattern[$varType] = $tempVar;
@@ -238,29 +248,6 @@ class SPARQLEndpoint extends SpecialPage {
 			$i++;
 		}
 		return $patterns;
-	}
-
-	/**
-	 * Create an RDF triple that links a wiki page to its corresponding
-	 * equivalent URI
-	 * @param string $uri
-	 * @param string $varname
-	 * @param boolean $isproperty
-	 * @return array $equivuritriple
-	 */
-	private function createEquivURITriple( $uri, $varname, $equivUriUri ) {
-		$equivuritriple = array(
-			'type' => 'triple',
-			's' => $varname,
-			'p' => $equivUriUri,
-			'o' => $uri,
-			's_type' => 'var',
-			'p_type' => 'uri',
-			'o_type' => 'uri',
-			'o_datatype' => '',
-			'o_lang' => ''
-		);
-		return $equivuritriple;
 	}
 
 	/**
