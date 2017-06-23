@@ -213,7 +213,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	 * @return array
 	 */
 	private function extendQueryPatternsWithEquivUriLinks( $patterns ) {
-		$i = 0;
+		$patternIdx = 0;
 		foreach ( $patterns as $pattern ) {
 			$equivUriUris = array(
 				's' => $this->storewrapper->getEquivURIURI(),
@@ -222,7 +222,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 			);
 			foreach ( array( 's', 'p', 'o' ) as $varType ) {
 				if ( $pattern[$varType . '_type'] === 'uri' ) {
-					$tempVar = 'rdfio_var_' . $i . '_' . $varType;
+					$tempVar = 'rdfio_var_' . $patternIdx . '_' . $varType;
 					$uri = $pattern[$varType];
 
 					// Add new Equivalent URI triple, linking to the
@@ -244,8 +244,8 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				}
 			}
 			// Put back the pattern in patterns array, since foreach does not edit in place
-			$patterns[$i] = $pattern;
-			$i++;
+			$patterns[$patternIdx] = $pattern;
+			$patternIdx++;
 		}
 		return $patterns;
 	}
