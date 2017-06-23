@@ -9,8 +9,6 @@ engines:
     enabled: true
   phpmd:
     enabled: true
-  phpcodesniffer:
-    enabled: true
 ratings:
   paths:
   - "**.php"
