@@ -9,6 +9,7 @@ class SPARQLImport extends SpecialPage {
 
 	/**
 	 * The main code goes here
+	 * @param string $par (unused)
 	 */
 	function execute( $par ) {
 		global $wgOut, $wgRequest;

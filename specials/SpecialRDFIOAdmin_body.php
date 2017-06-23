@@ -22,6 +22,9 @@ class RDFIOAdmin extends SpecialPage {
 		parent::__construct( 'RDFIOAdmin', 'editinterface' );
 	}
 
+	/**
+	 * @param string $par (unused)
+	 */
 	function execute( $par ) {
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
 			   $wgServer, $wgScriptPath, $wgUser;

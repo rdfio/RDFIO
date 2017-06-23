@@ -15,6 +15,7 @@ class SPARQLEndpoint extends SpecialPage {
 
 	/**
 	 * Execute the SPARQL Endpoint Special page
+	 * @param string $par (unused)
 	 */
 	public function execute( $par ) {
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;
