@@ -11,11 +11,11 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 	}
 
 	public function testExtractQueryInfosAndTypeSelect() {
-		$ep = new SPARQLEndpoint();
+		$endpoint = new SPARQLEndpoint();
 
 		$query = 'SELECT * WHERE { ?s ?p ?o }';
 
-		list( $qInfo, $qType ) = $this->invokeMethod( $ep, 'extractQueryInfosAndType', array( $query ) );
+		list( $qInfo, $qType ) = $this->invokeMethod( $endpoint, 'extractQueryInfosAndType', array( $query ) );
 
 		$this->assertEquals( $qType, 'select' );
 
@@ -27,11 +27,11 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 	}
 
 	public function testExtractQueryInfosAndTypeConstruct() {
-		$ep = new SPARQLEndpoint();
+		$endpoint = new SPARQLEndpoint();
 
 		$query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }';
 
-		list( $qInfo, $qType ) = $this->invokeMethod( $ep, 'extractQueryInfosAndType', array( $query ) );
+		list( $qInfo, $qType ) = $this->invokeMethod( $endpoint, 'extractQueryInfosAndType', array( $query ) );
 
 		$this->assertEquals( $qType, 'construct' );
 
@@ -43,7 +43,7 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 	}
 
 	public function testExtendQueryPatternsWithEquivUriLinks() {
-		$ep = new SPARQLEndpoint();
+		$endpoint = new SPARQLEndpoint();
 
 		// Pattern corresponding to SPARQL query:
 		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
@@ -85,13 +85,13 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 				'o_lang' => ''
 			)
 		);
-		$patAfter = $this->invokeMethod( $ep, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
+		$patAfter = $this->invokeMethod( $endpoint, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
 
 		$this->assertArrayEquals( $patExpected, $patAfter );
 	}
 
 	public function testExtendQueryPatternsWithEquivUriLinksProperty() {
-		$ep = new SPARQLEndpoint();
+		$endpoint = new SPARQLEndpoint();
 
 		// Pattern corresponding to SPARQL query:
 		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
@@ -144,13 +144,13 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 				'o_lang' => ''
 			)
 		);
-		$patAfter = $this->invokeMethod( $ep, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
+		$patAfter = $this->invokeMethod( $endpoint, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
 
 		$this->assertArrayEquals( $patExpected, $patAfter );
 	}
 
 	public function testExtendQueryPatternsWithEquivUriLinksMuliplePatterns() {
-		$ep = new SPARQLEndpoint();
+		$endpoint = new SPARQLEndpoint();
 
 		// Pattern corresponding to SPARQL query:
 		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
@@ -225,7 +225,7 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 				'o_lang' => ''
 			)
 		);
-		$patAfter = $this->invokeMethod( $ep, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
+		$patAfter = $this->invokeMethod( $endpoint, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
 
 		$this->assertArrayEquals( $patExpected, $patAfter );
 	}
