@@ -242,10 +242,9 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 					$pattern[$varType] = $tempVar;
 					$pattern[$varType . '_type'] = 'var';
 				}
-
-				// Put back the pattern in patterns array, since foreach does not edit in place
-				$patterns[$i] = $pattern;
 			}
+			// Put back the pattern in patterns array, since foreach does not edit in place
+			$patterns[$i] = $pattern;
 			$i++;
 		}
 		return $patterns;

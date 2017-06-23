@@ -90,6 +90,146 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 		$this->assertArrayEquals( $patExpected, $patAfter );
 	}
 
+	public function testExtendQueryPatternsWithEquivUriLinksProperty() {
+		$ep = new SPARQLEndpoint();
+
+		// Pattern corresponding to SPARQL query:
+		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
+		$patBefore = array(
+			array(
+				'type' => 'triple',
+				's'  => 'http://example.org/onto/Sweden',
+				'p'  => 'http://example.org/onto/HasCapital',
+				'o'  => 'o',
+				's_type' => 'uri',
+				'p_type' => 'uri',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => ''
+			)
+		);
+
+		$patExpected = array(
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_0_s',
+				'p'  => 'rdfio_var_0_p',
+				'o'  => 'o',
+				's_type' => 'var',
+				'p_type' => 'var',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_0_s',
+				'p'  => 'http://www.w3.org/2002/07/owl#sameAs',
+				'o'  => 'http://example.org/onto/Sweden',
+				's_type' => 'var',
+				'p_type' => 'uri',
+				'o_type' => 'uri',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_0_p',
+				'p'  => 'http://www.w3.org/2002/07/owl#equivalentProperty',
+				'o'  => 'http://example.org/onto/HasCapital',
+				's_type' => 'var',
+				'p_type' => 'uri',
+				'o_type' => 'uri',
+				'o_datatype' => '',
+				'o_lang' => ''
+			)
+		);
+		$patAfter = $this->invokeMethod( $ep, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
+
+		$this->assertArrayEquals( $patExpected, $patAfter );
+	}
+
+	public function testExtendQueryPatternsWithEquivUriLinksMuliplePatterns() {
+		$ep = new SPARQLEndpoint();
+
+		// Pattern corresponding to SPARQL query:
+		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
+		$patBefore = array(
+			array(
+				'type' => 'triple',
+				's'  => 'http://example.org/onto/Sweden',
+				'p'  => 'p',
+				'o'  => 'o',
+				's_type' => 'uri',
+				'p_type' => 'var',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'x',
+				'p'  => 'y',
+				'o'  => 'http://example.org/onto/Finland',
+				's_type' => 'var',
+				'p_type' => 'var',
+				'o_type' => 'uri',
+				'o_datatype' => '',
+				'o_lang' => ''
+			)
+		);
+
+		$patExpected = array(
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_0_s',
+				'p'  => 'p',
+				'o'  => 'o',
+				's_type' => 'var',
+				'p_type' => 'var',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_0_s',
+				'p'  => 'http://www.w3.org/2002/07/owl#sameAs',
+				'o'  => 'http://example.org/onto/Sweden',
+				's_type' => 'var',
+				'p_type' => 'uri',
+				'o_type' => 'uri',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'x',
+				'p'  => 'y',
+				'o'  => 'rdfio_var_1_o',
+				's_type' => 'var',
+				'p_type' => 'var',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => ''
+			),
+			array(
+				'type' => 'triple',
+				's'  => 'rdfio_var_1_o',
+				'p'  => 'http://www.w3.org/2002/07/owl#sameAs',
+				'o'  => 'http://example.org/onto/Finland',
+				's_type' => 'var',
+				'p_type' => 'uri',
+				'o_type' => 'uri',
+				'o_datatype' => '',
+				'o_lang' => ''
+			)
+		);
+		$patAfter = $this->invokeMethod( $ep, 'extendQueryPatternsWithEquivUriLinks', array( $patBefore ));
+
+		$this->assertArrayEquals( $patExpected, $patAfter );
+	}
+
 	/**
 	 * Call protected/private method of a class.
 	 *
