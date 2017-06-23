@@ -45,8 +45,8 @@ class RDFIOSPARQLEndpointTest extends MediaWikiTestCase {
 	public function testExtendQueryPatternsWithEquivUriLinks() {
 		$ep = new SPARQLEndpoint();
 
-		$query = 'SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }';
-
+		// Pattern corresponding to SPARQL query:
+		// SELECT * WHERE { <http://ex.org/Sweden> ?p ?o }
 		$patBefore = array(
 			array(
 				 'type' => 'triple',
