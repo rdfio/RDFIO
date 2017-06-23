@@ -1,6 +1,6 @@
 <?php
 
-class RDFImport extends SpecialPage {
+class RDFImport extends RDFIOSpecialPage {
 
 	function __construct() {
 		parent::__construct( 'RDFImport' );
@@ -26,7 +26,7 @@ class RDFImport extends SpecialPage {
 				if ( $triples ) {
 					$rdfImporter = new RDFIORDFImporter();
 					$wgOut->addHTML( $this->getHTMLForm( $requestData ) );
-					$wgOut->addHTML( RDFIOUtils::showInfoMessage('RDF Format info', 'The format used in the import was "' . $requestData->dataFormat . '".'));
+					$this->infoMsg( 'The format used in the import was "' . $requestData->dataFormat . '".');
 					$wgOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
@@ -43,7 +43,7 @@ class RDFImport extends SpecialPage {
 				$wgOut->addHTML( '</div>' );
 			}
 		} catch ( MWException $e ) {
-			RDFIOUtils::showErrorMessage( 'Error!', $e->getMessage() );
+			$this->errorMsg( $e->getMessage() );
 		}
 	}
 
@@ -97,7 +97,7 @@ class RDFImport extends SpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = RDFIOUtils::currentUserHasWriteAccess();
+		$requestData->hasWriteAccess = $this->allowInsert( $this->getUser() );
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;

@@ -106,6 +106,15 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * Add a formatted success message to the HTML output, with $message as message.
 	 * @param $message
 	 */
+	protected function infoMsg( $message ) {
+		$wOut = $this->getOutput();
+		$wOut->addHTML( RDFIOUtils::fmtInfoMsgHTML( "Information", $message ) );
+	}
+
+	/**
+	 * Add a formatted success message to the HTML output, with $message as message.
+	 * @param $message
+	 */
 	protected function successMsg( $message ) {
 		$wOut = $this->getOutput();
 		$wOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
