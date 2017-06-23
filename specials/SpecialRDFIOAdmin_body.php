@@ -26,6 +26,7 @@ class RDFIOAdmin extends SpecialPage {
 	 * @param string $par (unused)
 	 */
 	function execute( $par ) {
+		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
 		global $wgRequest, $wgOut, $smwgARC2StoreConfig,
 			   $wgServer, $wgScriptPath, $wgUser;
 

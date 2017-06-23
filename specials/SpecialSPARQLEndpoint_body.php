@@ -18,6 +18,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	 * @param string $par (unused)
 	 */
 	public function execute( $par ) {
+		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;
 
 		$this->setHeaders();
