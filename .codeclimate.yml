@@ -1,3 +1,25 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - ruby
+      - javascript
+      - python
+      - php
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+ratings:
+  paths:
+  - "**.inc"
+  - "**.js"
+  - "**.jsx"
+  - "**.module"
+  - "**.php"
+  - "**.py"
+  - "**.rb"
 exclude_paths:
     - "**/vendor/"     # We don't take responsibility for vendored code as long as it works
     - "RDFIO.i18n.php" # The i18n file contains mostly just strings, which looks like repeated code, but isn't
