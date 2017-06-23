@@ -107,7 +107,7 @@ class SPARQLImport extends SpecialPage {
 		} else {
 			RDFIOUtils::fmtErrorMsgHTML( "Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?" );
 		}
-		return $output = array( 'externalSparqlUrl' => $externalSparqlUrl );
+		return array( 'externalSparqlUrl' => $externalSparqlUrl );
 	}
 
 
