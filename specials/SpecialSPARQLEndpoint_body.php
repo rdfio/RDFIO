@@ -397,39 +397,6 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	}
 
 	/**
-	 * Set headers appropriate to the filetype specified in $outputtype
-	 * @param string $outputType
-	 */
-	private function setHeadersForOutputType( $outputType ) {
-		$wRequest = $this->getRequest();
-
-		$contentTypeMap = array(
-			'xml'     => 'application/xml',
-			'rdfxml'  => 'application/xml',
-			'json'    => 'application/json',
-			'turtle'  => 'text/html',
-			'htmltab' => '', // Not applicable
-			'tsv'     => 'text/html'
-		);
-
-		$extensionMap = array(
-			'xml'     => '.xml',
-			'rdfxml'  => '_rdf.xml',
-			'json'    => '.json',
-			'turtle'  => '.ttl',
-			'htmltab' => '', // Not applicable
-			'tsv'     => '.tsv'
-		);
-
-		if ( $outputType != 'htmltab' ) { // For HTML table we are taking care of the output earlier
-			$wRequest->response()->header( 'Content-type: ' . $contentTypeMap[$outputType] . '; charset=utf-8' );
-
-			$fileName = urlencode('sparql_output_' . wfTimestampNow() . $extensionMap[$outputType] );
-			$wRequest->response()->header( 'Content-disposition: attachment;filename=' . $fileName );
-		}
-	}
-
-	/**
 	 * Get the HTML for the main SPARQL querying form. If $query is set, use it to prefill the main textarea
 	 * @param string $query
 	 * @return string $htmlForm
