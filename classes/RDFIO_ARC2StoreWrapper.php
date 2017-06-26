@@ -101,7 +101,7 @@ class RDFIOARC2StoreWrapper {
 		} else {
 			$equivUriUri = self::EQUIV_URI;
 		}
-		$query = "SELECT ?equivUri WHERE { <$uri> <$equivUriUri> ?equivUri }";
+		$query = 'SELECT ?equivUri WHERE { <' . $uri . '> <' . $equivUriUri . '> ?equivUri }';
 		$results = $store->query( $query );
 		if ( !$store->getErrors() ) {
 			$equivUris = $results['result']['rows'];
@@ -129,7 +129,7 @@ class RDFIOARC2StoreWrapper {
 		} else {
 			$equivUriUri = self::EQUIV_URI;
 		}
-		$query = "SELECT ?uri WHERE { ?uri <$equivUriUri> <$equivUri> }";
+		$query = 'SELECT ?uri WHERE { ?uri <' . $equivUriUri . '> <' . $equivUri . '> }';
 		$results = $store->query( $query );
 		if ( !$store->getErrors() ) {
 			$rows = $results['result']['rows'];
@@ -172,7 +172,7 @@ class RDFIOARC2StoreWrapper {
 	 */
 	public function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
 		global $smwgNamespace;
-		if ( substr( $smwgNamespace, 0, 4 ) === "http" ) {
+		if ( substr( $smwgNamespace, 0, 4 ) === 'http' ) {
 			$localWikiNamespace = $smwgNamespace;
 		} else {
 			if ( $this->uriResolverUrl === '' ) {
