@@ -103,18 +103,22 @@ class RDFIOTripleStoreWrapper {
 		} else {
 			$equivUriUri = self::EQUIV_URI;
 		}
+
 		$query = 'SELECT ?equivUri WHERE { <' . $uri . '> <' . $equivUriUri . '> ?equivUri }';
 		$results = $this->tripleStore->query( $query );
-		if ( !$this->tripleStore->getErrors() ) {
-			$equivUris = $results['result']['rows'];
-			foreach ( $equivUris as $equivUriId => $equivUri ) {
-				$equivUris[$equivUriId] = $equivUri['equivUri'];
-			}
-		} else {
+
+		if ( $this->tripleStore->getErrors() ) {
 			foreach ( $this->tripleStore->getErrors() as $error ) {
 				throw new RDFIOTripleStoreWrapperException( $error );
 			}
+			return;
 		}
+
+		$equivUris = $results['result']['rows'];
+		foreach ( $equivUris as $equivUriId => $equivUri ) {
+			$equivUris[$equivUriId] = $equivUri['equivUri'];
+		}
+
 		return $equivUris;
 	}
 
