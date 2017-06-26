@@ -19,6 +19,7 @@ class RDFIOARC2StoreWrapper {
 		$this->uriResolverUrl = '';
 		if ( !is_null( $tripleStore ) ) {
 			$this->tripleStore = $tripleStore;
+			return;
 		}
 		$this->tripleStore = ARC2::getStore( $smwgARC2StoreConfig );
 	}
