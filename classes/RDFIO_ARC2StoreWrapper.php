@@ -127,7 +127,7 @@ class RDFIOARC2StoreWrapper {
 	 * @param string $equivUri
 	 * @return string $uri
 	 */
-	public function getURIForEquivURI( $equivUri, $isProperty ) {
+	public function getURIForEquivURI( $equivUri, $isProperty = false ) {
 		$uri = '';
 		if ( $isProperty ) {
 			$equivUriUri = self::EQUIV_PROPERTY_URI;
