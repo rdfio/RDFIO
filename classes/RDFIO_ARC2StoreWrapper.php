@@ -172,23 +172,6 @@ class RDFIOARC2StoreWrapper {
 	/////// Utility methods ///////
 
 	/**
-	 * Get the base URI used by SMW to identify wiki articles
-	 * @return string $localWikiNamespace
-	 */
-	public function getLocalWikiNamespace() { // TODO: Search and replace getURIResolverURI
-		global $smwgNamespace;
-		if ( substr( $smwgNamespace, 0, 4 ) === 'http' ) {
-			$localWikiNamespace = $smwgNamespace;
-		} else {
-			if ( $this->uriResolverUrl === '' ) {
-				$this->uriResolverUrl = SpecialPage::getTitleFor( 'URIResolver' ) . '/';
-			}
-			$localWikiNamespace = $this->uriResolverUrl;
-		}
-		return $localWikiNamespace;
-	}
-
-	/**
 	 * Get SMWs internal URI for corresponding to the "Equivalent URI" property
 	 * @return string
 	 */
