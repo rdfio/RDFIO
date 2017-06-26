@@ -7,7 +7,7 @@
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
-class RDFIOTripleStoreWrapper {
+class RDFIOARC2StoreWrapper {
 	protected $tripleStore;
 	protected $uriResolverUrl;
 
@@ -109,7 +109,7 @@ class RDFIOTripleStoreWrapper {
 
 		if ( $this->tripleStore->getErrors() ) {
 			foreach ( $this->tripleStore->getErrors() as $error ) {
-				throw new RDFIOTripleStoreWrapperException( $error );
+				throw new RDFIOARC2StoreWrapperException( $error );
 			}
 			return;
 		}
@@ -144,7 +144,7 @@ class RDFIOTripleStoreWrapper {
 			}
 		} else {
 			foreach ( $this->tripleStore->getErrors() as $error ) {
-				throw new RDFIOTripleStoreWrapperException( $error );
+				throw new RDFIOARC2StoreWrapperException( $error );
 			}
 		}
 		return $uri;
@@ -209,5 +209,5 @@ class RDFIOTripleStoreWrapper {
 }
 
 
-class RDFIOTripleStoreWrapperException extends MWException {
+class RDFIOARC2StoreWrapperException extends MWException {
 }

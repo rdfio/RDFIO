@@ -20,7 +20,7 @@ class RDFIOURIToTitleConverter {
 	protected $arc2Store = null;
 
 	function __construct( $arc2Triples, $arc2ResourceIndex, $arc2NSPrefixes ) {
-		$this->arc2Store = new RDFIOTripleStoreWrapper();
+		$this->arc2Store = new RDFIOARC2StoreWrapper();
 
 		// Store paramters as class variables
 		$this->arc2Triples = $arc2Triples;
