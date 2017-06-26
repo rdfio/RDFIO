@@ -61,7 +61,6 @@ class BatchExportRDF extends Maintenance {
 			}
 
 			$rdf = $ser->getSerializedTriples( $triples );
-			print_r( $rdf );
 
 			if ( !$ser->getErrors() ) {
 				fputs( $outFile, $rdf );
