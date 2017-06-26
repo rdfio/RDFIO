@@ -10,7 +10,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		if ( !$this->sparqlendpoint->isSetUp() ) {
 			$this->sparqlendpoint->setUp();
 		}
-		$this->storewrapper = new RDFIOARC2StoreWrapper();
+		$this->storewrapper = new RDFIOTripleStoreWrapper();
 	}
 
 	/**
@@ -336,7 +336,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				if ( $type === 'uri' ) {
 					try {
 						$equivURIs = $this->storewrapper->getEquivURIsForURI( $uri );
-					} catch ( RDFIOARC2StoreWrapperException $e ) {
+					} catch ( RDFIOTripleStoreWrapperException $e ) {
 						$this->errorMsg( $e );
 						return;
 					}

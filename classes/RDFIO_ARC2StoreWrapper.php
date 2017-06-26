@@ -7,17 +7,20 @@
  * @author samuel.lampa@gmail.com
  * @package RDFIO
  */
-class RDFIOARC2StoreWrapper {
-	protected $arcStore;
+class RDFIOTripleStoreWrapper {
+	protected $tripleStore;
 	protected $uriResolverUrl;
 
 	const EQUIV_URI = 'http://www.w3.org/2002/07/owl#sameAs';
 	const EQUIV_PROPERTY_URI = 'http://www.w3.org/2002/07/owl#equivalentProperty';
 
-	function __construct() {
+	function __construct( $tripleStore = null ) {
 		global $smwgARC2StoreConfig;
-		$this->arcStore = ARC2::getStore( $smwgARC2StoreConfig );
 		$this->uriResolverUrl = '';
+		if ( !is_null( $tripleStore ) ) {
+			$this->tripleStore = $tripleStore;
+		}
+		$this->tripleStore = ARC2::getStore( $smwgARC2StoreConfig );
 	}
 
 	/**
@@ -95,51 +98,49 @@ class RDFIOARC2StoreWrapper {
 	 */
 	public function getEquivURIsForURI( $uri, $isProperty = false ) {
 		$equivUris = array();
-		$store = $this->arcStore;
 		if ( $isProperty ) {
 			$equivUriUri = self::EQUIV_PROPERTY_URI;
 		} else {
 			$equivUriUri = self::EQUIV_URI;
 		}
 		$query = 'SELECT ?equivUri WHERE { <' . $uri . '> <' . $equivUriUri . '> ?equivUri }';
-		$results = $store->query( $query );
-		if ( !$store->getErrors() ) {
+		$results = $this->tripleStore->query( $query );
+		if ( !$this->tripleStore->getErrors() ) {
 			$equivUris = $results['result']['rows'];
 			foreach ( $equivUris as $equivUriId => $equivUri ) {
 				$equivUris[$equivUriId] = $equivUri['equivUri'];
 			}
 		} else {
-			foreach ( $store->getErrors() as $error ) {
-				throw new RDFIOARC2StoreWrapperException( $error );
+			foreach ( $this->tripleStore->getErrors() as $error ) {
+				throw new RDFIOTripleStoreWrapperException( $error );
 			}
 		}
 		return $equivUris;
 	}
 
 	/**
-	 * Given an Equivalent URI (ast defined in a wiki article, return the URI used by SMW
+	 * Given an Equivalent URI (as defined in a wiki article, return the URI used by SMW
 	 * @param string $equivUri
 	 * @return string $uri
 	 */
 	public function getURIForEquivURI( $equivUri, $isProperty ) {
 		$uri = '';
-		$store = $this->arcStore;
 		if ( $isProperty ) {
 			$equivUriUri = self::EQUIV_PROPERTY_URI;
 		} else {
 			$equivUriUri = self::EQUIV_URI;
 		}
 		$query = 'SELECT ?uri WHERE { ?uri <' . $equivUriUri . '> <' . $equivUri . '> }';
-		$results = $store->query( $query );
-		if ( !$store->getErrors() ) {
+		$results = $this->tripleStore->query( $query );
+		if ( !$this->tripleStore->getErrors() ) {
 			$rows = $results['result']['rows'];
 			if ( count( $rows ) > 0 ) {
 				$row = $rows[0];
 				$uri = $row['uri'];
 			}
 		} else {
-			foreach ( $store->getErrors() as $error ) {
-				throw new RDFIOARC2StoreWrapperException( $error );
+			foreach ( $this->tripleStore->getErrors() as $error ) {
+				throw new RDFIOTripleStoreWrapperException( $error );
 			}
 		}
 		return $uri;
@@ -204,5 +205,5 @@ class RDFIOARC2StoreWrapper {
 }
 
 
-class RDFIOARC2StoreWrapperException extends MWException {
+class RDFIOTripleStoreWrapperException extends MWException {
 }
