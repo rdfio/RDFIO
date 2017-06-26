@@ -40,10 +40,11 @@ require_once $rdfioDir . '/specials/SpecialSPARQLImport.php';
 require_once $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
 
 # Misc
+$GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
+$GLOBALS['wgAutoloadClasses']['RDFIOTestCase'] = $rdfioDir . '/tests/phpunit/RDFIOTestCase.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
 
 # Parsers
 $GLOBALS['wgAutoloadClasses']['ARC2_SPARQLSerializerPlugin'] = $rdfioDir . '/vendor/ARC2_SPARQLSerializerPlugin.php';
