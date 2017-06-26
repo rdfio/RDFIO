@@ -12,7 +12,7 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 	}
 
 	public function testGetEquivURIsForURI() {
-		$wrapper = new RDFIOARC2StoreWrapper(new FakeTripleStore() );
+		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
 		$inputUri =	'http://localhost:8080/w/index.php/Special:URIResolver/USA';
 
@@ -23,7 +23,7 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 	}
 
 	public function testGetURIForEquivURI() {
-		$wrapper = new RDFIOARC2StoreWrapper(new FakeTripleStore() );
+		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
 		$inputUri =	'http://www.countries.org/onto/USA';
 
