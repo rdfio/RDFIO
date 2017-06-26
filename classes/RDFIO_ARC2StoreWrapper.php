@@ -8,7 +8,7 @@
  * @package RDFIO
  */
 class RDFIOARC2StoreWrapper {
-	protected $tripleStore;
+	protected $arc2store;
 	protected $uriResolverUrl;
 
 	const EQUIV_URI = 'http://www.w3.org/2002/07/owl#sameAs';
@@ -18,10 +18,10 @@ class RDFIOARC2StoreWrapper {
 		global $smwgARC2StoreConfig;
 		$this->uriResolverUrl = '';
 		if ( !is_null( $tripleStore ) ) {
-			$this->tripleStore = $tripleStore;
+			$this->arc2store = $tripleStore;
 			return;
 		}
-		$this->tripleStore = ARC2::getStore( $smwgARC2StoreConfig );
+		$this->arc2store = ARC2::getStore( $smwgARC2StoreConfig );
 	}
 
 	/**
@@ -106,10 +106,10 @@ class RDFIOARC2StoreWrapper {
 		}
 
 		$query = 'SELECT ?equivUri WHERE { <' . $uri . '> <' . $equivUriUri . '> ?equivUri }';
-		$results = $this->tripleStore->query( $query );
+		$results = $this->arc2store->query( $query );
 
-		if ( $this->tripleStore->getErrors() ) {
-			foreach ( $this->tripleStore->getErrors() as $error ) {
+		if ( $this->arc2store->getErrors() ) {
+			foreach ( $this->arc2store->getErrors() as $error ) {
 				throw new RDFIOARC2StoreWrapperException( $error );
 			}
 			return;
@@ -136,15 +136,15 @@ class RDFIOARC2StoreWrapper {
 			$equivUriUri = self::EQUIV_URI;
 		}
 		$query = 'SELECT ?uri WHERE { ?uri <' . $equivUriUri . '> <' . $equivUri . '> }';
-		$results = $this->tripleStore->query( $query );
-		if ( !$this->tripleStore->getErrors() ) {
+		$results = $this->arc2store->query( $query );
+		if ( !$this->arc2store->getErrors() ) {
 			$rows = $results['result']['rows'];
 			if ( count( $rows ) > 0 ) {
 				$row = $rows[0];
 				$uri = $row['uri'];
 			}
 		} else {
-			foreach ( $this->tripleStore->getErrors() as $error ) {
+			foreach ( $this->arc2store->getErrors() as $error ) {
 				throw new RDFIOARC2StoreWrapperException( $error );
 			}
 		}
