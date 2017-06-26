@@ -137,6 +137,7 @@ class RDFIOARC2StoreWrapper {
 		}
 		$query = 'SELECT ?uri WHERE { ?uri <' . $equivUriUri . '> <' . $equivUri . '> }';
 		$results = $this->arc2store->query( $query );
+
 		if ( !$this->arc2store->getErrors() ) {
 			$rows = $results['result']['rows'];
 			if ( count( $rows ) > 0 ) {

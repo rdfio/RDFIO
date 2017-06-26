@@ -37,7 +37,12 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 
 class FakeTripleStore {
 	public function query( $query ) {
-		if ( $query == 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/USA> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }' ) {
+		$fakeResult = null;
+
+		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/USA> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }';
+		$query_getURIForEquivURI = 'SELECT ?uri WHERE { ?uri <http://www.w3.org/2002/07/owl#sameAs> <http://www.countries.org/onto/USA> }';
+
+		if ( $query == $query_getEquivURIsForURI ) {
 			$fakeResult = array(
 				'query_type' => 'select',
 				'result' => array(
@@ -53,7 +58,7 @@ class FakeTripleStore {
 					),
 				'query_time' => 0.0081660747528076
 			);
-		} else if ( $query == 'SELECT ?uri WHERE { $uri <http://www.w3.org/2002/07/owl#sameAs> <http://localhost:8080/w/index.php/Special:URIResolver/USA> }' ) {
+		} else if ( $query == $query_getURIForEquivURI ) {
 			$fakeResult = array(
 				'query_type' => 'select',
 				'result' => array(
@@ -71,5 +76,9 @@ class FakeTripleStore {
 			);
 		}
 		return $fakeResult;
+	}
+
+	public function getErrors() {
+		return null;
 	}
 }
