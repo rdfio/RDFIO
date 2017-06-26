@@ -40,11 +40,19 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 				's' => 'http://www.recshop.fake/cd/Empire%20Burlesque',
 				'p' => 'http://www.recshop.fake/cd#company',
 				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/Columbia',
+				's_type' => 'uri',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => '',
 			),
 			array(
 				's' => 'http://www.recshop.fake/cd/Empire%20Burlesque',
 				'p' => 'http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACountry',
 				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/USA',
+				's_type' => 'uri',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => '',
 			),
 		);
 

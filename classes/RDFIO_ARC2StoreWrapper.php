@@ -36,55 +36,35 @@ class RDFIOARC2StoreWrapper {
 	function toEquivUrisInTriples( $triples, $propUrisFilter = null ) {
 		$newTriples = array();
 
-		foreach ( $triples as $triple ) {
+		foreach ( $triples as $tripleidx => $triple ) {
 			// Subject
-			$subjEquivUris = array( $triple['s'] );
 			if ( $triple['s_type'] === 'uri' ) {
-				$subjUri = $triple['s'];
-				$subjEquivUrisTmp = $this->getEquivURIsForURI( $subjUri );
-				if ( count( $subjEquivUrisTmp ) > 0 ) {
-					$subjEquivUris = $subjEquivUrisTmp;
+				$subjEquivUris = $this->getEquivURIsForURI( $triple['s'] );
+				if ( count( $subjEquivUris ) > 0 ) {
+					$triples[$tripleidx]['s'] = $subjEquivUris[0];
 				}
 			}
 
 			// Property
-			$propertyUri = $triple['p'];
-			$propertyUris = array( $propertyUri );
-
-			$propEquivUris = $this->getEquivURIsForURI( $propertyUri );
-			if ( count( $propEquivUris ) > 0 ) {
-				$propertyUris = $propEquivUris;
-			}
-			if ( count( $propEquivUris ) > 0 && !is_null( $propUrisFilter ) ) {
+			$propEquivUris = $this->getEquivURIsForURI( $triple['p'] );
+			if ( !is_null( $propUrisFilter ) ) {
 				// Only include URIs that occur in the filter
 				$propEquivUris = array_intersect( $propEquivUris, $propUrisFilter );
 			}
-
-			// Object
-			$objEquivUris = array( $triple['o'] );
-			if ( $triple['o_type'] === 'uri' ) {
-				$objUri = $triple['o'];
-				$objEquivUrisTmp = $this->getEquivURIsForURI( $objUri );
-				if ( count( $objEquivUrisTmp ) > 0 ) {
-					$objEquivUris = $objEquivUrisTmp;
-				}
+			if ( count( $propEquivUris ) > 0 ) {
+				$triples[$tripleidx]['p'] = $propEquivUris[0];
 			}
 
-			// Generate triples
-			foreach ( $subjEquivUris as $subjEquivUri ) {
-				foreach ( $propertyUris as $propertyUri ) {
-					foreach ( $objEquivUris as $objEquivUri ) {
-						$newtriple = array(
-							's' => $subjEquivUri,
-							'p' => $propertyUri,
-							'o' => $objEquivUri
-						);
-						$newTriples[] = $newtriple;
-					}
+			// Object
+			if ( $triple['o_type'] === 'uri' ) {
+				$objEquivUris = $this->getEquivURIsForURI( $triple['s'] );
+				if ( count( $objEquivUris ) > 0 ) {
+					$triples[$tripleidx]['o'] = $objEquivUris[0];
 				}
 			}
 		}
-		return $newTriples;
+
+		return $triples;
 	}
 
 	/**
