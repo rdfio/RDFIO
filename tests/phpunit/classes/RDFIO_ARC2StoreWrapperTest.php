@@ -14,9 +14,9 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 	public function testGetEquivURIsForURI() {
 		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
-		$inputUri =	'http://localhost:8080/w/index.php/Special:URIResolver/USA';
+		$inputUri =	'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque';
 
-		$expectedUris = array( 'http://www.countries.org/onto/USA' );
+		$expectedUris = array( 'http://www.recshop.fake/cd/Empire%20Burlesque' );
 		$actualUris = $this->invokeMethod( $wrapper, 'getEquivURIsForURI', array( $inputUri ) );
 
 		$this->assertArrayEquals( $expectedUris, $actualUris );
@@ -25,22 +25,33 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 	public function testGetURIForEquivURI() {
 		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
-		$inputUri =	'http://www.countries.org/onto/USA';
+		$inputUri =	'http://www.recshop.fake/cd/Empire%20Burlesque';
 
-		$expectedUri = 'http://localhost:8080/w/index.php/Special:URIResolver/USA';
+		$expectedUri = 'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque';
 		$actualUri = $this->invokeMethod( $wrapper, 'getURIForEquivURI', array( $inputUri ) );
 
 		$this->assertEquals( $expectedUri, $actualUri );
 	}
 
+	public function testgetWikiTitleByEquivalentURI() {
+		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
+
+		$inputUri = 'http://www.recshop.fake/cd/Empire%20Burlesque';
+		$expectedTitle = 'Empire Burlesque';
+		$actualTitle = $this->invokeMethod( $wrapper, 'getWikiTitleByEquivalentURI', array( $inputUri ) );
+
+		$this->assertEquals( $expectedTitle, $actualTitle );
+	}
 }
+
+// ============ HELPER STUFF ============
 
 class FakeTripleStore {
 	public function query( $query ) {
 		$fakeResult = null;
 
-		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/USA> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }';
-		$query_getURIForEquivURI = 'SELECT ?uri WHERE { ?uri <http://www.w3.org/2002/07/owl#sameAs> <http://www.countries.org/onto/USA> }';
+		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }';
+		$query_getURIForEquivURI = 'SELECT ?uri WHERE { ?uri <http://www.w3.org/2002/07/owl#sameAs> <http://www.recshop.fake/cd/Empire%20Burlesque> }';
 
 		if ( $query == $query_getEquivURIsForURI ) {
 			$fakeResult = array(
@@ -51,7 +62,7 @@ class FakeTripleStore {
 					),
 					'rows' => array(
 						array(
-							'equivUri' => 'http://www.countries.org/onto/USA',
+							'equivUri' => 'http://www.recshop.fake/cd/Empire%20Burlesque',
 							'equivUri type' => 'uri',
 							)
 						)
@@ -67,7 +78,7 @@ class FakeTripleStore {
 					),
 					'rows' => array(
 						array(
-							'uri' => 'http://localhost:8080/w/index.php/Special:URIResolver/USA',
+							'uri' => 'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque',
 							'uri type' => 'uri',
 						)
 					)

@@ -160,14 +160,16 @@ class RDFIOARC2StoreWrapper {
 	 */
 	public function getWikiTitleByEquivalentURI( $uri, $isProperty = false ) {
 		$uriEncoded = str_replace( ' ', '%20', $uri );
-		$titleResolverUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
-		$titleResolverUriDec = SMWExporter::getInstance()->decodeURI( $titleResolverUri );
+		$internalUri = $this->getURIForEquivURI( $uriEncoded, $isProperty );
+		$internalUriDecoded = SMWExporter::getInstance()->decodeURI( $internalUri );
 
-		$uriParts = explode( '/', rtrim( $titleResolverUriDec, '/' ) );
+		// Remove URI parts, so that we get a clean title
+		$uriParts = explode( '/', rtrim( $internalUriDecoded, '/' ) );
 		$wikiTitle = str_replace( '_', ' ', array_pop( $uriParts ) );
 		if ( $isProperty ) {
 			$wikiTitle = str_replace( 'Property:', '', $wikiTitle );
 		}
+
 		return $wikiTitle;
 	}
 
