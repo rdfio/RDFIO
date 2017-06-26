@@ -11,6 +11,48 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 		parent::tearDown();
 	}
 
+	public function testToEquivUrisInTriples() {
+		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
+
+		$inputTriples = array(
+			array(
+				's' => 'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque',
+				'p' => 'http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACompany',
+				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/Columbia',
+				's_type' => 'uri',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => '',
+			),
+			array(
+				's' => 'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque',
+				'p' => 'http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACountry',
+				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/USA',
+				's_type' => 'uri',
+				'o_type' => 'var',
+				'o_datatype' => '',
+				'o_lang' => '',
+			)
+		);
+
+		$expectedTriples = array(
+			array(
+				's' => 'http://www.recshop.fake/cd/Empire%20Burlesque',
+				'p' => 'http://www.recshop.fake/cd#company',
+				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/Columbia',
+			),
+			array(
+				's' => 'http://www.recshop.fake/cd/Empire%20Burlesque',
+				'p' => 'http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACountry',
+				'o' => 'http://localhost:8080/w/index.php/Special:URIResolver/USA',
+			),
+		);
+
+		$actualTriples = $this->invokeMethod( $wrapper, 'toEquivUrisInTriples', array( $inputTriples ) );
+
+		$this->assertArrayEquals( $expectedTriples, $actualTriples );
+	}
+
 	public function testGetEquivURIsForURI() {
 		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
@@ -33,7 +75,7 @@ class RDFIOARC2StoreWrapperTest extends RDFIOTestCase {
 		$this->assertEquals( $expectedUri, $actualUri );
 	}
 
-	public function testgetWikiTitleByEquivalentURI() {
+	public function testGetWikiTitleByEquivalentURI() {
 		$wrapper = new RDFIOARC2StoreWrapper( new FakeTripleStore() );
 
 		$inputUri = 'http://www.recshop.fake/cd/Empire%20Burlesque';
@@ -52,6 +94,7 @@ class FakeTripleStore {
 
 		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }';
 		$query_getURIForEquivURI = 'SELECT ?uri WHERE { ?uri <http://www.w3.org/2002/07/owl#sameAs> <http://www.recshop.fake/cd/Empire%20Burlesque> }';
+		$query_complementTriplesWithEquivURIs = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACompany> <http://www.w3.org/2002/07/owl#equivalentProperty> ?equivUri }';
 
 		if ( $query == $query_getEquivURIsForURI ) {
 			$fakeResult = array(
@@ -80,6 +123,22 @@ class FakeTripleStore {
 						array(
 							'uri' => 'http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque',
 							'uri type' => 'uri',
+						)
+					)
+				),
+				'query_time' => 0.0081660747528076
+			);
+		} else if ( $query == $query_complementTriplesWithEquivURIs ) {
+			$fakeResult = array(
+				'query_type' => 'select',
+				'result' => array(
+					'variables' => array(
+						'equivUri'
+					),
+					'rows' => array(
+						array(
+							'equivUri' => 'http://www.recshop.fake/cd#company',
+							'equivUri type' => 'uri',
 						)
 					)
 				),

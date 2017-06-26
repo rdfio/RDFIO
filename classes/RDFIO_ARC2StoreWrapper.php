@@ -33,7 +33,7 @@ class RDFIOARC2StoreWrapper {
 	 * @param array $propUrisFilter
 	 * @return array $triples
 	 */
-	function complementTriplesWithEquivURIs( $triples, $propUrisFilter = '' ) {
+	function toEquivUrisInTriples( $triples, $propUrisFilter = null ) {
 		$newTriples = array();
 
 		foreach ( $triples as $triple ) {
@@ -48,19 +48,16 @@ class RDFIOARC2StoreWrapper {
 			}
 
 			// Property
-			$propertyuri = $triple['p'];
-			$propEquivUris = array( $triple['p'] );
-			$propEquivUrisTmp = $this->getEquivURIsForURI( $propertyuri, true );
+			$propertyUri = $triple['p'];
+			$propertyUris = array( $propertyUri );
 
-
-			if ( count( $propEquivUrisTmp ) > 0 ) {
-				if ( $propUrisFilter != '' ) {
-					// Only include URIs that occur in the filter
-					$propEquivUrisTmp = array_intersect( $propEquivUrisTmp, $propUrisFilter );
-				}
-				if ( $propEquivUrisTmp != '' ) {
-					$propEquivUris = $propEquivUrisTmp;
-				}
+			$propEquivUris = $this->getEquivURIsForURI( $propertyUri, true );
+			if ( count( $propEquivUris ) > 0 ) {
+				$propertyUris = $propEquivUris;
+			}
+			if ( count( $propEquivUris ) > 0 && !is_null( $propUrisFilter ) ) {
+				// Only include URIs that occur in the filter
+				$propEquivUris = array_intersect( $propEquivUris, $propUrisFilter );
 			}
 
 			// Object
@@ -75,11 +72,11 @@ class RDFIOARC2StoreWrapper {
 
 			// Generate triples
 			foreach ( $subjEquivUris as $subjEquivUri ) {
-				foreach ( $propEquivUris as $propEquivUri ) {
+				foreach ( $propertyUris as $propertyUri ) {
 					foreach ( $objEquivUris as $objEquivUri ) {
 						$newtriple = array(
 							's' => $subjEquivUri,
-							'p' => $propEquivUri,
+							'p' => $propertyUri,
 							'o' => $objEquivUri
 						);
 						$newTriples[] = $newtriple;
@@ -115,9 +112,12 @@ class RDFIOARC2StoreWrapper {
 			return;
 		}
 
-		$equivUris = $results['result']['rows'];
-		foreach ( $equivUris as $equivUriId => $equivUri ) {
-			$equivUris[$equivUriId] = $equivUri['equivUri'];
+		$rows = $results['result']['rows'];
+
+		if ( count( $rows ) > 0 ) {
+			foreach ( $rows as $equivUriId => $equivUri ) {
+				$equivUris[$equivUriId] = $equivUri['equivUri'];
+			}
 		}
 
 		return $equivUris;

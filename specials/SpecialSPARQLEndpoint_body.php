@@ -109,7 +109,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				$triples = $arc2->toTriples( $tripleindex );
 
 				if ( $options->outputEquivUris ) {
-					$triples = $this->storewrapper->complementTriplesWithEquivURIs( $triples );
+					$triples = $this->storewrapper->toEquivUrisInTriples( $triples );
 				}
 
 				$this->prepareCreatingDownloadableFile( $options );
