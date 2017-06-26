@@ -18,6 +18,7 @@ class BatchExportRDF extends Maintenance {
 		parent::__construct();
 		$this->addOption( 'out', 'A file name for writing the output.', true, true );
 		$this->addOption( 'format', 'Serialization format for the exported RDF. (one of rdfxml, turtle or ntriples)', true, true );
+		$this->addOption( 'origuris', 'Output the original URIs (set with "Equivalent URI" property in the wiki) for pages', false, false );
 	}
 
 	public function execute() {
@@ -38,6 +39,14 @@ class BatchExportRDF extends Maintenance {
 			}
 
 			$triples = ARC2::getTriplesFromIndex( $index );
+
+			// Optionally convert to original URIs
+			if ( $this->getOption( 'origuris', false ) ) {
+				$arc2storeWrapper = new RDFIOARC2StoreWrapper();
+				$triples = $arc2storeWrapper->toEquivUrisInTriples( $triples );
+			}
+
+			// Serialize to selected output format
 			$format = $this->getOption( 'format', 'rdfxml' );
 			switch ( $format ) {
 				case 'rdfxml':

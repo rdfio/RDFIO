@@ -92,9 +92,9 @@ class FakeTripleStore {
 	public function query( $query ) {
 		$fakeResult = null;
 
-		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri }';
+		$query_getEquivURIsForURI = 'SELECT ?equivUri WHERE { { <http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri } UNION { <http://localhost:8080/w/index.php/Special:URIResolver/Empire_Burlesque> <http://www.w3.org/2002/07/owl#equivalentProperty> ?equivUri } }';
 		$query_getURIForEquivURI = 'SELECT ?uri WHERE { ?uri <http://www.w3.org/2002/07/owl#sameAs> <http://www.recshop.fake/cd/Empire%20Burlesque> }';
-		$query_complementTriplesWithEquivURIs = 'SELECT ?equivUri WHERE { <http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACompany> <http://www.w3.org/2002/07/owl#equivalentProperty> ?equivUri }';
+		$query_complementTriplesWithEquivURIs = 'SELECT ?equivUri WHERE { { <http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACompany> <http://www.w3.org/2002/07/owl#sameAs> ?equivUri } UNION { <http://localhost:8080/w/index.php/Special:URIResolver/Property-3ACompany> <http://www.w3.org/2002/07/owl#equivalentProperty> ?equivUri } }';
 
 		if ( $query == $query_getEquivURIsForURI ) {
 			$fakeResult = array(

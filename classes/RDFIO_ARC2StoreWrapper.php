@@ -51,7 +51,7 @@ class RDFIOARC2StoreWrapper {
 			$propertyUri = $triple['p'];
 			$propertyUris = array( $propertyUri );
 
-			$propEquivUris = $this->getEquivURIsForURI( $propertyUri, true );
+			$propEquivUris = $this->getEquivURIsForURI( $propertyUri );
 			if ( count( $propEquivUris ) > 0 ) {
 				$propertyUris = $propEquivUris;
 			}
@@ -94,15 +94,10 @@ class RDFIOARC2StoreWrapper {
 	 * @param boolean $isProperty
 	 * @return array $equivUris
 	 */
-	public function getEquivURIsForURI( $uri, $isProperty = false ) {
+	public function getEquivURIsForURI( $uri ) {
 		$equivUris = array();
-		if ( $isProperty ) {
-			$equivUriUri = self::EQUIV_PROPERTY_URI;
-		} else {
-			$equivUriUri = self::EQUIV_URI;
-		}
 
-		$query = 'SELECT ?equivUri WHERE { <' . $uri . '> <' . $equivUriUri . '> ?equivUri }';
+		$query = 'SELECT ?equivUri WHERE { { <' . $uri . '> <' . self::EQUIV_URI . '> ?equivUri } UNION { <' . $uri . '> <' . self::EQUIV_PROPERTY_URI . '> ?equivUri } }';
 		$results = $this->arc2store->query( $query );
 
 		if ( $this->arc2store->getErrors() ) {
