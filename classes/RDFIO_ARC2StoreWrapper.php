@@ -57,7 +57,7 @@ class RDFIOARC2StoreWrapper {
 
 			// Object
 			if ( $triple['o_type'] === 'uri' ) {
-				$objEquivUris = $this->getEquivURIsForURI( $triple['s'] );
+				$objEquivUris = $this->getEquivURIsForURI( $triple['o'] );
 				if ( count( $objEquivUris ) > 0 ) {
 					$triples[$tripleidx]['o'] = $objEquivUris[0];
 				}
