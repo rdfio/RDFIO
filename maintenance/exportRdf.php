@@ -37,6 +37,7 @@ class BatchExportRDF extends Maintenance {
 		$offset = 0;
 		$limit = 100;
 
+		echo( "Starting RDF export to file $outPath ...\n" );
 		while ( true ) {
 			$query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } OFFSET ' . $offset . ' LIMIT ' . $limit;
 			$resultSet = $store->executeArc2Query( $query );
