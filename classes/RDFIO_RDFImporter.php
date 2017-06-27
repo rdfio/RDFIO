@@ -32,7 +32,7 @@ class RDFIORDFImporter {
 	}
 
 	/**
-	 * Import RDF/XML, e.g. from the RDF Import Special Page.
+	 * Import RDF in turtle format, e.g. from the RDF Import Special Page.
 	 * @param string $importData
 	 */
 	public function importTurtle( $importData ) {

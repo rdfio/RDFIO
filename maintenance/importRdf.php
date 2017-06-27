@@ -16,6 +16,7 @@ require_once $basePath . '/maintenance/Maintenance.php';
 class BatchImportRDF extends Maintenance {
 	public function __construct() {
 		parent::__construct();
+		// NTriples is required in order to split lines into chunks. Splitting RDF/XML or Turtle much harder.
 		$this->addOption( 'indata', 'A file in with RDF data in NTriples format, with one triple per line.', true, true );
 		$this->addOption( 'chunksize', 'How many lines (triples) to import at a time. 0 means no chunking.', false, true );
 		$this->addOption( 'chunksleep', 'How many seconds (float value) to sleep after each chunk has been imported.', false, true );
