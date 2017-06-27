@@ -50,6 +50,7 @@ class RDFIOURIToTitleConverter {
 
 		foreach ($convStrategies as $currStrategy ) {
 			$wikiPageTitle = $this->$currStrategy( $uriToConvert );
+			$wikiPageTitle = urldecode( $wikiPageTitle ); // If a part of the URL was used
 			if ($wikiPageTitle != null) {
 				return $wikiPageTitle;
 			}
