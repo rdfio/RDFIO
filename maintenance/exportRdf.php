@@ -23,6 +23,14 @@ class BatchExportRDF extends Maintenance {
 
 	public function execute() {
 		$outPath = $this->getOption( 'out', '' );
+		// Serialize to selected output format
+		$format = $this->getOption( 'format', 'rdfxml' );
+
+		// Validate format flag
+		if ( !in_array( $format, array( 'rdfxml', 'turtle', 'ntriples' ) ) ) {
+			die( "Invalid format supplied: $format. Must be one of: rdfxml, turtle or ntriples.\n");
+		}
+
 		$outFile = fopen( $outPath, 'w' );
 		$store = new SMWARC2Store();
 
@@ -46,8 +54,6 @@ class BatchExportRDF extends Maintenance {
 				$triples = $arc2storeWrapper->toEquivUrisInTriples( $triples );
 			}
 
-			// Serialize to selected output format
-			$format = $this->getOption( 'format', 'rdfxml' );
 			switch ( $format ) {
 				case 'rdfxml':
 					$ser = ARC2::getRDFXMLSerializer();
