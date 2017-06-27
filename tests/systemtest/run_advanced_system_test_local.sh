@@ -2,15 +2,15 @@
 echo "Starting advanced system test ...";
 
 mysql -u root smw < emptydb.sql
-php ../../../../maintenance/importDump.php initial_content_advanced.xml
+php ../../../../maintenance/importDump.php advanced_content_initial.xml
 
 php ../../maintenance/importRdf.php --in data/testdata_advanced.ttl
-php ../../../../maintenance/dumpBackup.php --current > actual_advanced.xml
+php ../../../../maintenance/dumpBackup.php --current > advanced_actual.xml
 
-cat expected_advanced.xml | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > expected_content_advanced.xml
-cat actual_advanced.xml | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > actual_content_advanced.xml
+cat advanced_expected.xml | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > advanced_content_expected.xml
+cat advanced_actual.xml | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > advanced_content_actual.xml
 
-if ! diff -q {expected,actual}_content_advanced.xml &>/dev/null; then
+if ! diff -q advanced_content_{expected,actual}.xml &>/dev/null; then
 	>&2 echo "ERROR: Files differ in advanced system test!" && echo "For details, check with diff {expected,actual}_content_advanced.xml in Rdfio/tests/systemtest"
 	exit 1;
 else
