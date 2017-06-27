@@ -8,13 +8,13 @@
 class RDFIOWikiPage {
 	protected $title;
 	protected $equivalentUris;
-	protected $facts;
+	protected $factIndex; // Array of type [ 'property' => 'object' ]
 	protected $categories;
 
 	function __construct( $title ) {
 		$this->setTitle( $title );
 		$this->equivalentUris = array();
-		$this->facts = array();
+		$this->factIndex = array();
 		$this->categories = array();
 	}
 
@@ -28,7 +28,7 @@ class RDFIOWikiPage {
 
 	public function addFact( $fact ) {
 		if ( !is_null( $fact ) ) {
-			$this->facts[] = $fact; // TODO: Detect duplicates?
+			$this->factIndex[$fact['p']] = $fact['o'];
 		}
 	}
 
@@ -43,7 +43,11 @@ class RDFIOWikiPage {
 	}
 
 	public function getFacts() {
-		return $this->facts;
+		$facts = array();
+		foreach( $this->factIndex as $prop => $obj ) {
+			$facts[] = array( 'p' => $prop, 'o' => $obj );
+		}
+		return $facts;
 	}
 
 	public function getCategories() {
