@@ -22,6 +22,9 @@ MediaWiki:Sidebar
 * SEARCH
 * TOOLBOX
 * LANGUAGES
+Property:Artist
+[[Equivalent URI::http://www.recshop.fake/cd#artist]]
+[[Has type::Text]]
 Empire Burlesque
 [[Equivalent URI::http://www.recshop.fake/cd/Empire%20Burlesque]]
 [[Artist::Bob Dylan]]
@@ -29,19 +32,21 @@ Empire Burlesque
 [[Company::Columbia]]
 [[Price::10.90]]
 [[Year::1985]]
-Property:Artist
-[[Equivalent URI::http://www.recshop.fake/cd#artist]]
+Property:Country
+[[Equivalent URI::http://www.recshop.fake/cd#country]]
+[[Has type::Page]]
 USA
 [[Equivalent URI::http://www.countries.org/onto/USA]]
 [[Label::USA]]
-Property:Country
-[[Equivalent URI::http://www.recshop.fake/cd#country]]
 Property:Company
 [[Equivalent URI::http://www.recshop.fake/cd#company]]
+[[Has type::Text]]
 Property:Price
 [[Equivalent URI::http://www.recshop.fake/cd#price]]
+[[Has type::Text]]
 Property:Year
 [[Equivalent URI::http://www.recshop.fake/cd#year]]
+[[Has type::Text]]
 Hide your heart
 [[Equivalent URI::http://www.recshop.fake/cd/Hide%20your%20heart]]
 [[Artist::Bonnie Tyler]]
@@ -53,6 +58,7 @@ UK
 [[Equivalent URI::http://www.countries.org/onto/UK]]
 Property:Label
 [[Equivalent URI::http://www.w3.org/2000/01/rdf-schema#label]]
+[[Has type::Text]]
 Category:Albums
 [[Equivalent URI::http://www.countries.org/onto/Albums]]
 [[Category:MediaCollections]]

@@ -38,6 +38,32 @@ class RDFIOWikiPage {
 		}
 	}
 
+	public function addDataType( $dataType ) {
+		$allowed_types = array(
+			'Annotation URI',
+			'Boolean',
+			'Code',
+			'Date',
+			'Email',
+			'External identifier',
+			'Geographic coordinate',
+			'Monolingual text',
+			'Number',
+			'Page',
+			'Quantity',
+			'Record',
+			'Telephone number',
+			'Temperature',
+			'Text',
+			'Reference',
+			'URL',
+		);
+		if ( !in_array( $dataType, $allowed_types ) ) {
+			throw new RDFIOException( 'Datatype not in allowed datatypes: ' . $dataType );
+		}
+		$this->addFact( array( 'p' => 'Has type', 'o' => $dataType ) );
+	}
+
 	public function getEquivalentUris() {
 		return $this->equivalentUris;
 	}

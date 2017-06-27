@@ -27,71 +27,114 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 		 * a representation of wiki pages instead.
 		 */
 		foreach ( $arc2Triples as $triple ) {
-
-			// Store triple array members as better named variables
-			$subjectURI = $triple['s'];
-			$propertyURI = $triple['p'];
-			$objectUriOrValue = $triple['o'];
-			$objectType = $triple['o_type'];
-
 			// Convert URI:s to wiki titles
-			$wikiPageTitle = $uriToTitleConv->convert( $subjectURI );
+			$wikiPageTitle = $uriToTitleConv->convert( $triple['s'] );
 
-			if ( $propertyURI === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' ) {
+			if ( $triple['p'] === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' ) {
 
 				// Add categorization of page
-				$catPageTitle = $uriToTitleConv->convert( $objectUriOrValue );
+				$catPageTitle = $uriToTitleConv->convert( $triple['o'] );
 				$catPageTitleWithNS = 'Category:' . $catPageTitle;
 				// Add data for the subject page
-				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact = null, $catPageTitleWithNS ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact = null, $catPageTitleWithNS ); // TODO: Use i18n:ed NS
 				// Add data for the category page
-				$this->addDataToPage( $catPageTitleWithNS, $objectUriOrValue ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] ); // TODO: Use i18n:ed NS
 
-			} else if ( $propertyURI === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
+			} else if ( $triple['p'] === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
 
 				// Add categorization of page
-				$catPageTitle = $uriToTitleConv->convert( $objectUriOrValue );
+				$catPageTitle = $uriToTitleConv->convert( $triple['o'] );
 				$catPageTitleWithNS = 'Category:' . $catPageTitle;
 				$pageTitleWithNS = 'Category:' . $wikiPageTitle;
 
 				// Add data for the subject page
-				$this->addDataToPage( $pageTitleWithNS, $subjectURI, $fact = null, $catPageTitleWithNS );
+				$this->addDataToPage( $pageTitleWithNS, $triple['s'], $fact = null, $catPageTitleWithNS );
 
 				// Add data for the category page
-				$this->addDataToPage( $catPageTitleWithNS, $objectUriOrValue );
+				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] );
 
 			} else {
 				// Separate handling for properties
-				$propertyTitle = $uriToPropTitleConv->convert( $propertyURI );
+				$propertyTitle = $uriToPropTitleConv->convert( $triple['p'] );
 				// Add the property namespace to property title
 				$propTitleWithNS = 'Property:' . $propertyTitle; // TODO: Use i18n:ed NS
+				// Add Equivalent URI to property page
+				$this->addDataToPage( $propTitleWithNS, $triple['p'] );
 
 				/*
 				 * Decide whether to create a page for the linked "object" or not,
 				 * depending on object datatype (uri or literal)
 				 */
-				$objectTitle = '';
-				switch ( $objectType ) {
+				$propertyDataType = null;
+				switch ( $triple['o_type'] ) {
 					case 'uri':
-						// @TODO: $objectType also decide data type of the property like these:
-						//        http://semantic-mediawiki.org/wiki/Help:Properties_and_types#List_of_datatypes
-						//        ?
-						$objectTitle = $uriToTitleConv->convert( $objectUriOrValue );
-						$this->addDataToPage( $objectTitle, $objectUriOrValue );
+						// Create new page for the object
+						$object = $uriToTitleConv->convert( $triple['o'] );
+						$this->addDataToPage( $object, $triple['o'] );
+						// Since URIs convert to pages, properties linking to URIs will be of 'Page' type
+						$propertyDataType = 'Page';
 						break;
 					case 'literal':
-						$objectTitle = $objectUriOrValue;
+						$object = $triple['o'];
+
+						// Determine data type of property
+						$xsd = 'http://www.w3.org/2001/XMLSchema#';
+						switch( $triple['o_datatype'] ) {
+							case $xsd . 'byte':
+							case $xsd . 'decimal':
+							case $xsd . 'int':
+							case $xsd . 'integer':
+							case $xsd . 'long':
+							case $xsd . 'negativeInteger':
+							case $xsd . 'nonNegativeInteger':
+							case $xsd . 'nonPositiveInteger':
+							case $xsd . 'positiveInteger':
+							case $xsd . 'short':
+							case $xsd . 'unsignedLong':
+							case $xsd . 'unsignedInt':
+							case $xsd . 'unsignedShort':
+							case $xsd . 'unsignedByte':
+							case $xsd . 'float':
+							case $xsd . 'double':
+								$propertyDataType = 'Number';
+								break;
+							case $xsd . 'string':
+								$propertyDataType = 'Text';
+								break;
+							case $xsd . 'date':
+							case $xsd . 'dateTime':
+							case $xsd . 'duration':
+							case $xsd . 'time':
+								$propertyDataType = 'Date';
+								break;
+							case $xsd . 'boolean':
+							case $xsd . 'bool':
+								$propertyDataType = 'Boolean';
+								break;
+							case $xsd . 'anyURI':
+								$propertyDataType = 'URL';
+								break;
+							default:
+								if ( substr( $object, 0, 4 ) === 'http' ) {
+									$propertyDataType = 'URL';
+									break;
+								}
+								$propertyDataType = 'Text';
+						}
 						break;
 					default:
-						throw new RDFIOARC2ToWikiConverterException( 'Error in ARC2ToWikiConverter: Unknown type ("' . $objectType . '") of object ("' . $objectUriOrValue . '") in triple! (not "uri" nor "literal")!' );
+						throw new RDFIOARC2ToWikiConverterException( 'Error in ARC2ToWikiConverter: Unknown type ("' . $triple['o_type'] . '") of object ("' . $triple['o'] . '") in triple! (not "uri" nor "literal")!' );
 				}
 
 				// Create a fact array
-				$fact = array( 'p' => $propertyTitle, 'o' => $objectTitle );
-
+				$fact = array( 'p' => $propertyTitle, 'o' => $object );
 				// Add data to class variables
-				$this->addDataToPage( $wikiPageTitle, $subjectURI, $fact );
-				$this->addDataToPage( $propTitleWithNS, $propertyURI );
+				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact );
+
+				if( !is_null( $propertyDataType ) ) {
+					// Add Data type to property page
+					$this->addDataToPage( $propTitleWithNS, null, null, null, $propertyDataType );
+				}
 			}
 		}
 
@@ -106,14 +149,23 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	 * @param string $fact
 	 * @param string $category
 	 */
-	private function addDataToPage( $pageTitle, $equivURI, $fact = null, $category = null ) {
+	private function addDataToPage( $pageTitle, $equivURI = null, $fact = null, $category = null, $dataType = null ) {
 		// Create page array if not exists in array
 		if ( !array_key_exists( $pageTitle, $this->wikiPages ) ) {
 			$this->wikiPages[$pageTitle] = new RDFIOWikiPage( $pageTitle );
 		}
-		$this->wikiPages[$pageTitle]->addEquivalentURI( $equivURI );
-		$this->wikiPages[$pageTitle]->addFact( $fact );
-		$this->wikiPages[$pageTitle]->addCategory( $category );
+		if ( !is_null( $equivURI ) ) {
+			$this->wikiPages[$pageTitle]->addEquivalentURI( $equivURI );
+		}
+		if ( !is_null( $fact ) ) {
+			$this->wikiPages[$pageTitle]->addFact( $fact );
+		}
+		if ( !is_null( $category ) ) {
+			$this->wikiPages[$pageTitle]->addCategory( $category );
+		}
+		if ( !is_null( $dataType ) ) {
+			$this->wikiPages[$pageTitle]->addDataType( $dataType );
+		}
 	}
 
 }

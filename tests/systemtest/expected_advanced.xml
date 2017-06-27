@@ -206,7 +206,8 @@ Now please follow these steps:
       <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_population]]&quot;</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="58">[[Equivalent URI::http://example.org/onto/has_population]]</text>
+	  <text xml:space="preserve" bytes="58">[[Equivalent URI::http://example.org/onto/has_population]]
+[[Has type::Number]]</text>
       <sha1>mvjtaozbmxcv15el4k7vi9pi5jllbwj</sha1>
     </revision>
   </page>
@@ -223,7 +224,8 @@ Now please follow these steps:
       <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_second_city]]&quot;</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="59">[[Equivalent URI::http://example.org/onto/has_second_city]]</text>
+	  <text xml:space="preserve" bytes="59">[[Equivalent URI::http://example.org/onto/has_second_city]]
+[[Has type::Page]]</text>
       <sha1>pzey0qi9kt2okn1v0emsm3x7f107jfk</sha1>
     </revision>
   </page>
