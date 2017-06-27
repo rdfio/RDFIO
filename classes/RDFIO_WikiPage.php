@@ -64,6 +64,13 @@ class RDFIOWikiPage {
 		$this->addFact( array( 'p' => 'Has type', 'o' => $dataType ) );
 	}
 
+	public function isProperty() {
+		if ( substr( $this->getTitle(), 0, 9 ) === 'Property:' ) {
+			return true;
+		}
+		return false;
+	}
+
 	public function getEquivalentUris() {
 		return $this->equivalentUris;
 	}
@@ -78,6 +85,13 @@ class RDFIOWikiPage {
 
 	public function getCategories() {
 		return $this->categories;
+	}
+
+	/**
+	 * @return string title
+	 */
+	public function getTitle() {
+		return $this->title;
 	}
 
 	public function setTitle( $wikiTitle ) {

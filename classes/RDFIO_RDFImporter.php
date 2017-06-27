@@ -78,7 +78,21 @@ class RDFIORDFImporter {
 
 		// Import pages into wiki
 		$smwPageWriter = new RDFIOSMWPageWriter();
-		$smwPageWriter->import( $wikiPages );
+
+		// Separate property pages and other pages
+		$propertyPages = array();
+		$otherPages = array();
+		foreach ( $wikiPages as $pageTitle => $wikiPage ) {
+			if ( $wikiPage->isProperty() ) {
+				$propertyPages[$pageTitle] = $wikiPage;
+			} else {
+				$otherPages[$pageTitle] = $wikiPage;
+			}
+		}
+
+		// Import property pages first (to get proper data type of facts using them)
+		$smwPageWriter->import( $propertyPages );
+		$smwPageWriter->import( $otherPages );
 
 		$output = array( 'triples' => $triples );
 		return $output;

@@ -126,15 +126,17 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 						throw new RDFIOARC2ToWikiConverterException( 'Error in ARC2ToWikiConverter: Unknown type ("' . $triple['o_type'] . '") of object ("' . $triple['o'] . '") in triple! (not "uri" nor "literal")!' );
 				}
 
+				// Add Data type to property page.
+				// NOTE: This is important to do BEFORE adding any fact using the property,
+				// in order for the fact to get correct encoding in the ARC2 store.
+				if( !is_null( $propertyDataType ) ) {
+					$this->addDataToPage( $propTitleWithNS, null, null, null, $propertyDataType );
+				}
+
 				// Create a fact array
 				$fact = array( 'p' => $propertyTitle, 'o' => $object );
 				// Add data to class variables
 				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact );
-
-				if( !is_null( $propertyDataType ) ) {
-					// Add Data type to property page
-					$this->addDataToPage( $propTitleWithNS, null, null, null, $propertyDataType );
-				}
 			}
 		}
 
