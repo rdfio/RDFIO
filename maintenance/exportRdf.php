@@ -68,12 +68,12 @@ class BatchExportRDF extends Maintenance {
 				foreach( $ser->getErrors() as $err ) {
 					echo( 'ARC2 serializer error: ' . $err );
 				}
-				die('Exited RDF Export script due to previous errors.');
+				echo('Exited RDF Export script due to previous errors.');
+				break;
 			}
 
 			$offset += $limit;
 		}
-
 
 		fclose( $outFile );
 	}
