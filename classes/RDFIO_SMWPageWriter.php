@@ -220,8 +220,8 @@ class RDFIOSMWPageWriter {
 		$catTitleWikified = $this->getWikifiedTitle( $category, NS_CATEGORY );
 		if ( !array_key_exists( $catTitleWikified, $oldCategories ) ) {
 			$newCatText = "\n" . '[[Category:' . $catTitleWikified . "]]"; // Is there an inbuilt class method to do this?  Can't find one in Category.
+			$wikiText .= $newCatText;
 		}
-		$wikiText .= $newCatText;
 		return $wikiText;
 	}
 
