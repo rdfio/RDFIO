@@ -17,7 +17,7 @@ class BatchImportRDF extends Maintenance {
 	public function __construct() {
 		parent::__construct();
 		// NTriples is required in order to split lines into chunks. Splitting RDF/XML or Turtle much harder.
-		$this->addOption( 'indata', 'A file in with RDF data in NTriples format, with one triple per line.', true, true );
+		$this->addOption( 'in', 'A file in with RDF data in NTriples format, with one triple per line.', true, true );
 		$this->addOption( 'chunksize', 'How many lines (triples) to import at a time. 0 means no chunking.', false, true );
 		$this->addOption( 'chunksleep', 'How many seconds (float value) to sleep after each chunk has been imported.', false, true );
 		$this->addOption( 'offset', 'Skip this many triples before starting import', false, true );
@@ -25,26 +25,26 @@ class BatchImportRDF extends Maintenance {
 	}
 
 	public function execute() {
-		$indataFile = $this->getOption( 'indata', '' );
+		$inFile = $this->getOption( 'in', '' );
 		$chunksize = intval( $this->getOption( 'chunksize', 0 ) );
 		$chunksleep = floatval( $this->getOption( 'chunksleep', 0.0 ) );
 		$offset = intval( $this->getOption( 'offset', 0 ) );
 		$verbose = $this->getOption( 'verbose', false );
 
-		echo( "Starting import from file: $indataFile\n" );
+		echo( "Starting import from file: $inFile\n" );
 		if ( $offset > 0 ) {
 			echo( "Starting with offset $offset ...\n" );
 		}
 
 		$rdfImporter = new RDFIORDFImporter();
-		$indataFileHandle = fopen( $indataFile, 'r' );
+		$inFileHandle = fopen( $inFile, 'r' );
 
 		$lineinchunk = 1;
 		$chunkindex = 1;
 		$lineindex = 0;
 		$totalimported = 0;
 		$importdata = '';
-		while ( $line = fgets( $indataFileHandle ) ) {
+		while ( $line = fgets( $inFileHandle ) ) {
 			if ( $lineindex >= $offset ) {
 				if ( $chunksize > 0 && $lineinchunk == 1 ) {
 					if ( $verbose ) {
@@ -83,7 +83,7 @@ class BatchImportRDF extends Maintenance {
 		}
 		// Import any remaining stuff, or all the stuff, if chunksize = 0
 		$rdfImporter->importTurtle( $importdata );
-		fclose( $indataFileHandle );
+		fclose( $inFileHandle );
 		echo( "Finished importing everything ($totalimported triples in total)!\n" );
 	}
 }

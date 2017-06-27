@@ -4,7 +4,7 @@ echo "Starting advanced system test ...";
 mysql -u root smw < emptydb.sql
 php ../../../../maintenance/importDump.php initial_content_advanced.xml
 
-php ../../maintenance/importRdf.php --indata data/testdata_advanced.ttl
+php ../../maintenance/importRdf.php --in data/testdata_advanced.ttl
 php ../../../../maintenance/dumpBackup.php --current > actual_advanced.xml
 
 cat expected_advanced.xml | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > expected_content_advanced.xml
