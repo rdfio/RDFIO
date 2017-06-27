@@ -3,14 +3,14 @@
 @prefix countries: <http://www.countries.org/onto/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<http://www.recshop.fake/cd/Empire Burlesque>
+<http://www.recshop.fake/cd/Empire%20Burlesque>
     cd:artist "Bob Dylan" ;
     cd:country countries:USA ;
     cd:company "Columbia" ;
     cd:price "10.90" ;
     cd:year "1985" .
 
-<http://www.recshop.fake/cd/Hide your heart>
+<http://www.recshop.fake/cd/Hide%20your%20heart>
     cd:artist "Bonnie Tyler" ;
     cd:country "UK" ;
     cd:company "CBS Records" ;

@@ -23,7 +23,7 @@ MediaWiki:Sidebar
 * TOOLBOX
 * LANGUAGES
 Empire Burlesque
-[[Equivalent URI::http://www.recshop.fake/cd/Empire Burlesque]]
+[[Equivalent URI::http://www.recshop.fake/cd/Empire%20Burlesque]]
 [[Artist::Bob Dylan]]
 [[Country::USA]]
 [[Company::Columbia]]
@@ -43,7 +43,7 @@ Property:Price
 Property:Year
 [[Equivalent URI::http://www.recshop.fake/cd#year]]
 Hide your heart
-[[Equivalent URI::http://www.recshop.fake/cd/Hide your heart]]
+[[Equivalent URI::http://www.recshop.fake/cd/Hide%20your%20heart]]
 [[Artist::Bonnie Tyler]]
 [[Country::UK]]
 [[Company::CBS Records]]
