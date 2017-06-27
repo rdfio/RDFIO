@@ -1,0 +1,10 @@
+<http://www.recshop.fake/cd/Empire%20Burlesque> <http://www.recshop.fake/cd#artist> "Bob Dylan"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Empire%20Burlesque> <http://www.recshop.fake/cd#company> "Columbia"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Empire%20Burlesque> <http://www.recshop.fake/cd#country> <http://www.countries.org/onto/USA> .
+<http://www.recshop.fake/cd/Empire%20Burlesque> <http://www.recshop.fake/cd#price> "10.90"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Empire%20Burlesque> <http://www.recshop.fake/cd#year> "1985"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Hide%20your%20heart> <http://www.recshop.fake/cd#artist> "Bonnie Tyler"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Hide%20your%20heart> <http://www.recshop.fake/cd#company> "CBS Records"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Hide%20your%20heart> <http://www.recshop.fake/cd#country> <http://www.countries.org/onto/UK> .
+<http://www.recshop.fake/cd/Hide%20your%20heart> <http://www.recshop.fake/cd#price> "9.90"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://www.recshop.fake/cd/Hide%20your%20heart> <http://www.recshop.fake/cd#year> "1988"^^<http://www.w3.org/2001/XMLSchema#string> .

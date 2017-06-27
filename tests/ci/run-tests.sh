@@ -8,3 +8,4 @@ mv coverage.xml $HOME/RDFIO/
 cd /home/ubuntu/w/extensions/Rdfio/tests/systemtest/
 ./run_system_test_circleci.sh
 ./run_advanced_system_test_circleci.sh
+./run_roundtrip_test_circleci.sh

@@ -1,0 +1,54 @@
+Main Page
+
+Now please follow these steps:
+
+# First [[Special:UserLogin|log in to the wiki]] (user Admin, pass changethis).
+# Please go to the [[Special:RDFIOAdmin|RDFIO Admin Special Page]] and ensure that the ARC2 store is properly set up.
+# Go to the [[Special:RDFImport|RDF Import Special Page]], click &quot;Paste RDF&quot;, and then &quot;RDFXML example data&quot; under the text field, and import it.
+# GO to [[Special:RecentChanges|Recent Changes]], to see if you got some newly imported data.
+# Finally, go to the [[Special:SPARQLEndpoint|SPARQL Endpoint]] and execute the example query, and see if you can see the example data show up!
+MediaWiki:Sidebar
+** mainpage|mainpage-description
+** recentchanges-url|recentchanges
+** randompage-url|randompage
+** helppage|help
+* Semantic Tools
+** Special:RDFIOAdmin|RDFIO Admin
+** Special:RDFImport|RDF Import
+** Special:SPARQLEndpoint|SPARQL Endpoint
+** Special:SPARQLImport|SPARQL Import
+** Special:Categories|Categories
+** Special:Properties|Properties
+* SEARCH
+* TOOLBOX
+* LANGUAGES
+Sweden
+[[Has population::10000001]]
+
+[[Equivalent URI::http://example.org/onto/Sweden]]
+[[Category:Country]]
+[[Has second city::Gothenburg]]
+Property:Has capital
+Germany
+
+{{Country
+|Capital=Berlin
+|Population=82000001
+|Orig URI=http://example.org/onto/Germany
+|Second city=Frankfurt
+}}
+Template:Country
+
+* '''Capital:''' [[Has capital::{{{Capital|}}}]]
+* '''Second city:''' [[Has second city::{{{Second city|}}}]]
+* '''Population:''' [[Has population::{{{Population|}}}]]
+* '''Equivalent URI:''' [[Equivalent URI::{{{Orig URI|}}}]]
+Category:Country
+Property:Has population
+[[Has type::Number]]
+Property:Has second city
+[[Has type::Page]]
+Gothenburg
+[[Equivalent URI::http://example.org/onto/Gothenburg]]
+Frankfurt
+[[Equivalent URI::http://example.org/onto/Frankfurt]]
