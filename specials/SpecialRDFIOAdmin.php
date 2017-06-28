@@ -7,10 +7,8 @@
  */
 class RDFIOAdmin extends RDFIOSpecialPage {
 
-	protected $isSysop;
-
 	function __construct() {
-		parent::__construct( 'RDFIOAdmin', 'editinterface' );
+		parent::__construct( 'RDFIOAdmin' );
 	}
 
 	/**
