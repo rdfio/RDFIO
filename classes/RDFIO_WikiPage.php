@@ -39,7 +39,7 @@ class RDFIOWikiPage {
 	}
 
 	public function addDataType( $dataType ) {
-		$allowed_types = array(
+		$allowedTypes = array(
 			'Annotation URI',
 			'Boolean',
 			'Code',
@@ -58,7 +58,7 @@ class RDFIOWikiPage {
 			'Reference',
 			'URL',
 		);
-		if ( !in_array( $dataType, $allowed_types ) ) {
+		if ( !in_array( $dataType, $allowedTypes ) ) {
 			throw new RDFIOException( 'Datatype not in allowed datatypes: ' . $dataType );
 		}
 		$this->addFact( array( 'p' => 'Has type', 'o' => $dataType ) );

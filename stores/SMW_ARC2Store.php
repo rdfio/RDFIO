@@ -115,9 +115,8 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 */
 	public function executeArc2Query( $requestString ) {
 
-		$q = $requestString;
-		$rs = $this->arc2store->query( $q );
-		$result = $rs;
+		$query = $requestString;
+		$result = $this->arc2store->query( $query );
 
 		$errors = $this->arc2store->getErrors();
 		foreach ( $errors as $error ) {
