@@ -28,7 +28,7 @@ class BatchExportRDF extends Maintenance {
 
 		// Validate format flag
 		if ( !in_array( $format, array( 'rdfxml', 'turtle', 'ntriples' ) ) ) {
-			die( "Invalid format supplied: $format. Must be one of: rdfxml, turtle or ntriples.\n");
+			$this->error( "Invalid format supplied: $format. Must be one of: rdfxml, turtle or ntriples", 1 );
 		}
 
 		$outFile = fopen( $outPath, 'w' );
