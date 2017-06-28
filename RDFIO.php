@@ -59,10 +59,15 @@ $GLOBALS['wgAutoloadClasses']['RDFIOWikiPage'] = $rdfioDir . '/classes/RDFIO_Wik
 
 // Special pages
 $GLOBALS['wgAutoloadClasses']['RDFIOSpecialPage'] = $rdfioDir . '/classes/RDFIO_SpecialPage.php';
-$GLOBALS['wgAutoloadClasses']['RDFImport'] = $rdfioDir . '/specials/SpecialRDFImport.php'; # Tell MediaWiki to load the extension body.
-$GLOBALS['wgAutoloadClasses']['RDFIOAdmin'] = $rdfioDir . '/specials/SpecialRDFIOAdmin.php'; # Tell MediaWiki to load the extension body.
-$GLOBALS['wgAutoloadClasses']['SPARQLEndpoint'] = $rdfioDir . '/specials/SpecialSPARQLEndpoint.php'; # Tell MediaWiki to load the extension body.
-$GLOBALS['wgAutoloadClasses']['SPARQLImport'] = $rdfioDir . '/specials/SpecialSPARQLImport.php'; # Tell MediaWiki to load the extension body.
+$GLOBALS['wgAutoloadClasses']['RDFIOAdmin'] = $rdfioDir . '/specials/SpecialRDFIOAdmin.php';
+$GLOBALS['wgAutoloadClasses']['RDFImport'] = $rdfioDir . '/specials/SpecialRDFImport.php';
+$GLOBALS['wgAutoloadClasses']['SPARQLEndpoint'] = $rdfioDir . '/specials/SpecialSPARQLEndpoint.php';
+$GLOBALS['wgAutoloadClasses']['SPARQLImport'] = $rdfioDir . '/specials/SpecialSPARQLImport.php';
+
+$GLOBALS['wgSpecialPages']['RDFIOAdmin'] = 'RDFIOAdmin';
+$GLOBALS['wgSpecialPages']['RDFImport'] = 'RDFImport';
+$GLOBALS['wgSpecialPages']['SPARQLEndpoint'] = 'SPARQLEndpoint';
+$GLOBALS['wgSpecialPages']['SPARQLImport'] = 'SPARQLImport';
 
 // -------------------------------------------------------------
 // ARC2 RDF Store config
