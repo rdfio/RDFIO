@@ -39,7 +39,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 * @param $data
 	 */
 	public function updateData( SMWSemanticData $data ) {
-		// TODO: Should doDataUpdate() be used instead? (See SMWStore class)
+		// NOTE: Should doDataUpdate() be used instead? (See SMWStore class)
 		$exportData = SMWExporter::getInstance()->makeExportData( $data );
 		$subjectUri = SMWExporter::getInstance()->expandURI( $exportData->getSubject()->getUri() );
 
@@ -57,7 +57,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 			$predicateStr = '';
 
 			if ( $object instanceof SMWExpLiteral ) {
-				// TODO: Add escaping for results of getLexicalForm()?
+				// NOTE: Add escaping for results of getLexicalForm()?
 				$objectStr = '"' . $object->getLexicalForm() . '"' . ( ( $object->getDatatype() == '' ) ? '' : '^^<' . $object->getDatatype() . '>' );
 			} elseif ( $object instanceof SMWExpResource ) {
 				$objectStr = '<' . SMWExporter::getInstance()->expandURI( $object->getUri() ) . '>';
@@ -144,7 +144,6 @@ class SMWARC2Store extends SMWSQLStore3 {
 	 */
 	private function removeDataForURI( $uri ) {
 		$sparqlUpdateText = 'DELETE { <' . $uri . '> ?x ?y . }';
-		wfDebugLog( 'SPARQL_LOG', $sparqlUpdateText ); // TODO: Keep?
 		$response = $this->executeArc2Query( $sparqlUpdateText );
 		return $response;
 	}
