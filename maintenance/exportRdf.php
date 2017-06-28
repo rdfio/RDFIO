@@ -37,7 +37,7 @@ class BatchExportRDF extends Maintenance {
 		$offset = 0;
 		$limit = 100;
 
-		echo( "Starting RDF export to file $outPath ...\n" );
+		$this->output( "Starting RDF export to file $outPath ...\n" );
 		while ( true ) {
 			$query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } OFFSET ' . $offset . ' LIMIT ' . $limit;
 			$resultSet = $store->executeArc2Query( $query );
@@ -69,16 +69,11 @@ class BatchExportRDF extends Maintenance {
 
 			$rdf = $ser->getSerializedTriples( $triples );
 
-			if ( !$ser->getErrors() ) {
-				fputs( $outFile, $rdf );
-			} else {
-				foreach( $ser->getErrors() as $err ) {
-					echo( 'ARC2 serializer error: ' . $err );
-				}
-				echo('Exited RDF Export script due to previous errors.');
-				break;
+			if ( $ser->getErrors() ) {
+				$this->error("Exited RDF Export script due to previous errors:\n" . implode("\n", $ser->getErrors() ), 1 );
 			}
 
+			fputs( $outFile, $rdf );
 			$offset += $limit;
 		}
 

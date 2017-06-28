@@ -31,9 +31,9 @@ class BatchImportRDF extends Maintenance {
 		$offset = intval( $this->getOption( 'offset', 0 ) );
 		$verbose = $this->getOption( 'verbose', false );
 
-		echo( "Starting import from file: $inFile\n" );
+		$this->output( "Starting import from file: $inFile\n" );
 		if ( $offset > 0 ) {
-			echo( "Starting with offset $offset ...\n" );
+			$this->output( "Starting with offset $offset ...\n" );
 		}
 
 		$rdfImporter = new RDFIORDFImporter();
@@ -48,14 +48,14 @@ class BatchImportRDF extends Maintenance {
 			if ( $lineindex >= $offset ) {
 				if ( $chunksize > 0 && $lineinchunk == 1 ) {
 					if ( $verbose ) {
-						echo( "Starting chunk $chunkindex ...\n" );
+						$this->output( "Starting chunk $chunkindex ...\n" );
 					}
 				}
 
 				$importdata .= $line;
 
 				if ( $verbose ) {
-					echo( "Appended line $lineinchunk in chunk $chunkindex, to indata ...\n" );
+					$this->output( "Appended line $lineinchunk in chunk $chunkindex, to indata ...\n" );
 				}
 
 				$totalimported++;
@@ -63,7 +63,7 @@ class BatchImportRDF extends Maintenance {
 				if ( $chunksize != 0 && $lineinchunk == $chunksize ) {
 					$rdfImporter->importTurtle( $importdata );
 					$totalwithoffset = $totalimported + $offset;
-					echo( "Imported $chunksize triples in chunk $chunkindex ($totalimported triples imported in total, and $totalwithoffset including offset)!\n" );
+					$this->output( "Imported $chunksize triples in chunk $chunkindex ($totalimported triples imported in total, and $totalwithoffset including offset)!\n" );
 
 					// Reset variables
 					$lineinchunk = 0;
@@ -73,7 +73,7 @@ class BatchImportRDF extends Maintenance {
 					$chunkindex++;
 
 					if ( $verbose ) {
-						echo( 'Now sleeping for ' . strval( $chunksleep ) . ' seconds before continuing with next chunk ...' );
+						$this->output( 'Now sleeping for ' . strval( $chunksleep ) . ' seconds before continuing with next chunk ...' );
 					}
 					sleep( $chunksleep );
 				}
@@ -84,7 +84,7 @@ class BatchImportRDF extends Maintenance {
 		// Import any remaining stuff, or all the stuff, if chunksize = 0
 		$rdfImporter->importTurtle( $importdata );
 		fclose( $inFileHandle );
-		echo( "Finished importing everything ($totalimported triples in total)!\n" );
+		$this->output( "Finished importing everything ($totalimported triples in total)!\n" );
 	}
 }
 

@@ -21,21 +21,23 @@ class SetupArc2Store extends Maintenance {
 	public function execute() {
 		global $smwgARC2StoreConfig;
 
-		# Get ARC2 Store
 		$store = ARC2::getStore( $smwgARC2StoreConfig );
 
-		if ( !$store->isSetUp() ) {
-			echo( "ARC2 Store is NOT setup, so setting up now ... " );
-			$store->setUp();
-			if ( $store->isSetUp() ) {
-				echo( "Done!\n" );
-			} else {
-				echo( "Setup failed with the following errors reported by the ARC2 library:\n" );
-				echo( $store->getErrors() );
-				exit( 1 );
-			}
-		} else {
-			echo( "Store is already set up, so not doing anything.\n" );
+		if ( $store->isSetUp() ) {
+			$this->output( "Store is already set up, so not doing anything.\n" );
+			return;
+		}
+
+		$this->output( 'ARC2 Store is NOT setup, so setting up now ... ' );
+		$store->setUp();
+
+		if ( $store->getErrors() ) {
+			$this->error( "Setup failed with the following errors reported by the ARC2 library:\n" . implode( "\n", $store->getErrors() ) . "\n" );
+			return;
+		}
+
+		if ( $store->isSetUp() ) {
+			$this->output( "Store successfully set up!\n" );
 		}
 	}
 }
