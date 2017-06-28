@@ -91,8 +91,6 @@ class RDFImport extends RDFIOSpecialPage {
 		$requestData->action = $wgRequest->getText( 'action' );
 		$requestData->editToken = $wgRequest->getText( 'token' );
 		$requestData->importSource = $wgRequest->getText( 'importsrc' );
-		$requestData->nsPrefixInWikiTitlesProperties = $wgRequest->getBool( 'nspintitle_prop', false ); // TODO: Remove?
-		$requestData->nsPrefixInWikiTitlesEntities = $wgRequest->getBool( 'nspintitle_ent', false ); // TODO: Remove?
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
@@ -330,8 +328,6 @@ class RDFIORequestData {
 	public $action;
 	public $editToken;
 	public $importSource;
-	public $nsPrefixInWikiTitlesProperties;
-	public $nsPrefixInWikiTitlesEntities;
 	public $externalRdfUrl;
 	public $importData;
 	public $dataFormat;
