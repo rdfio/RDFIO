@@ -110,8 +110,12 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * @param $message
 	 */
 	protected function infoMsg( $message ) {
+		$infoHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #66AAFF; background-color: #AADDFF;">
+				<h3>Information</h3>
+				<p>' . $message . '</p>
+								</div>';
 		$wOut = $this->getOutput();
-		$wOut->addHTML( RDFIOUtils::fmtInfoMsgHTML( "Information", $message ) );
+		$wOut->addHTML( $infoHtml );
 	}
 
 	/**
@@ -119,8 +123,12 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * @param $message
 	 */
 	protected function successMsg( $message ) {
+		$successHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #99FF99; background-color: #DDFFDD;">
+				<h3>Success</h3>
+				<p>' . $message . '</p>
+								</div>';
 		$wOut = $this->getOutput();
-		$wOut->addHTML( RDFIOUtils::fmtSuccessMsgHTML( "Success!", $message ) );
+		$wOut->addHTML( $successHtml );
 	}
 
 	/**
@@ -128,8 +136,12 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * @param $message
 	 */
 	protected function errorMsg( $message ) {
+		$errorHtml = '<div style="margin: .4em 0; padding: .4em .7em; border: 1px solid #FF9999; background-color: #FFDDDD;">
+				<h3>Error</h3>
+				<p>' . $message . '</p>
+								</div>';
 		$wOut = $this->getOutput();
-		$wOut->addHTML( RDFIOUtils::fmtErrorMsgHTML( "Error!", $message ) );
+		$wOut->addHTML( $errorHtml );
 	}
 
 	/**
