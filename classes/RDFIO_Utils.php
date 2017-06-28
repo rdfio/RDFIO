@@ -93,9 +93,16 @@ class RDFIOUtils {
 	 * @return string $title
 	 */
 	static function cleanWikiTitle( $title ) {
-		$title = str_replace('[', '', $title);
-		$title = str_replace(']', '', $title);
-		// TODO: Add more here later ...
+		$replacements = array(
+			'[' => '',
+			']' => '',
+			'{{' => '',
+			'}}' => '',
+			'#' => ':',
+		);
+		foreach( $replacements as $search => $replace ) {
+			$title = str_replace( $search, $replace, $title );
+		}
 		return $title;
 	}
 }

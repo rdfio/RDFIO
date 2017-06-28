@@ -40,7 +40,7 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 	 * @covers RDFIOUtils::cleanWikiTitle
 	 */
 	public function testClearWikiTitle() {
-		$cleanedTitle = RDFIOUtils::cleanWikiTitle( '[Some] words in the title' );
-		$this->assertEquals( 'Some words in the title', $cleanedTitle );
+		$cleanedTitle = RDFIOUtils::cleanWikiTitle( '[Some]#words in the {{title}}' );
+		$this->assertEquals( 'Some:words in the title', $cleanedTitle );
 	}
 } 
