@@ -6,8 +6,8 @@
  */
 class RDFIOSpecialPage extends SpecialPage {
 
-	function __construct() {
-		parent::__construct( 'SPARQLEndpoint' );
+	function __construct( $pageName ) {
+		parent::__construct( $pageName );
 	}
 
 	/**
