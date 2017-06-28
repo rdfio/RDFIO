@@ -34,7 +34,6 @@ class RDFIOARC2StoreWrapper {
 	 * @return array $triples
 	 */
 	function toEquivUrisInTriples( $triples, $propUrisFilter = null ) {
-		$newTriples = array();
 
 		foreach ( $triples as $tripleidx => $triple ) {
 			// Subject
