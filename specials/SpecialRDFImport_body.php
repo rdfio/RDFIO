@@ -12,7 +12,8 @@ class RDFImport extends RDFIOSpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
-		global $wgOut;
+		$wOut = $this->getOutput();
+		$wUser = $this->getUser();
 
 		try {
 			# Set HTML headers sent to the browser
@@ -25,22 +26,20 @@ class RDFImport extends RDFIOSpecialPage {
 				$triples = $importInfo['triples'];
 				if ( $triples ) {
 					$rdfImporter = new RDFIORDFImporter();
-					$wgOut->addHTML( $this->getHTMLForm( $requestData ) );
+					$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
 					$this->infoMsg( 'The format used in the import was "' . $requestData->dataFormat . '".');
-					$wgOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
+					$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
 					}
 				} else if ( !$triples ) {
 					throw new RDFIOException ( "No new triples to import" );
 				}
-			} else if ( !$requestData->hasWriteAccess ) {
-				throw new RDFIOException( "User does not have write access" );
 			} else {
-				$wgOut->addHTML( $this->getHTMLForm( $requestData ) );
-				$wgOut->addHTML( '<div id=sources style="display:none">' );
-				$wgOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
-				$wgOut->addHTML( '</div>' );
+				$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
+				$wOut->addHTML( '<div id=sources style="display:none">' );
+				$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
+				$wOut->addHTML( '</div>' );
 			}
 		} catch ( MWException $e ) {
 			$this->errorMsg( $e->getMessage() );
@@ -97,7 +96,7 @@ class RDFImport extends RDFIOSpecialPage {
 		$requestData->externalRdfUrl = $wgRequest->getText( 'extrdfurl' );
 		$requestData->importData = $wgRequest->getText( 'importdata' );
 		$requestData->dataFormat = $wgRequest->getText( 'dataformat' );
-		$requestData->hasWriteAccess = $this->allowInsert( $this->getUser() );
+		$requestData->hasWriteAccess = $this->allowInsert( $this->getUser(), $wgRequest );
 		$requestData->articlePath = $wgArticlePath;
 
 		return $requestData;
@@ -107,10 +106,10 @@ class RDFImport extends RDFIOSpecialPage {
 	/**
 	 * Output the HTML for the form, to the user
 	 */
-	function getHTMLForm( $requestData ) {
+	function getHTMLForm( $requestData, $user ) {
 		$formText = "";
 		$formText .= $this->getJsCode();
-		$formText .= $this->getHTMLFormContent( $requestData );
+		$formText .= $this->getHTMLFormContent( $requestData, $user );
 		return $formText;
 	}
 
@@ -202,7 +201,7 @@ EOT;
 	 * @param string $extraFormContent
 	 * @return string $htmlFormContent
 	 */
-	public function getHTMLFormContent( $requestData, $extraFormContent = '' ) {
+	public function getHTMLFormContent( $requestData, $user, $extraFormContent = '' ) {
 		$textfieldHiddenHTML = '';
 		$urlChecked = ( $requestData->importSource === 'url' );
 		$textfieldChecked = ( $requestData->importSource === 'textfield' );
@@ -274,7 +273,8 @@ EOT;
 							</tr>
 						</tbody></table>
 					</div>
-					<input type="submit" value="Submit">' . Html::Hidden( 'token', $requestData->editToken ) . '
+					<input type="submit" value="Submit">
+					<input type="hidden" name="token" value="' . $user->getEditToken() . '"> .
 				</form>';
 
 		return $htmlFormContent;

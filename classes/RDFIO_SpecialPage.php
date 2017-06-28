@@ -64,21 +64,18 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * of exceptions to that, by showing error messages etc
 	 * @return bool
 	 */
-	protected function allowInsert( $user ) {
+	protected function allowInsert( $user, $request ) {
 		global $rogAllowRemoteEdit;
 
 		if ( !isset( $rogAllowRemoteEdit ) ) {
-			$this->errorMsg( '$rogAllowRemoteEdit variable not set, so insert not allowed.');
 			return false;
 		}
 
 		if ( !$rogAllowRemoteEdit ) {
-			$this->errorMsg( '$rogAllowRemoteEdit set to false, so insert not allowed.');
 			return false;
 		}
 
-		if ( !$user->matchEditToken( $this->getRequest()->getText( 'token' ) ) ) {
-			$this->errorMsg( 'Cross-site request forgery detected! ');
+		if ( !$this->editTokenOk( $user, $request ) ) {
 			return false;
 		}
 
@@ -86,7 +83,13 @@ class RDFIOSpecialPage extends SpecialPage {
 			return true;
 		}
 
-		$this->errorMsg( 'The current user lacks access either to edit or create pages (or both) in this wiki');
+		return false;
+	}
+
+	protected function editTokenOk( $user, $request ) {
+		if ( $user->matchEditToken( $request->getText( 'token' ) ) ) {
+			return true;
+		}
 		return false;
 	}
 

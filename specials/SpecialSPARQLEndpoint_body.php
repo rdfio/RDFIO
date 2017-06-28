@@ -20,10 +20,11 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	public function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;
+		$wUser = $this->getUser();
+		$wRequest = $this->getRequest();
 
 		$this->setHeaders();
 		$options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
-		$user = $this->getUser();
 
 		if ( $options->query == '' ) {
 			$this->printHTMLForm( $options );
@@ -39,7 +40,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				$this->executeReadOnlyQuery( $options );
 				return;
 			case 'insert':
-				if ( !$this->allowInsert( $user ) ) {
+				if ( !$this->allowInsert( $wUser, $wRequest ) ) {
 					$this->errorMsg( 'Current user is not allowed to do INSERT statements.' );
 					$this->printHTMLForm( $options );
 					return;
@@ -48,7 +49,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				$this->printHTMLForm( $options );
 				return;
 			case 'delete':
-				if ( !$this->allowDelete( $user ) ) {
+				if ( !$this->allowDelete( $wUser ) ) {
 					$this->errorMsg( 'Current user is not allowed to do DELETE statements.' );
 					$this->printHTMLForm( $options );
 				}
