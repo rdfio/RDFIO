@@ -103,11 +103,12 @@ class RDFIORDFImporter {
 		$dataSourcePage->addEquivalentURI( $dataSourceUrl );
 		$dataSourcePage->addFact( array( 'p' => 'RDFIO Import Type', 'o' => $importType ) );
 		$dataSourcePage->addCategory( 'RDFIO Data Source' );
+
 		$smwPageWriter = new RDFIOSMWPageWriter();
 		$smwPageWriter->import( array( $dataSourceUrl => $dataSourcePage ) );
 	}
 
-	function showImportedTriples( $importedTriples ) {
+	function showImportedTriples( $triples ) {
 		$output = "";
 		$styleCss = <<<EOD
 	    	    table .rdfio- th {
@@ -120,10 +121,10 @@ class RDFIORDFImporter {
 	    	    }
 EOD;
 		$output .= '<style>' . $styleCss . '</style>';
-		$output .= '<h3>Imported triples</h3>';
+		$output .= '<h3>Imported ' . count( $triples ) . ' triples:</h3>';
 		$output .= '<table class="wikitable sortable rdfio-table"><tbody><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr>';
 
-		foreach ( $importedTriples as $triple ) {
+		foreach ( $triples as $triple ) {
 			$s = $triple['s'];
 			$p = $triple['p'];
 			$o = $triple['o'];
