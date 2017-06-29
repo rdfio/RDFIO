@@ -79,7 +79,7 @@ class RDFIOSpecialPage extends SpecialPage {
 			return false;
 		}
 
-		if ( in_array( 'edit', $user->getRights() ) && in_array( 'createpage', $user->getRights() )) {
+		if ( in_array( 'edit', $user->getRights() ) && in_array( 'createpage', $user->getRights() ) ) {
 			return true;
 		}
 

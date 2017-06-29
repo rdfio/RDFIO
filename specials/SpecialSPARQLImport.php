@@ -1,10 +1,10 @@
 <?php
 
-class SPARQLImport extends SpecialPage {
+class SPARQLImport extends RDFIOSpecialPage {
 
 	function __construct() {
 		parent::__construct( 'SPARQLImport' );
-		$this->triplesPerBatch = 10; // Limits how many triples are loaded per time
+		$this->triplesPerBatch = 25; // Limits how many triples are loaded per time
 	}
 
 	/**
@@ -13,36 +13,40 @@ class SPARQLImport extends SpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
-		global $wgOut, $wgRequest;
+
+		$wOut = $this->getOutput();
+		$wRequest = $this->getRequest();
+		$wUser = $this->getUser();
 
 		try {
 			$this->setHeaders();
 			$submitButtonText = "Import";
 
 			// For now, print the result XML from the SPARQL query
-			if ( $wgRequest->getText( 'action' ) === 'import' ) {
-				if ( RDFIOUtils::currentUserHasWriteAccess() ) {
-					$offset = $wgRequest->getVal( 'offset', 0 );
+			if ( $wRequest->getText( 'action' ) === 'import' ) {
+
+				if ( $this->allowInsert( $wUser, $wRequest ) ) {
+					$offset = $wRequest->getVal( 'offset', 0 );
 					$limit = $this->triplesPerBatch;
 					$submitButtonText = "Import next $limit triples...";
-					$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+					$wOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
 					$importInfo = $this->import( $limit, $offset );
 					$externalSparqlUrl = $importInfo['externalSparqlUrl'];
 					$dataSourceImporter = new RDFIORDFImporter();
 					$dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
 				} else {
-					$errTitle = "No write access";
 					$errMsg = "The current logged in user does not have write access";
-					RDFIOUtils::showErrorMessage( $errTitle, $errMsg );
+					$this->errorMsg( $errMsg );
 				}
+
 			} else {
-				$wgOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-				$wgOut->addHTML( '<div id=sources style="display:none">' );
-				$wgOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
-				$wgOut->addHTML( '</div>' );
+				$wOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
+				$wOut->addHTML( '<div id=sources style="display:none">' );
+				$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
+				$wOut->addHTML( '</div>' );
 			}
 		} catch ( RDFIOException $e ) {
-			RDFIOUtils::showErrorMessage( 'Error!', $e->getMessage() );
+			$this->errorMsg( $e->getMessage() );
 		}
 
 	}
@@ -55,10 +59,11 @@ class SPARQLImport extends SpecialPage {
 		}
 	}
 
-	protected function import( $limit = 10, $offset = 0 ) {
-		global $wgOut, $wgRequest;
-		//$rdfioUtils = new RDFIOUtils();
-		$externalSparqlUrl = $wgRequest->getText( 'extsparqlurl' );
+	protected function import( $limit = 25, $offset = 0 ) {
+		$wOut = $this->getOutput();
+		$wRequest = $this->getRequest();
+
+		$externalSparqlUrl = $wRequest->getText( 'extsparqlurl' );
 		if ( $externalSparqlUrl === '' ) {
 			throw new RDFIOException( 'Empty SPARQL Url provided!' );
 		} else if ( !RDFIOUtils::isURI( $externalSparqlUrl ) ) {
@@ -105,33 +110,35 @@ class SPARQLImport extends SpecialPage {
 			}
 			$rdfImporter = new RDFIORDFImporter();
 			$rdfImporter->importTriples( $importTriples );
-			$wgOut->addHTML( $rdfImporter->showImportedTriples( $importTriples ) );
+			$wOut->addHTML( $rdfImporter->showImportedTriples( $importTriples ) );
 		} else {
-			RDFIOUtils::fmtErrorMsgHTML( "Error", "There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?" );
+			$this->errorMsg( 'There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?' );
 		}
 		return array( 'externalSparqlUrl' => $externalSparqlUrl );
 	}
 
-
 	protected function getHTMLForm( $buttonText ) {
-		global $wgArticlePath, $wgRequest;
+		global $wgArticlePath;
+		$wRequest = $this->getRequest();
+		$wUser = $this->getUser();
+
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
-		$extSparqlUrl = $wgRequest->getText( 'extsparqlurl', '' );
+		$extSparqlUrl = $wRequest->getText( 'extsparqlurl', '' );
 		$limit = $this->triplesPerBatch;
-		$offset = $wgRequest->getText( 'offset', 0 - $limit ) + $limit;
-		$htmlForm = <<<EOD
-		<form method="post" action="$thisPageUrl" >
+		$offset = $wRequest->getText( 'offset', 0 - $limit ) + $limit;
+		$htmlForm = '
+		<form method="get" action="' . $thisPageUrl . '" >
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<div id="urlfields">
-				<input type="text" name="extsparqlurl" id="extsparqlurl" size="60" value="$extSparqlUrl"></input>
+				<input type="text" name="extsparqlurl" id="extsparqlurl" size="60" value="' . $extSparqlUrl . '"></input>
 				<a href="#" onClick="addSources();">Use previous source</a>
 				</div>
 				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
-				<input type="hidden" name="offset" value=$offset>
-				<input type="submit" value="$buttonText">
-		</form>
-EOD;
+				<input type="hidden" name="offset" value="' . $offset . '">
+				<input type="hidden" name="token" value="' . $wUser->getEditToken() . '">
+				<input type="submit" value="' . $buttonText . '">
+		</form>';
 		$htmlForm .= $this->getJs();
 		return $htmlForm;
 	}
