@@ -55,9 +55,8 @@ class SPARQLImport extends RDFIOSpecialPage {
 	function resourceType( $resourceStr ) {
 		if ( substr( $resourceStr, 0, 4 ) === 'http' ) {
 			return 'uri';
-		} else {
-			return 'literal';
 		}
+		return 'literal';
 	}
 
 	protected function import( $limit = 25, $offset = 0 ) {
@@ -65,11 +64,15 @@ class SPARQLImport extends RDFIOSpecialPage {
 		$wRequest = $this->getRequest();
 
 		$externalSparqlUrl = $wRequest->getText( 'extsparqlurl' );
+
 		if ( $externalSparqlUrl === '' ) {
 			throw new RDFIOException( 'Empty SPARQL Url provided!' );
-		} else if ( !RDFIOUtils::isURI( $externalSparqlUrl ) ) {
-			throw new RDFIOException( 'Invalid SPARQL Url provided! (Must start with \'http://\' or \'https://\')' );
 		}
+
+		if ( substr( $externalSparqlUrl, 0, 4 ) !== 'http' ) {
+			throw new RDFIOException( 'Invalid SPARQL Endpoint URL provided! (Must start with \'http\')' );
+		}
+
 		$sparqlQuery = urlencode( "SELECT DISTINCT * WHERE { ?s ?p ?o } OFFSET $offset LIMIT $limit" );
 		$sparqlQueryUrl = $externalSparqlUrl . '/' . '?query=' . $sparqlQuery;
 		$sparqlResultXml = file_get_contents( $sparqlQueryUrl );
@@ -87,26 +90,15 @@ class SPARQLImport extends RDFIOSpecialPage {
 			$triple = array();
 
 			foreach ( $result as $binding ) {
+				$str = $this->extractStringFromBinding( $binding );
 				if ( $binding['name'] == 's' ) {
-					$s = (string)$binding->uri[0];
-					if ( $s == '' ) {
-						throw new Exception( 'Could not extract subject from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-					}
-					$triple['s'] = $s;
+					$triple['s'] = $str;
 					$triple['s_type'] = $this->resourceType( $triple['s'] );
 				} else if ( $binding['name'] == 'p' ) {
-					$p = (string)$binding->uri[0];
-					if ( $p == '' ) {
-						throw new Exception( 'Could not extract predicate from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-					}
-					$triple['p'] = $p;
+					$triple['p'] = $str;
 					$triple['p_type'] = $this->resourceType( $triple['p'] );
 				} else if ( $binding['name'] == 'o' ) {
-					$o = (string)$binding->uri[0];
-					if ( $o == '' ) {
-						throw new Exception( 'Could not extract object from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-					}
-					$triple['o'] = $o;
+					$triple['o'] = $str;
 					$triple['o_type'] = $this->resourceType( $triple['o'] );
 					$triple['o_datatype'] = '';
 				}
@@ -120,6 +112,14 @@ class SPARQLImport extends RDFIOSpecialPage {
 		$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 
 		return array( 'externalSparqlUrl' => $externalSparqlUrl );
+	}
+
+	protected function extractStringFromBinding( $binding ) {
+		$str = (string)$binding->uri[0];
+		if ( $str == '' ) {
+			throw new Exception( 'Could not extract object from empty string (' . $binding->uri . '), in SPARQLImport' );
+		}
+		return $str;
 	}
 
 	protected function getHTMLForm( $buttonText, $limit, $offset ) {
