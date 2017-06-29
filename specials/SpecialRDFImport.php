@@ -27,7 +27,7 @@ class RDFImport extends RDFIOSpecialPage {
 				if ( $triples ) {
 					$rdfImporter = new RDFIORDFImporter();
 					$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
-					$this->infoMsg( 'The format used in the import was "' . $requestData->dataFormat . '".');
+					$this->successMsg('Successfully imported ' . count( $triples ) . ' triples!' );
 					$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
