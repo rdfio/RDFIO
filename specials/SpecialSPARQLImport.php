@@ -4,7 +4,6 @@ class SPARQLImport extends RDFIOSpecialPage {
 
 	function __construct() {
 		parent::__construct( 'SPARQLImport' );
-		$this->triplesPerBatch = 25; // Limits how many triples are loaded per time
 	}
 
 	/**
@@ -18,37 +17,39 @@ class SPARQLImport extends RDFIOSpecialPage {
 		$wRequest = $this->getRequest();
 		$wUser = $this->getUser();
 
-		try {
-			$this->setHeaders();
-			$submitButtonText = "Import";
+		$this->setHeaders();
+		$submitButtonText = "Start import";
 
-			// For now, print the result XML from the SPARQL query
-			if ( $wRequest->getText( 'action' ) === 'import' ) {
+		$offset = $wRequest->getVal( 'offset', 0 );
+		$limit = $wRequest->getVal( 'limit', 25 );
 
-				if ( $this->allowInsert( $wUser, $wRequest ) ) {
-					$offset = $wRequest->getVal( 'offset', 0 );
-					$limit = $this->triplesPerBatch;
-					$submitButtonText = "Import next $limit triples...";
-					$wOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-					$importInfo = $this->import( $limit, $offset );
-					$externalSparqlUrl = $importInfo['externalSparqlUrl'];
-					$dataSourceImporter = new RDFIORDFImporter();
-					$dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
-				} else {
-					$errMsg = "The current logged in user does not have write access";
-					$this->errorMsg( $errMsg );
-				}
+		if ( $wRequest->getText( 'action' ) === 'import' ) {
 
-			} else {
-				$wOut->addHTML( $this->getHTMLForm( $submitButtonText ) );
-				$wOut->addHTML( '<div id=sources style="display:none">' );
-				$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
-				$wOut->addHTML( '</div>' );
+			if ( !$this->allowInsert( $wUser, $wRequest ) ) {
+				$this->errorMsg( 'The current logged in user does not have write access' );
+				return;
 			}
-		} catch ( RDFIOException $e ) {
-			$this->errorMsg( $e->getMessage() );
+
+			$submitButtonText = "Import next batch of triples...";
+			$wOut->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset + $limit ) );
+
+			try {
+				$importInfo = $this->import( $limit, $offset );
+				$externalSparqlUrl = $importInfo['externalSparqlUrl'];
+				$dataSourceImporter = new RDFIORDFImporter();
+				$dataSourceImporter->addDataSource( $externalSparqlUrl, 'SPARQL' );
+			} catch ( RDFIOException $e ) {
+				$this->errorMsg( $e->getMessage() );
+				return;
+			}
+
+			return;
 		}
 
+		$wOut->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset ) );
+		$wOut->addHTML( '<div id=sources style="display:none">' );
+		$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
+		$wOut->addHTML( '</div>' );
 	}
 
 	function resourceType( $resourceStr ) {
@@ -75,59 +76,62 @@ class SPARQLImport extends RDFIOSpecialPage {
 
 		$sparqlResultXmlObj = simplexml_load_string( $sparqlResultXml );
 
-		$importTriples = array();
+		$triples = array();
 
-		if ( is_object( $sparqlResultXmlObj ) ) {
-			foreach ( $sparqlResultXmlObj->results->children() as $result ) {
-				$triple = array();
-				// $wgOut->addHTML( print_r($result, true) );
-				foreach ( $result as $binding ) {
-					if ( $binding['name'] == 's' ) {
-						$s = (string)$binding->uri[0];
-						if ( $s == '' ) {
-							throw new Exception( 'Could not extract subject from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-						}
-						$triple['s'] = $s;
-						$triple['s_type'] = $this->resourceType( $triple['s'] );
-					} else if ( $binding['name'] == 'p' ) {
-						$p = (string)$binding->uri[0];
-						if ( $p == '' ) {
-							throw new Exception( 'Could not extract predicate from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-						}
-						$triple['p'] = $p;
-						$triple['p_type'] = $this->resourceType( $triple['p'] );
-					} else if ( $binding['name'] == 'o' ) {
-						$o = (string)$binding->uri[0];
-						if ( $o == '' ) {
-							throw new Exception( 'Could not extract object from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
-						}
-						$triple['o'] = $o;
-						$triple['o_type'] = $this->resourceType( $triple['o'] );
-						$triple['o_datatype'] = '';
-					}
-				}
-				$importTriples[] = $triple;
-			}
-			$rdfImporter = new RDFIORDFImporter();
-			$rdfImporter->importTriples( $importTriples );
-			$wOut->addHTML( $rdfImporter->showImportedTriples( $importTriples ) );
-		} else {
+		if ( !is_object( $sparqlResultXmlObj ) ) {
 			$this->errorMsg( 'There was a problem importing from the endpoint. Are you sure that the given URL is a valid SPARQL endpoint?' );
+			return;
 		}
+
+		foreach ( $sparqlResultXmlObj->results->children() as $result ) {
+			$triple = array();
+
+			foreach ( $result as $binding ) {
+				if ( $binding['name'] == 's' ) {
+					$s = (string)$binding->uri[0];
+					if ( $s == '' ) {
+						throw new Exception( 'Could not extract subject from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
+					}
+					$triple['s'] = $s;
+					$triple['s_type'] = $this->resourceType( $triple['s'] );
+				} else if ( $binding['name'] == 'p' ) {
+					$p = (string)$binding->uri[0];
+					if ( $p == '' ) {
+						throw new Exception( 'Could not extract predicate from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
+					}
+					$triple['p'] = $p;
+					$triple['p_type'] = $this->resourceType( $triple['p'] );
+				} else if ( $binding['name'] == 'o' ) {
+					$o = (string)$binding->uri[0];
+					if ( $o == '' ) {
+						throw new Exception( 'Could not extract object from empty string (' . print_r( $binding->uri, true ) . '), in SPARQLImport' );
+					}
+					$triple['o'] = $o;
+					$triple['o_type'] = $this->resourceType( $triple['o'] );
+					$triple['o_datatype'] = '';
+				}
+			}
+
+			$triples[] = $triple;
+		}
+
+		$rdfImporter = new RDFIORDFImporter();
+		$rdfImporter->importTriples( $triples );
+		$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
+
 		return array( 'externalSparqlUrl' => $externalSparqlUrl );
 	}
 
-	protected function getHTMLForm( $buttonText ) {
+	protected function getHTMLForm( $buttonText, $limit, $offset ) {
 		global $wgArticlePath;
 		$wRequest = $this->getRequest();
 		$wUser = $this->getUser();
 
 		$thisPageUrl = str_replace( '/$1', '', $wgArticlePath ) . "/Special:SPARQLImport";
 		$extSparqlUrl = $wRequest->getText( 'extsparqlurl', '' );
-		$limit = $this->triplesPerBatch;
-		$offset = $wRequest->getText( 'offset', 0 - $limit ) + $limit;
+
 		$htmlForm = '
-		<form method="get" action="' . $thisPageUrl . '" >
+		<form method="get" action="' . $thisPageUrl . '" style="clear: none;">
 				URL of SPARQL endpoint:<br>
 				<input type="hidden" name="action" value="import">
 				<div id="urlfields">
@@ -135,35 +139,42 @@ class SPARQLImport extends RDFIOSpecialPage {
 				<a href="#" onClick="addSources();">Use previous source</a>
 				</div>
 				<p><span style="font-style: italic; font-size: 11px">Example: http://www.semantic-systems-biology.org/biogateway/endpoint</span></p>
-				<input type="hidden" name="offset" value="' . $offset . '">
+				<p>Batching parameters (Automatically updated - change manually only if you know you know you need it!):</p>
+				<table style="margin-bottom: 1em;">
+					<tr>
+						<th style="text-align: right;">Limit:</th>
+						<td><input type="text" name="limit" size="3" value="' . $limit . '"></td>
+					</tr>
+					<tr>
+						<th style="text-align: right;">Offset:</th>
+						<td><input type="text" name="offset" size="3" value="' . $offset . '"></td>
+					</tr>
+				</table>
 				<input type="hidden" name="token" value="' . $wUser->getEditToken() . '">
-				<input type="submit" value="' . $buttonText . '">
-		</form>';
+				<input type="submit" value="' . $buttonText . '"> <a href="' . $thisPageUrl . '">Reset form</a></form>';
 		$htmlForm .= $this->getJs();
 		return $htmlForm;
 	}
 
 	public function getJs() {
-		$jsCode = '
-<script type="text/javascript">
-function addSources() {
-	var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
-	var sources = sourceList.getElementsByTagName("a");
-	var urlForm = document.getElementById("urlfields");
-	var urlTextField = document.getElementById("extsparqlurl");
-	var selectList = document.createElement("select");
-	selectList.id = "sourceSelect";
-	urlForm.appendChild(selectList);
-	for (var i = 0; i < sources.length; i++) {
-		var option = document.createElement("option");
-		option.value = sources[i].innerHTML;
-		option.text = sources[i].innerHTML;
-		selectList.appendChild(option);
-	}
-	selectList.onchange = function() {selectedUrl = selectList.options[selectList.selectedIndex].value; selectedUrl1 = selectedUrl.substring(0,1).toLowerCase(); selectedUrl2 = selectedUrl.substring(1); selectedUrl = selectedUrl1.concat(selectedUrl2); urlTextField.value = selectedUrl};
-}
-</script>
-					';
+		$jsCode = '<script type="text/javascript">
+		function addSources() {
+			var sourceList = document.getElementById("sources").getElementsByTagName("p")[0];
+			var sources = sourceList.getElementsByTagName("a");
+			var urlForm = document.getElementById("urlfields");
+			var urlTextField = document.getElementById("extsparqlurl");
+			var selectList = document.createElement("select");
+			selectList.id = "sourceSelect";
+			urlForm.appendChild(selectList);
+			for (var i = 0; i < sources.length; i++) {
+				var option = document.createElement("option");
+				option.value = sources[i].innerHTML;
+				option.text = sources[i].innerHTML;
+				selectList.appendChild(option);
+			}
+			selectList.onchange = function() {selectedUrl = selectList.options[selectList.selectedIndex].value; selectedUrl1 = selectedUrl.substring(0,1).toLowerCase(); selectedUrl2 = selectedUrl.substring(1); selectedUrl = selectedUrl1.concat(selectedUrl2); urlTextField.value = selectedUrl};
+		}
+		</script>';
 		return $jsCode;
 	}
 
