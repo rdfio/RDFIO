@@ -56,23 +56,4 @@ class RDFIOUtils {
 		$successMsgHtml = self::fmtInfoMsgHTML( $title, $message );
 		$wgOut->addHTML( $successMsgHtml );
 	}
-
-	/**
-	 * Remove some characters that are not allowed in Wiki titles.
-	 * @param string $title
-	 * @return string $title
-	 */
-	static function cleanWikiTitle( $title ) {
-		$replacements = array(
-			'[' => '',
-			']' => '',
-			'{{' => '',
-			'}}' => '',
-			'#' => ':',
-		);
-		foreach( $replacements as $search => $replace ) {
-			$title = str_replace( $search, $replace, $title );
-		}
-		return $title;
-	}
 }

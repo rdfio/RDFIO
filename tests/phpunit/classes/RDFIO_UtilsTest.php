@@ -35,12 +35,4 @@ class RDFIOUtilsTest extends MediaWikiTestCase {
 		$this->assertTrue( RDFIOUtils::endsWithColon( 'http:' ) );
 		$this->assertFalse( RDFIOUtils::endsWithColon( 'https://' ) );
 	}
-
-	/**
-	 * @covers RDFIOUtils::cleanWikiTitle
-	 */
-	public function testClearWikiTitle() {
-		$cleanedTitle = RDFIOUtils::cleanWikiTitle( '[Some]#words in the {{title}}' );
-		$this->assertEquals( 'Some:words in the title', $cleanedTitle );
-	}
 } 

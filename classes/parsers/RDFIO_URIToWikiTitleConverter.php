@@ -31,10 +31,10 @@ class RDFIOURIToTitleConverter {
 	/**
 	 * The main method, converting from URI:s to wiki titles.
 	 * NOTE: Properties are taken care of py a special method below!
-	 * @param string $uriToConvert
+	 * @param string $uri
 	 * @return string $wikiTitle
 	 */
-	public function convert( $uriToConvert ) {
+	public function convert( $uri ) {
 		// Define the conversion functions to try, in
 		// specified order (the first one first).
 		// You'll find them defined further below in this file.
@@ -46,13 +46,14 @@ class RDFIOURIToTitleConverter {
 			'useValueAsIs'
 		);
 
-		$wikiPageTitle = '';
-
 		foreach ($convStrategies as $currStrategy ) {
-			$wikiPageTitle = $this->$currStrategy( $uriToConvert );
-			$wikiPageTitle = urldecode( $wikiPageTitle ); // If a part of the URL was used
-			if ($wikiPageTitle != null) {
-				return $wikiPageTitle;
+			$title = $this->$currStrategy( $uri );
+
+			$title = urldecode( $title ); // If a part of the URL was used
+			$title = $this->cleanPageTitle( $title );
+
+			if ($title != '') {
+				return $title;
 			}
 		}
 	}
@@ -77,7 +78,7 @@ class RDFIOURIToTitleConverter {
 	function applyGlobalSettingForPropertiesToUseAsWikiTitle( $uri ) {
 		global $rogTitleProperties;
 
-		$wikiPageTitle = '';
+		$title = '';
 
 		if ( !$this->globalSettingForPropertiesToUseAsWikiTitleExists() ) {
 			$this->setglobalSettingForPropertiesToUseAsWikiTitleToDefault();
@@ -87,35 +88,28 @@ class RDFIOURIToTitleConverter {
 		if ( is_array($index) ) {
 			foreach ( $index as $subject => $properties ) {
 				if ( $subject === $uri ) {
-					foreach ( $properties as $property => $object ) {
-						if ( in_array( $property, $rogTitleProperties ) ) {
-							$wikiPageTitle = $object[0];
+					foreach ( $properties as $prop => $obj ) {
+						if ( in_array( $prop, $rogTitleProperties ) ) {
+							$title = $obj[0];
 						}
 					}
 				}
 			}
 		}
 
-		if ( $wikiPageTitle != '' ) {
-			$wikiPageTitle = RDFIOUtils::cleanWikiTitle( $wikiPageTitle );
-		}
-		if ( $wikiPageTitle != '' ) {
-			return $wikiPageTitle;
-		} else {
-			return null;
-		}
-	}	
+		return $title;
+	}
 
 	/**
 	 * Strategy 3: Abbreviate the namespace to its NS prefix as configured in
 	 * mappings in the parser (default ones, or provided as part of the
 	 * imported data)
 	 */
-	function shortenURINamespaceToAliasInSourceRDF( $uriToConvert ) {
+	function shortenURINamespaceToAliasInSourceRDF( $uri ) {
 		global $rogBaseURIs;
 		
 		$nsPrefixes = $this->arc2NSPrefixes;
-		$wikiPageTitle = '';
+		$title = '';
 
 		// The same, but according to mappings from LocalSettings.php
 		if ( is_array( $rogBaseURIs ) ) {
@@ -124,38 +118,32 @@ class RDFIOURIToTitleConverter {
 
 		// Collect all the inputs for abbreviation, and apply:
 		if ( is_array( $nsPrefixes ) ) {
-			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uriToConvert, $nsPrefixes );
-			$wikiPageTitle = $abbreviatedUri;
+			$abbreviatedUri = $this->abbreviateParserNSPrefixes( $uri, $nsPrefixes );
+			$title = $abbreviatedUri;
 		}
 
-		if ( $wikiPageTitle != '' ) {
-			return $wikiPageTitle;
-		} else {
-			return null;
-		}	
+		return $title;
 	}
 
 	/**
 	 * Strategy 4: As a default, just try to get the local part of the URL
 	 */
-	function extractLocalPartFromURI( $uriToConvert ) {
-		$parts = $this->splitURI( $uriToConvert );
+	function extractLocalPartFromURI( $uri ) {
+		$title = '';
+
+		$parts = $this->splitURI( $uri );
 		if ( $parts[1] != '' ) {
-			$wikiPageTitle = $parts[1];
+			$title = $parts[1];
 		}
 
-		if ( $wikiPageTitle != '' ) {
-			return $wikiPageTitle;
-		} else {
-			return null;
-		}	
+		return $title;
 	}
 
 	/**
 	 * Strategy 5: Just use the value as is, as if it was a literal value
 	 */
-	function useValueAsIs( $uriToConvert ) {
-		return $uriToConvert;
+	function useValueAsIs( $uri ) {
+		return $uri;
 	}
 
 	/////// HELPER METHODS ///////
@@ -285,6 +273,24 @@ class RDFIOURIToTitleConverter {
 		return array( $uri, '' );
 	}
 
+	/**
+	 * Remove some characters that are not allowed in Wiki titles.
+	 * @param string $title
+	 * @return string $title
+	 */
+	public function cleanPageTitle( $title ) {
+		$replacements = array(
+			'[' => '',
+			']' => '',
+			'{{' => '',
+			'}}' => '',
+			'#' => ':',
+		);
+		foreach( $replacements as $search => $replace ) {
+			$title = str_replace( $search, $replace, $title );
+		}
+		return $title;
+	}
 }
 
 /**
@@ -305,7 +311,6 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 	 * @return string $propertyTitle
 	 */
 	function convert( $propertyURI ) {
-		$propertyTitle = '';
 		$existingPropTitle = $this->arc2Store->getWikiTitleByEquivalentURI($propertyURI, true);
 		if ( $existingPropTitle != "" ) {
 			// If the URI had an existing title, use that
@@ -314,9 +319,9 @@ class RDFIOURIToPropertyTitleConverter extends RDFIOURIToTitleConverter {
 			$uriToTitleConv = new RDFIOURIToWikiTitleConverter( $this->arc2Triples, $this->arc2ResourceIndex, $this->arc2NSPrefixes );
 			$propertyTitle = $uriToTitleConv->convert( $propertyURI );
 		}
-		$propertyTitle = RDFIOUtils::cleanWikiTitle( $propertyTitle );
+		$propertyTitle = $this->cleanPageTitle( $propertyTitle );
+
 		return $propertyTitle;
 	}
-
 }	
 
