@@ -54,7 +54,7 @@ class RDFImport extends RDFIOSpecialPage {
 		if ( $requestData->importSource === 'url' ) {
 			if ( $requestData->externalRdfUrl === '' ) {
 				throw new RDFIOException( 'URL field is empty!' );
-			} else if ( !RDFIOUtils::isURI( $requestData->externalRdfUrl ) ) {
+			} else if ( substr( $requestData->externalRdfUrl, 0, 4 ) !== 'http' ) {
 				throw new RDFIOException( 'Invalid URL provided!' );
 			}
 			$rdfData = file_get_contents( $requestData->externalRdfUrl );

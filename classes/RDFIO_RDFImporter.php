@@ -128,13 +128,13 @@ EOD;
 			$s = $triple['s'];
 			$p = $triple['p'];
 			$o = $triple['o'];
-			if ( RDFIOUtils::isURI( $s ) ) {
+			if ( $this->isUri( $s ) ) {
 				$s = "<a href=\"$s\">$s</a>";
 			}
-			if ( RDFIOUtils::isURI( $p ) ) {
+			if ( $this->isUri( $p ) ) {
 				$p = "<a href=\"$p\">$p</a>";
 			}
-			if ( RDFIOUtils::isURI( $o ) ) {
+			if ( $this->isUri( $o ) ) {
 				$o = "<a href=\"$o\">$o</a>";
 			}
 			$output .= "<tr><td>$s</td><td>$p</td><td>$o</td></tr>";
@@ -142,5 +142,9 @@ EOD;
 
 		$output .= "</tbody></table>";
 		return $output;
+	}
+
+	function isUri( $str ) {
+		return ( substr( $str, 0, 4 ) === 'http' );
 	}
 }

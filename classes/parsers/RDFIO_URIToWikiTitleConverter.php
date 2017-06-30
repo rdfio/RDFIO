@@ -202,26 +202,17 @@ class RDFIOURIToTitleConverter {
 
 		if ( $localpart === '' ) {
 			$abbreviatedUri = $basepart;
-		} elseif ( RDFIOUtils::isURI( $basepart ) ) {
-			// Change ARC:s default "random string", to indicate more clearly that
-			// it lacks title
-			$abbreviatedUri = str_replace( 'arc', 'untitled', $localpart );
-
-		} elseif ( RDFIOUtils::isURI( $basepart ) ) {
+		} elseif ( substr( $basepart, 0, 4 ) === 'http' ) {
 			// If the abbreviation does not seem to have succeeded,
 			// fall back to use only the local part
 			$abbreviatedUri = $localpart;
-
-		} elseif ( RDFIOUtils::endsWithColon( $basepart ) ) {
+		} elseif ( substr( $basepart, -1 ) === ':' ) {
 			// Don't add another colon
 			$abbreviatedUri = $basepart . $localpart;
-
 		} elseif ( $basepart == false || $basepart == '' ) {
 			$abbreviatedUri = $localpart;
-
 		} else {
 			$abbreviatedUri = $basepart . ':' . $localpart;
-
 		}
 
 		return $abbreviatedUri;

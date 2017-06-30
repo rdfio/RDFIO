@@ -41,7 +41,6 @@ $GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreException'] = $rdfioDir . '/stores/
 
 // Misc
 $GLOBALS['wgAutoloadClasses']['RDFIOARC2StoreWrapper'] = $rdfioDir . '/classes/RDFIO_ARC2StoreWrapper.php';
-$GLOBALS['wgAutoloadClasses']['RDFIOUtils'] = $rdfioDir . '/classes/RDFIO_Utils.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOSMWPageWriter'] = $rdfioDir . '/classes/RDFIO_SMWPageWriter.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOTestCase'] = $rdfioDir . '/tests/phpunit/RDFIOTestCase.php';
 $GLOBALS['wgAutoloadClasses']['RDFIOWikiWriter'] = $rdfioDir . '/classes/RDFIO_WikiWriter.php';
