@@ -64,12 +64,7 @@ class RDFIOURIToTitleConverter {
 	 * Strategy 1: Use existing title for URI
 	 */
 	function getExistingTitleForURI( $uri ) {
-		$wikiTitle = $this->arc2Store->getWikiTitleByEquivalentURI( $uri );
-		if ( $wikiTitle != '' ) {
-			return $wikiTitle;
-		} else {
-			return null;
-		}
+		return $this->arc2Store->getWikiTitleByEquivalentURI( $uri );
 	}
 
 	/**
