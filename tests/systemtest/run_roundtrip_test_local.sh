@@ -1,9 +1,9 @@
 #!/bin/bash
 echo "Starting simple system test..."
 
-expected="roundtrip_content_expected.xml"
-actual="roundtrip_content_actual.xml"
-actual_filtered="roundtrip_content_actual_filtered.xml"
+expected="roundtrip_content_expected.nt"
+actual="roundtrip_content_actual.nt"
+actual_filtered="roundtrip_content_actual_filtered.nt"
 
 rm $actual $actual_filtered
 mysql -u root smw < emptydb.sql
