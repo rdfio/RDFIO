@@ -35,7 +35,7 @@ class BatchExportRDF extends Maintenance {
 		$store = new SMWARC2Store();
 
 		$offset = 0;
-		$limit = 100;
+		$limit = 250;
 
 		$this->output( "Starting RDF export to file $outPath ...\n" );
 		while ( true ) {

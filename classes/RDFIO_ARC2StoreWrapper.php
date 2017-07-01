@@ -35,30 +35,51 @@ class RDFIOARC2StoreWrapper {
 	 */
 	function toEquivUrisInTriples( $triples, $propUrisFilter = null ) {
 
+		$equivUriCache = array();
+
 		foreach ( $triples as $tripleidx => $triple ) {
 			// Subject
-			if ( $triple['s_type'] === 'uri' ) {
-				$subjEquivUris = $this->getEquivURIsForURI( $triple['s'] );
+			$subjUri = $triple['s'];
+			if ( array_key_exists( $subjUri, $equivUriCache ) ) {
+				echo "Cache hit!\n";
+				$triples[$tripleidx]['s'] = $equivUriCache[$subjUri];
+			} else {
+				$subjEquivUris = $this->getEquivURIsForURI( $subjUri );
 				if ( count( $subjEquivUris ) > 0 ) {
 					$triples[$tripleidx]['s'] = $subjEquivUris[0];
+					$equivUriCache[$subjUri] = $subjEquivUris[0];
 				}
 			}
 
 			// Property
-			$propEquivUris = $this->getEquivURIsForURI( $triple['p'] );
-			if ( !is_null( $propUrisFilter ) ) {
-				// Only include URIs that occur in the filter
-				$propEquivUris = array_intersect( $propEquivUris, $propUrisFilter );
-			}
-			if ( count( $propEquivUris ) > 0 ) {
-				$triples[$tripleidx]['p'] = $propEquivUris[0];
+			$propUri = $triple['p'];
+			if ( array_key_exists( $propUri, $equivUriCache ) ) {
+				echo "Cache hit!\n";
+				$triples[$tripleidx]['p'] = $equivUriCache[$propUri];
+			} else {
+				$propEquivUris = $this->getEquivURIsForURI( $triple['p'] );
+				if ( !is_null( $propUrisFilter ) ) {
+					// Only include URIs that occur in the filter
+					$propEquivUris = array_intersect( $propEquivUris, $propUrisFilter );
+				}
+				if ( count( $propEquivUris ) > 0 ) {
+					$triples[$tripleidx]['p'] = $propEquivUris[0];
+					$equivUriCache[$propUri] = $propEquivUris[0];
+				}
 			}
 
 			// Object
 			if ( $triple['o_type'] === 'uri' ) {
-				$objEquivUris = $this->getEquivURIsForURI( $triple['o'] );
-				if ( count( $objEquivUris ) > 0 ) {
-					$triples[$tripleidx]['o'] = $objEquivUris[0];
+				$objUri = $triple['o'];
+				if ( array_key_exists( $objUri, $equivUriCache ) ) {
+					echo "Cache hit!\n";
+					$triples[$tripleidx]['o'] = $equivUriCache[$objUri];
+				} else {
+					$objEquivUris = $this->getEquivURIsForURI( $objUri );
+					if ( count( $objEquivUris ) > 0 ) {
+						$triples[$tripleidx]['o'] = $objEquivUris[0];
+						$equivUriCache[$objUri] = $objEquivUris[0];
+					}
 				}
 			}
 		}
