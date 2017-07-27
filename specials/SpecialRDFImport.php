@@ -15,35 +15,42 @@ class RDFImport extends RDFIOSpecialPage {
 		$wOut = $this->getOutput();
 		$wUser = $this->getUser();
 
-		try {
-			# Set HTML headers sent to the browser
-			$this->setHeaders();
+		// Set HTML headers sent to the browser
+		$this->setHeaders();
 
-			# The main code
-			$requestData = $this->getRequestData();
-			if ( $requestData->hasWriteAccess && $requestData->action === 'import' ) {
+		// The main code
+		$requestData = $this->getRequestData();
+		if ( $requestData->action === 'import' ) {
+			if ( !$requestData->hasWriteAccess ) {
+				$this->errorMsg( "The current user does not have write access in the wiki" );
+				return;
+			}
+
+			try {
 				$importInfo = $this->importData( $requestData );
 				$triples = $importInfo['triples'];
 				if ( $triples ) {
-					$rdfImporter = new RDFIORDFImporter();
-					$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
+					$this->showHTMLFormAndInfo( $requestData );
+
 					$this->successMsg('Successfully imported ' . count( $triples ) . ' triples!' );
+
+					// Show imported triples
+					$rdfImporter = new RDFIORDFImporter();
 					$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
+
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
 					}
+					return;
+
 				} else if ( !$triples ) {
-					throw new RDFIOException ( "No new triples to import" );
+					$this->errorMsg( 'No new triples to import, in in-data' );
 				}
-			} else {
-				$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
-				$wOut->addHTML( '<div id=sources style="display:none">' );
-				$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
-				$wOut->addHTML( '</div>' );
+			} catch ( MWException $e ) {
+				$this->errorMsg( $e->getMessage() );
 			}
-		} catch ( MWException $e ) {
-			$this->errorMsg( $e->getMessage() );
 		}
+		$this->showHTMLFormAndInfo( $requestData );
 	}
 
 	/**
@@ -100,6 +107,18 @@ class RDFImport extends RDFIOSpecialPage {
 		return $requestData;
 	}
 
+	/**
+	 * Show the RDF Import Form HTML, and some additional info HTML
+	 */
+	function showHTMLFormAndInfo( $requestData ) {
+		$wOut = $this->getOutput();
+		$wUser = $this->getUser();
+
+		$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
+		$wOut->addHTML( '<div id=sources style="display:none">' );
+		$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
+		$wOut->addHTML( '</div>' );
+	}
 
 	/**
 	 * Output the HTML for the form, to the user
