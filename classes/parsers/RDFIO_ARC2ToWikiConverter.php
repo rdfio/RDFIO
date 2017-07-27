@@ -34,18 +34,18 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 
 				// Add categorization of page
 				$catPageTitle = $uriToTitleConv->convert( $triple['o'] );
-				$catPageTitleWithNS = 'Category:' . $catPageTitle;
+				$catPageTitleWithNS = Title::makeTitleSafe( NS_CATEGORY, $catPageTitle )->getFullText();
 				// Add data for the subject page
-				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact = null, $catPageTitleWithNS ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact = null, $catPageTitleWithNS );
 				// Add data for the category page
-				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] ); // TODO: Use i18n:ed NS
+				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] );
 
 			} else if ( $triple['p'] === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
 
 				// Add categorization of page
 				$catPageTitle = $uriToTitleConv->convert( $triple['o'] );
-				$catPageTitleWithNS = 'Category:' . $catPageTitle;
-				$pageTitleWithNS = 'Category:' . $wikiPageTitle;
+				$catPageTitleWithNS = Title::makeTitleSafe( NS_CATEGORY, $catPageTitle )->getFullText();
+				$pageTitleWithNS = Title::makeTitleSafe( NS_CATEGORY, $wikiPageTitle )->getFullText();
 
 				// Add data for the subject page
 				$this->addDataToPage( $pageTitleWithNS, $triple['s'], $fact = null, $catPageTitleWithNS );
@@ -57,7 +57,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				// Separate handling for properties
 				$propertyTitle = $uriToPropTitleConv->convert( $triple['p'] );
 				// Add the property namespace to property title
-				$propTitleWithNS = 'Property:' . $propertyTitle; // TODO: Use i18n:ed NS
+				$propTitleWithNS = Title::makeTitleSafe( SMW_NS_PROPERTY, $propertyTitle )->getFullText();
 				// Add Equivalent URI to property page
 				$this->addDataToPage( $propTitleWithNS, $triple['p'] );
 
