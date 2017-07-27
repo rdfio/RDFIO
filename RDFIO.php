@@ -13,7 +13,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 // -------------------------------------------------------------
 // Extension meta data
 // -------------------------------------------------------------
-define( 'RDFIO_VERSION', 'v2.2.0' );
+define( 'RDFIO_VERSION', 'v2.2.1' );
 
 $GLOBALS['wgExtensionCredits']['other'][] = array(
 	'path' => __FILE__,
