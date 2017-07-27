@@ -41,7 +41,6 @@ class RDFIOARC2StoreWrapper {
 			// Subject
 			$subjUri = $triple['s'];
 			if ( array_key_exists( $subjUri, $equivUriCache ) ) {
-				echo "Cache hit!\n";
 				$triples[$tripleidx]['s'] = $equivUriCache[$subjUri];
 			} else {
 				$subjEquivUris = $this->getEquivURIsForURI( $subjUri );
@@ -54,7 +53,6 @@ class RDFIOARC2StoreWrapper {
 			// Property
 			$propUri = $triple['p'];
 			if ( array_key_exists( $propUri, $equivUriCache ) ) {
-				echo "Cache hit!\n";
 				$triples[$tripleidx]['p'] = $equivUriCache[$propUri];
 			} else {
 				$propEquivUris = $this->getEquivURIsForURI( $triple['p'] );
@@ -72,7 +70,6 @@ class RDFIOARC2StoreWrapper {
 			if ( $triple['o_type'] === 'uri' ) {
 				$objUri = $triple['o'];
 				if ( array_key_exists( $objUri, $equivUriCache ) ) {
-					echo "Cache hit!\n";
 					$triples[$tripleidx]['o'] = $equivUriCache[$objUri];
 				} else {
 					$objEquivUris = $this->getEquivURIsForURI( $objUri );
