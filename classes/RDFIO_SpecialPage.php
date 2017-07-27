@@ -65,16 +65,6 @@ class RDFIOSpecialPage extends SpecialPage {
 	 * @return bool
 	 */
 	protected function allowInsert( $user, $request ) {
-		global $rogAllowRemoteEdit;
-
-		if ( !isset( $rogAllowRemoteEdit ) ) {
-			return false;
-		}
-
-		if ( !$rogAllowRemoteEdit ) {
-			return false;
-		}
-
 		if ( !$this->editTokenOk( $user, $request ) ) {
 			return false;
 		}
