@@ -272,7 +272,7 @@ EOT;
 						</tbody></table>
 					</div>
 					<input type="submit" value="Submit">
-					<input type="hidden" name="token" value="' . $user->getEditToken() . '"> .
+					<input type="hidden" name="token" value="' . $user->getEditToken() . '">
 				</form>';
 
 		return $htmlFormContent;
