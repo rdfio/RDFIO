@@ -158,8 +158,10 @@ class RDFIOARC2StoreWrapper {
 		// Remove URI parts, so that we get a clean title
 		$uriParts = explode( '/', rtrim( $internalUriDecoded, '/' ) );
 		$wikiTitle = str_replace( '_', ' ', array_pop( $uriParts ) );
-		if ( $isProperty ) {
-			$wikiTitle = str_replace( 'Property:', '', $wikiTitle );
+
+		if ( $wikiTitle != '' && $isProperty  ) {
+			$propertyNS = Title::newFromDBkey( $wikiTitle )->getNsText();
+			$wikiTitle = str_replace( $propertyNS . ':', '', $wikiTitle );
 		}
 
 		return $wikiTitle;

@@ -65,7 +65,9 @@ class RDFIOWikiPage {
 	}
 
 	public function isProperty() {
-		if ( substr( $this->getTitle(), 0, 9 ) === 'Property:' ) {
+		$ns = Title::newFromDBkey( $this->getTitle() )->getNamespace();
+
+		if ( $ns === SMW_NS_PROPERTY ) {
 			return true;
 		}
 		return false;
