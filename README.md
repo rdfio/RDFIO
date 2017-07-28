@@ -42,7 +42,7 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-**Please note:** RDFIO is not yet updated to work with SMW 2.5.x, so you have to use 2.4.x at the moment!
+**Please note:** RDFIO does not yet work with anything later than MW 1.26.x and SMW 2.4.x.
 
 ### Vagrant box
 
