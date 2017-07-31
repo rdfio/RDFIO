@@ -71,7 +71,7 @@ minutes.
 Dependencies
 ------------
 
-- [MediaWiki](mediawiki.org) 1.26.x (Up to 1.28.x if installing manually. Composer has problems after 1.26)
+- [MediaWiki](mediawiki.org) 1.26.x (Up to 1.27.x if installing manually. Composer has problems after 1.26)
 - [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) 2.4.x (2.5.x won't work yet!)
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2) Latest version on github should work
 
