@@ -42,7 +42,7 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-**Please note:** RDFIO does not yet work with anything later than MW 1.26.x and SMW 2.4.x.
+**Please note:** RDFIO does not yet confirmed to work with anything later than MW 1.27.x and SMW 2.4.x.
 
 ### Vagrant box
 
@@ -71,7 +71,7 @@ minutes.
 Dependencies
 ------------
 
-- [MediaWiki](mediawiki.org) 1.26.x (Up to 1.27.x if installing manually. Composer has problems after 1.26)
+- [MediaWiki](mediawiki.org) 1.27.x (1.29.x definitely does not work yet)
 - [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) 2.4.x (2.5.x won't work yet!)
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2) Latest version on github should work
 
