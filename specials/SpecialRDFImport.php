@@ -245,7 +245,7 @@ EOT;
 					document.getElementById("datafields").style.display = "";
 				}
 				</script>
-				<form method="post" action="' . str_replace( '/$1', '', $requestData->articlePath ) . '/Special:RDFImport"
+				<form method="post" action=""
 				name="createEditQuery"><input type="hidden" name="action" value="import">
 				' . $extraFormContent . '
 					<table border="0">

@@ -37,7 +37,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 				$this->infoMsg( 'Store is <b>not</b> set up' );
 				$setupStoreForm = '
 				<form method="get"
-					action="' . $wgServer . $wgScriptPath . '/index.php/Special:RDFIOAdmin"
+					action=""
 					name="createEditQuery">
 					<input
 						type="submit"

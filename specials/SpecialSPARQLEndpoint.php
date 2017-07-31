@@ -426,7 +426,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 			$selOutputHTML = ' selected="selected" ';
 		}
 
-		$htmlForm = '<form method="post" action="' . str_replace( '/$1', '', $wgArticlePath ) . '/Special:SPARQLEndpoint"
+		$htmlForm = '<form method="post" action=""
 	        name="createEditQuery">
 	<div style="font-size: 10px">
 	<table border="0"><tbody>
