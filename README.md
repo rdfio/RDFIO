@@ -67,6 +67,64 @@ minutes.
    namely to go to the `Special:RDFIOAdmin` page on your wiki, and hit the "setup"
    button, to initialize the MySQL tables needed by the ARC2 library that RDFIO
    builds upon.
+   
+#### Optional but recommended steps
+
+* Edit the MediaWiki:Sidebar page and add the following wiki snippet, as an extra menu (I use to place it before just the "* SEARCH" line), which will give you links to the main functionality with RDFIO from the main links in the left sidebar on the wiki:
+
+   ```
+   * Semantic Tools
+   ** Special:RDFIOAdmin|RDFIO Admin
+   ** Special:RDFImport|RDF Import
+   ** Special:SPARQLEndpoint|SPARQL Endpoint
+   ** Special:SPARQLImport|SPARQL Import
+   ```
+
+* Create the article "MediaWiki:Smw_uri_blacklist" and make sure it is empty (you might need to add some nonsense content like `{{{<!--empty-->}}}`).
+
+#### Test that it works
+
+* Access the **SPARQL endpoint** at http://[url-to-your-wiki]/Special:SPARQLEndpoint
+* Access the **RDF Import page** at http://[url-to-your-wiki]/Special:RDFImport
+* Access the **SPARQL Import page** at http://[url-to-your-wiki]/Special:SPARQLImport
+* Optionally, if you want to really see that it works, try adding some semantic data to wiki pages, and then check the database (using phpMyAdmin e.g.) to see if you get some triples in the table named `arc2store_triple`.
+
+### Additional configuration
+
+These are some configuration options that you might want to adjust to your specific use case. That goes into your `LocalSettings.php` file. Find below a template with the default options, which you can start from, add to your `LocalSettings.php` file and modify to your liking:
+
+```php
+# ---------------------------------------------------------------
+#  RDFIO Configuration
+# ---------------------------------------------------------------
+# An associative array with base uris as keys and corresponding 
+# prefixes as the items. Example:
+# array( 
+#       "http://example.org/someOntology#" => "ont1",
+#       "http://example.org/anotherOntology#" => "ont2"
+#      );
+# $rogBaseURIs = array();
+# ---------------------------------------------------------------
+# Query by /Output Equivalent URIs SPARQL Endpoint 
+# (overrides settings in HTML Form)
+# 
+# $rogQueryByEquivURI = false;
+# $rogOutputEquivURIs = false;
+#
+# $rogTitleProperties = array(
+#  'http://semantic-mediawiki.org/swivt/1.0#page',
+#  'http://www.w3.org/2000/01/rdf-schema#label',
+#  'http://purl.org/dc/elements/1.1/title',
+#  'http://www.w3.org/2004/02/skos/core#preferredLabel',
+#  'http://xmlns.com/foaf/0.1/name',
+#  'http://www.nmrshiftdb.org/onto#spectrumId'
+# );
+# ---------------------------------------------------------------
+# Allow edit operations via SPARQL from remote services
+#
+# $rogAllowRemoteEdit = false;
+# ---------------------------------------------------------------
+```
 
 Dependencies
 ------------
