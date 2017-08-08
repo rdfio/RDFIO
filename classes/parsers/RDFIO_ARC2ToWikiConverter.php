@@ -36,9 +36,10 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				$catPageTitle = $uriToTitleConv->convert( $triple['o'] );
 				$catPageTitleWithNS = Title::makeTitleSafe( NS_CATEGORY, $catPageTitle )->getFullText();
 				// Add data for the subject page
-				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact = null, $catPageTitleWithNS );
+				$this->addEquivUriToPage( $triple['s'], $wikiPageTitle );
+				$this->addCategoryToPage( $catPageTitleWithNS, $wikiPageTitle );
 				// Add data for the category page
-				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] );
+				$this->addEquivUriToPage( $triple['o'], $catPageTitleWithNS );
 
 			} else if ( $triple['p'] === 'http://www.w3.org/2000/01/rdf-schema#subClassOf' ) {
 
@@ -48,10 +49,11 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				$pageTitleWithNS = Title::makeTitleSafe( NS_CATEGORY, $wikiPageTitle )->getFullText();
 
 				// Add data for the subject page
-				$this->addDataToPage( $pageTitleWithNS, $triple['s'], $fact = null, $catPageTitleWithNS );
+				$this->addEquivUriToPage( $triple['s'], $pageTitleWithNS );
+				$this->addCategoryToPage( $catPageTitleWithNS, $pageTitleWithNS );
 
 				// Add data for the category page
-				$this->addDataToPage( $catPageTitleWithNS, $triple['o'] );
+				$this->addEquivUriToPage( $triple['o'], $catPageTitleWithNS );
 
 			} else {
 				// Separate handling for properties
@@ -59,7 +61,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				// Add the property namespace to property title
 				$propTitleWithNS = Title::makeTitleSafe( SMW_NS_PROPERTY, $propertyTitle )->getFullText();
 				// Add Equivalent URI to property page
-				$this->addDataToPage( $propTitleWithNS, $triple['p'] );
+				$this->addEquivUriToPage( $triple['p'], $propTitleWithNS );
 
 				/*
 				 * Decide whether to create a page for the linked "object" or not,
@@ -70,13 +72,13 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 					case 'bnode':
 					case 'uri':
 						// Create new page for the object
-						$object = $uriToTitleConv->convert( $triple['o'] );
-						$this->addDataToPage( $object, $triple['o'] );
+						$objectTitleOrVal = $uriToTitleConv->convert( $triple['o'] );
+						$this->addEquivUriToPage( $triple['o'], $objectTitleOrVal );
 						// Since URIs convert to pages, properties linking to URIs will be of 'Page' type
 						$propertyDataType = 'Page';
 						break;
 					case 'literal':
-						$object = $triple['o'];
+						$objectTitleOrVal = $triple['o'];
 
 						// Determine data type of property
 						$xsd = 'http://www.w3.org/2001/XMLSchema#';
@@ -116,7 +118,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 								$propertyDataType = 'URL';
 								break;
 							default:
-								if ( substr( $object, 0, 4 ) === 'http' ) {
+								if ( substr( $objectTitleOrVal, 0, 4 ) === 'http' ) {
 									$propertyDataType = 'URL';
 									break;
 								}
@@ -131,46 +133,79 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				// NOTE: This is important to do BEFORE adding any fact using the property,
 				// in order for the fact to get correct encoding in the ARC2 store.
 				if( !is_null( $propertyDataType ) ) {
-					$this->addDataToPage( $propTitleWithNS, null, null, null, $propertyDataType );
+					$this->addDataTypeToPage( $propertyDataType, $propTitleWithNS );
 				}
 
 				// Create a fact array
-				$fact = array( 'p' => $propertyTitle, 'o' => $object );
+				$fact = array( 'p' => $propertyTitle, 'o' => $objectTitleOrVal );
 				// Add data to class variables
-				$this->addDataToPage( $wikiPageTitle, $triple['s'], $fact );
+				$this->addEquivUriToPage( $triple['s'], $wikiPageTitle );
+				$this->addFactToPage( $fact, $wikiPageTitle );
 			}
 		}
 
 		return $this->wikiPages;
 	}
 
+
 	/**
-	 * Convenience function to add a $fact (predicate/object tuple) or $category into
-	 * the RDFIOWikiPage according to the title specified in $pageTitle
-	 * @param string $pageTitle
 	 * @param string $equivURI
-	 * @param string $fact
-	 * @param string $category
+	 * @param string $pageTitle
 	 */
-	private function addDataToPage( $pageTitle, $equivURI = null, $fact = null, $category = null, $dataType = null ) {
+	private function addEquivUriToPage( $equivURI, $pageTitle ) {
+		if ( !is_null( $equivURI ) ) {
+			$this->getPage( $pageTitle )->addEquivalentURI( $equivURI );
+		}
+	}
+
+	/**
+	 * @param array $fact
+	 * @param string $pageTitle
+	 */
+	private function addFactToPage( $fact, $pageTitle ) {
+		if ( !is_null( $fact ) ) {
+			$this->getPage( $pageTitle )->addFact( $fact );
+		}
+	}
+
+	/**
+	 * @param string $category
+	 * @param string $pageTitle
+	 */
+	private function addCategoryToPage( $category, $pageTitle ) {
+		if ( !is_null( $category ) ) {
+			$this->getPage( $pageTitle )->addCategory( $category );
+		}
+	}
+
+	/**
+	 * @param string $dataType
+	 * @param string $pageTitle
+	 */
+	private function addDataTypeToPage( $dataType, $pageTitle ) {
+		if ( !is_null( $dataType ) ) {
+			$this->getPage( $pageTitle )->addDataType( $dataType );
+		}
+	}
+
+	/**
+	 * @param string $pageTitle
+	 */
+	private function ensurePageExists( $pageTitle ) {
 		// Create page array if not exists in array
 		if ( !array_key_exists( $pageTitle, $this->wikiPages ) ) {
 			$this->wikiPages[$pageTitle] = new RDFIOWikiPage( $pageTitle );
 		}
-		if ( !is_null( $equivURI ) ) {
-			$this->wikiPages[$pageTitle]->addEquivalentURI( $equivURI );
-		}
-		if ( !is_null( $fact ) ) {
-			$this->wikiPages[$pageTitle]->addFact( $fact );
-		}
-		if ( !is_null( $category ) ) {
-			$this->wikiPages[$pageTitle]->addCategory( $category );
-		}
-		if ( !is_null( $dataType ) ) {
-			$this->wikiPages[$pageTitle]->addDataType( $dataType );
-		}
 	}
 
+	/**
+	 * @param string $pageTitle
+	 * @return RDFIOWikiPage $page
+	 */
+	private function getPage( $pageTitle ) {
+		$this->ensurePageExists( $pageTitle );
+		return $this->wikiPages[$pageTitle];
+	}
 }
 
 class RDFIOARC2ToWikiConverterException extends MWException {
