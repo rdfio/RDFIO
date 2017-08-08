@@ -2,7 +2,7 @@
 echo "Starting simple system test..."
 
 rm simple_content_actual.xml
-mysql -u root smw < emptydb.sql
+mysql -u smw --password=changethis smw < emptydb.sql
 php ../../maintenance/importRdf.php --in data/testdata.ttl
 php ../../../../maintenance/dumpBackup.php --current | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > simple_content_actual.xml
 if ! diff -q simple_content_{expected,actual}.xml &>/dev/null; then

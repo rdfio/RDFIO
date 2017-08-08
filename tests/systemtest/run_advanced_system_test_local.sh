@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Starting advanced system test ...";
 
-mysql -u root smw < emptydb.sql
+mysql -u smw --password=changethis smw < emptydb.sql
 php ../../../../maintenance/importDump.php advanced_content_initial.xml
 
 php ../../maintenance/importRdf.php --in data/testdata_advanced.ttl

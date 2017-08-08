@@ -6,7 +6,7 @@ actual="roundtrip_content_actual.nt"
 actual_filtered="roundtrip_content_actual_filtered.nt"
 
 rm $actual $actual_filtered
-mysql -u root smw < emptydb.sql
+mysql -u smw --password=changethis smw < emptydb.sql
 php ../../maintenance/importRdf.php --in data/testdata.nt
 php ../../maintenance/exportRdf.php --origuris --format ntriples --out $actual
 
