@@ -41,6 +41,7 @@ class RDFIOURIToTitleConverter {
 		$convStrategies = array(
 			'getExistingTitleForURI',
 			'applyGlobalSettingForPropertiesToUseAsWikiTitle',
+			'parseBNode',
 			'shortenURINamespaceToAliasInSourceRDF',
 			'extractLocalPartFromURI',
 			'useValueAsIs'
@@ -96,7 +97,23 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * Strategy 3: Abbreviate the namespace to its NS prefix as configured in
+	 * Strategy 3: Check if $uri is a blank node, and if so, add 'BNode_' to the wiki title.
+	 * @param $uri
+	 * @return string
+	 */
+	function parseBNode( $uri ) {
+		$title = '';
+
+		if ( substr( $uri, 0, 2 ) == '_:' ) {
+			$bnodeId = explode( ':', $uri )[1];
+			$title = 'Blank_node_' . substr( $bnodeId, 3);
+		}
+
+		return $title;
+	}
+
+	/**
+	 * Strategy 4: Abbreviate the namespace to its NS prefix as configured in
 	 * mappings in the parser (default ones, or provided as part of the
 	 * imported data)
 	 */
@@ -121,7 +138,7 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * Strategy 4: As a default, just try to get the local part of the URL
+	 * Strategy 5: As a default, just try to get the local part of the URL
 	 */
 	function extractLocalPartFromURI( $uri ) {
 		$title = '';
@@ -135,7 +152,7 @@ class RDFIOURIToTitleConverter {
 	}
 
 	/**
-	 * Strategy 5: Just use the value as is, as if it was a literal value
+	 * Strategy 6: Just use the value as is, as if it was a literal value
 	 */
 	function useValueAsIs( $uri ) {
 		return $uri;

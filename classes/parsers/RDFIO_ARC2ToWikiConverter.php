@@ -67,6 +67,7 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 				 */
 				$propertyDataType = null;
 				switch ( $triple['o_type'] ) {
+					case 'bnode':
 					case 'uri':
 						// Create new page for the object
 						$object = $uriToTitleConv->convert( $triple['o'] );
