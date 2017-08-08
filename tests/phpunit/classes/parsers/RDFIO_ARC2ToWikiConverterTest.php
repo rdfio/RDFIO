@@ -42,6 +42,19 @@ class RDFIOARC2ToWikiConverterTest extends RDFIOTestCase {
 		$this->assertTrue( $equivUriExists );
 	}
 
+	public function testAddEquivUriToPageDontAddBNode() {
+		$arc2ToWiki = new RDFIOARC2ToWikiConverter();
+
+		$equivUri = '_:arc123abc';
+		$pageTitle = 'ExamplePage';
+
+		$this->invokeMethod( $arc2ToWiki, 'addEquivUriToPage', array( $equivUri, $pageTitle ) );
+		$page = $this->invokeMethod( $arc2ToWiki, 'getPage', array( $pageTitle ) );
+
+		$equivUriExists = $this->invokeMethod( $page, 'equivalentURIExists', array( $equivUri ) );
+		$this->assertFalse( $equivUriExists );
+	}
+
 	public function testAddFactToPage() {
 		$arc2ToWiki = new RDFIOARC2ToWikiConverter();
 

@@ -153,7 +153,8 @@ class RDFIOARC2ToWikiConverter extends RDFIOParser {
 	 * @param string $pageTitle
 	 */
 	private function addEquivUriToPage( $equivURI, $pageTitle ) {
-		if ( !is_null( $equivURI ) ) {
+		// Make sure $equivURI is not null, nor a blank node (starting with '_:')
+		if ( !is_null( $equivURI ) && substr( $equivURI, 0, 2 ) !== '_:' ) {
 			$this->getPage( $pageTitle )->addEquivalentURI( $equivURI );
 		}
 	}
