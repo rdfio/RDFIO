@@ -136,7 +136,6 @@ Dependencies
 Known limitations
 -----------------
 
-- RDFIO does not yet support anonymous / blank nodes.
 - RDFIO does not yet support all the features of [SMW's vocabulary import](https://www.semantic-mediawiki.org/wiki/Help:Import_vocabulary).
 
 Bugs, new feature request and contact information
