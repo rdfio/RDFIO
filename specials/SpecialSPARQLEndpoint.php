@@ -404,8 +404,6 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	 * @return string $htmlForm
 	 */
 	private function getHTMLForm( $query = '' ) {
-		global $wgArticlePath;
-
 		$wRequest = $this->getRequest();
 		$wUser = $this->getUser();
 		$uriResolverURI = SpecialPage::getTitleFor( 'URIResolver' )->getFullURL() . '/';
