@@ -9,3 +9,6 @@ ex:Sweden
 ex:Germany
 	ex:has_second_city ex:Frankfurt ;
 	ex:has_population 82000001 .
+
+ex:Norway
+    ex:metadata [ ex:has_second_city ex:Bergen ; ] ;

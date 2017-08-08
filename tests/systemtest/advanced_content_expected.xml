@@ -48,7 +48,17 @@ Property:Has population
 [[Has type::Number]]
 Property:Has second city
 [[Has type::Page]]
+Property:Metadata
+[[Equivalent URI::http://example.org/onto/metadata]]
+[[Has type::Page]]
 Gothenburg
 [[Equivalent URI::http://example.org/onto/Gothenburg]]
 Frankfurt
 [[Equivalent URI::http://example.org/onto/Frankfurt]]
+Norway
+[[Equivalent URI::http://example.org/onto/Norway]]
+[[Metadata::Blank_node_123abc]]
+Bergen
+[[Equivalent URI::http://example.org/onto/Bergen]]
+Blank node 123abc
+[[Has second city::Bergen]]

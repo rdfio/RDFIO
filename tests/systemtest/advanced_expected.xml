@@ -3,7 +3,7 @@
     <sitename>MW</sitename>
     <dbname>smw</dbname>
     <base>http://localhost/w/index.php/Main_Page</base>
-    <generator>MediaWiki 1.26.4</generator>
+    <generator>MediaWiki 1.27.3</generator>
     <case>first-letter</case>
     <namespaces>
       <namespace key="-2" case="first-letter">Media</namespace>
@@ -97,12 +97,13 @@ Now please follow these steps:
     <ns>0</ns>
     <id>3</id>
     <revision>
-      <id>14</id>
+      <id>15</id>
       <parentid>4</parentid>
-      <timestamp>2017-04-18T13:29:34Z</timestamp>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
       <text xml:space="preserve" bytes="160">[[Has capital::Stockholm]]
@@ -136,15 +137,16 @@ Now please follow these steps:
     <ns>0</ns>
     <id>5</id>
     <revision>
-      <id>13</id>
+      <id>17</id>
       <parentid>6</parentid>
-      <timestamp>2017-04-18T13:29:10Z</timestamp>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="223">Germany is a [[Category:Country|country]] in [[Europe]], with a population of [[Has population::82000001]].
+      <text xml:space="preserve" bytes="223">Germany is a [[Category:Country|country]] in [[Europe]], with a population of [[Has population::82000000]].
 
 {{Country
 |Capital=Berlin
@@ -152,7 +154,7 @@ Now please follow these steps:
 |Orig URI=http://example.org/onto/Germany
 |Second city=Frankfurt
 }}</text>
-      <sha1>cq9v7xdilpx5eckw6wlbgppgb8ejazu</sha1>
+      <sha1>30o7klebzloc49jgldthaakb5k10b35</sha1>
     </revision>
   </page>
   <page>
@@ -198,17 +200,18 @@ Now please follow these steps:
     <ns>102</ns>
     <id>8</id>
     <revision>
-      <id>9</id>
-      <timestamp>2017-04-18T13:02:46Z</timestamp>
+      <id>12</id>
+      <parentid>9</parentid>
+      <timestamp>2017-08-08T20:16:39Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
-      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_population]]&quot;</comment>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-	  <text xml:space="preserve" bytes="58">[[Equivalent URI::http://example.org/onto/has_population]]
+      <text xml:space="preserve" bytes="79">[[Equivalent URI::http://example.org/onto/has_population]]
 [[Has type::Number]]</text>
-      <sha1>mvjtaozbmxcv15el4k7vi9pi5jllbwj</sha1>
+      <sha1>hxfej82p518x7opdlocf1gm4d1ot487</sha1>
     </revision>
   </page>
   <page>
@@ -216,53 +219,128 @@ Now please follow these steps:
     <ns>102</ns>
     <id>9</id>
     <revision>
-      <id>10</id>
-      <timestamp>2017-04-18T13:03:25Z</timestamp>
+      <id>11</id>
+      <parentid>10</parentid>
+      <timestamp>2017-08-08T20:16:39Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
-      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/has_second_city]]&quot;</comment>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-	  <text xml:space="preserve" bytes="59">[[Equivalent URI::http://example.org/onto/has_second_city]]
+      <text xml:space="preserve" bytes="78">[[Equivalent URI::http://example.org/onto/has_second_city]]
 [[Has type::Page]]</text>
-      <sha1>pzey0qi9kt2okn1v0emsm3x7f107jfk</sha1>
+      <sha1>6a20i3qi5k8eor1j8v7j9k2v0mq20hs</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Metadata</title>
+    <ns>102</ns>
+    <id>10</id>
+    <revision>
+      <id>13</id>
+      <timestamp>2017-08-08T20:16:39Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Page updated by RDFIO</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="72">
+[[Equivalent URI::http://example.org/onto/metadata]]
+[[Has type::Page]]</text>
+      <sha1>ppnobf3lixl13j6wf41pt9w7z7kge9j</sha1>
     </revision>
   </page>
   <page>
     <title>Gothenburg</title>
     <ns>0</ns>
-    <id>10</id>
+    <id>11</id>
     <revision>
-      <id>11</id>
-      <timestamp>2017-04-18T13:28:16Z</timestamp>
+      <id>14</id>
+      <timestamp>2017-08-08T20:16:39Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
-      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Gothenburg]]&quot;</comment>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-      <text xml:space="preserve" bytes="54">
+      <text xml:space="preserve" bytes="55">
 [[Equivalent URI::http://example.org/onto/Gothenburg]]</text>
-      <sha1>44rdn8s2i8cp4w6nq3pk01mi1uav5s4</sha1>
+      <sha1>bykxfg0srvzu6ceooecvss2zfm6j59y</sha1>
     </revision>
   </page>
   <page>
     <title>Frankfurt</title>
     <ns>0</ns>
-    <id>11</id>
+    <id>12</id>
     <revision>
-      <id>12</id>
-      <timestamp>2017-04-18T13:28:42Z</timestamp>
+      <id>16</id>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
       <contributor>
-        <ip>10.0.2.2</ip>
+        <ip>127.0.0.1</ip>
       </contributor>
-      <comment>Created page with &quot;[[Equivalent URI::http://example.org/onto/Frankfurt]]&quot;</comment>
+      <comment>Page updated by RDFIO</comment>
       <model>wikitext</model>
       <format>text/x-wiki</format>
-	  <text xml:space="preserve" bytes="53">
+      <text xml:space="preserve" bytes="54">
 [[Equivalent URI::http://example.org/onto/Frankfurt]]</text>
-      <sha1>eqfptun4sxgbsrlvg3lj4tmv041ah73</sha1>
+      <sha1>qj6dtfq7tiuq1mryh7h2n00zvevu2qa</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Norway</title>
+    <ns>0</ns>
+    <id>13</id>
+    <revision>
+      <id>18</id>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Page updated by RDFIO</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="83">
+[[Equivalent URI::http://example.org/onto/Norway]]
+[[Metadata::Blank_node_123abc]]</text>
+      <sha1>e99r3571vt87h1vdxft1dfpgwtccou0</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Bergen</title>
+    <ns>0</ns>
+    <id>14</id>
+    <revision>
+      <id>19</id>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Page updated by RDFIO</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="51">
+[[Equivalent URI::http://example.org/onto/Bergen]]</text>
+      <sha1>95x45lppdfqh89bdogjqnknbonhkkxm</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Blank node 123abc</title>
+    <ns>0</ns>
+    <id>15</id>
+    <revision>
+      <id>20</id>
+      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Page updated by RDFIO</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="28">
+[[Has second city::Bergen]]</text>
+      <sha1>hb6bqjr0bb03o32gex7qhlv5hwyamsd</sha1>
     </revision>
   </page>
 </mediawiki>
