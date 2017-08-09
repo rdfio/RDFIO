@@ -44,7 +44,7 @@
 # starting servers, which your tests will connect to.
 machine:
   php:
-    version: 5.6.22 # See available versions here: https://circleci.com/docs/1.0/build-image-trusty/#php
+    version: 7.0.20 # See available versions here: https://circleci.com/docs/1.0/build-image-trusty/#php
 
 dependencies:
   override:
