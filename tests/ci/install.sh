@@ -20,7 +20,7 @@ echo "=== STARTING TO INSTALL SMW ==="
 
 sudo chown -R ubuntu:ubuntu .
 
-composer require mediawiki/semantic-media-wiki $SMWVER
+composer require mediawiki/semantic-media-wiki $SMWVER --update-no-dev
 php maintenance/update.php
 
 mkdir -p extensions/PageForms
