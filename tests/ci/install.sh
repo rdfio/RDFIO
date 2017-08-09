@@ -20,6 +20,7 @@ echo "=== STARTING TO INSTALL SMW ==="
 
 sudo chown -R ubuntu:ubuntu .
 
+composer update
 composer require mediawiki/semantic-media-wiki $SMWVER --update-no-dev
 php maintenance/update.php
 
