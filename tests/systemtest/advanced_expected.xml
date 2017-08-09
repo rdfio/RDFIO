@@ -3,7 +3,7 @@
     <sitename>MW</sitename>
     <dbname>smw</dbname>
     <base>http://localhost/w/index.php/Main_Page</base>
-    <generator>MediaWiki 1.27.3</generator>
+    <generator>MediaWiki 1.29.0</generator>
     <case>first-letter</case>
     <namespaces>
       <namespace key="-2" case="first-letter">Media</namespace>
@@ -26,8 +26,6 @@
       <namespace key="15" case="first-letter">Category talk</namespace>
       <namespace key="102" case="first-letter">Property</namespace>
       <namespace key="103" case="first-letter">Property talk</namespace>
-      <namespace key="104" case="first-letter">Type</namespace>
-      <namespace key="105" case="first-letter">Type talk</namespace>
       <namespace key="106" case="first-letter">Form</namespace>
       <namespace key="107" case="first-letter">Form talk</namespace>
       <namespace key="108" case="first-letter">Concept</namespace>
@@ -93,13 +91,237 @@ Now please follow these steps:
     </revision>
   </page>
   <page>
-    <title>Sweden</title>
-    <ns>0</ns>
+    <title>MediaWiki:Smw import skos</title>
+    <ns>8</ns>
     <id>3</id>
     <revision>
-      <id>15</id>
-      <parentid>4</parentid>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>4</id>
+      <timestamp>2017-08-09T19:18:13Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="982">http://www.w3.org/2004/02/skos/core#|[http://www.w3.org/TR/skos-reference/skos.rdf Simple Knowledge Organization System (SKOS)]
+ altLabel|Type:Monolingual text
+ broader|Type:Annotation URI
+ broaderTransitive|Type:Annotation URI
+ broadMatch|Type:Annotation URI
+ changeNote|Type:Text
+ closeMatch|Type:Annotation URI
+ Collection|Class
+ Concept|Class
+ ConceptScheme|Class
+ definition|Type:Text
+ editorialNote|Type:Text
+ exactMatch|Type:Annotation URI
+ example|Type:Text
+ hasTopConcept|Type:Page
+ hiddenLabel|Type:String
+ historyNote|Type:Text
+ inScheme|Type:Page
+ mappingRelation|Type:Page
+ member|Type:Page
+ memberList|Type:Page
+ narrower|Type:Annotation URI
+ narrowerTransitive|Type:Annotation URI
+ narrowMatch|Type:Annotation URI
+ notation|Type:Text
+ note|Type:Text
+ OrderedCollection|Class
+ prefLabel|Type:String
+ related|Type:Annotation URI
+ relatedMatch|Type:Annotation URI
+ scopeNote|Type:Text
+ semanticRelation|Type:Page
+ topConceptOf|Type:Page
+
+[[Category:Imported vocabulary]]</text>
+      <sha1>7uej7l6j7zibffqxeqr83oypfu8tya3</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>MediaWiki:Smw import foaf</title>
+    <ns>8</ns>
+    <id>4</id>
+    <revision>
+      <id>5</id>
+      <timestamp>2017-08-09T19:18:14Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="298">http://xmlns.com/foaf/0.1/|[http://www.foaf-project.org/ Friend Of A Friend]
+ name|Type:Text
+ homepage|Type:URL
+ mbox|Type:Email
+ mbox_sha1sum|Type:Text
+ depiction|Type:URL
+ phone|Type:Text
+ Person|Category
+ Organization|Category
+ knows|Type:Page
+ member|Type:Page
+
+[[Category:Imported vocabulary]]</text>
+      <sha1>54j1f1u0gxrlqu4877gsk6vv72gs354</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>MediaWiki:Smw import owl</title>
+    <ns>8</ns>
+    <id>5</id>
+    <revision>
+      <id>6</id>
+      <timestamp>2017-08-09T19:18:14Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="1196">http://www.w3.org/2002/07/owl#|[http://www.w3.org/2002/07/owl Web Ontology Language (OWL)]
+ AllDifferent|Category
+ allValuesFrom|Type:Page
+ AnnotationProperty|Category
+ backwardCompatibleWith|Type:Page
+ cardinality|Type:Number
+ Class|Category
+ comment|Type:Page
+ complementOf|Type:Page
+ DataRange|Category
+ DatatypeProperty|Category
+ DeprecatedClass|Category
+ DeprecatedProperty|Category
+ differentFrom|Type:Page
+ disjointWith|Type:Page
+ distinctMembers|Type:Page
+ equivalentClass|Type:Page
+ equivalentProperty|Type:Page
+ FunctionalProperty|Category
+ hasValue|Type:Page
+ imports|Type:Page
+ incompatibleWith|Type:Page
+ intersectionOf|Type:Page
+ InverseFunctionalProperty|Category
+ inverseOf|Type:Page
+ isDefinedBy|Type:Page
+ label|Type:Page
+ maxCardinality|Type:Number
+ minCardinality|Type:Number
+ Nothing|Category
+ ObjectProperty|Category
+ oneOf|Type:Page
+ onProperty|Type:Page
+ Ontology|Category
+ OntologyProperty|Category
+ owl|Type:Page
+ priorVersion|Type:Page
+ Restriction|Category
+ sameAs|Type:Page
+ seeAlso|Type:Page
+ someValuesFrom|Type:Page
+ SymmetricProperty|Category
+ Thing|Category
+ TransitiveProperty|Category
+ unionOf|Type:Page
+ versionInfo|Type:Page
+
+[[Category:Imported vocabulary]]</text>
+      <sha1>mjrj8ysg8aclt8sddeabn26vvadmsuy</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Foaf:knows</title>
+    <ns>102</ns>
+    <id>6</id>
+    <revision>
+      <id>7</id>
+      <timestamp>2017-08-09T19:18:14Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="233">* [[Imported from::foaf:knows]] 
+* [[Has property description::A person known by this person (indicating some level of reciprocated interaction between the parties).@en]] 
+
+[[Category:Imported vocabulary]] {{DISPLAYTITLE:foaf:knows}}</text>
+      <sha1>5fpdmhtk9h4opuere6cb7zrdzeal6ur</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Foaf:name</title>
+    <ns>102</ns>
+    <id>7</id>
+    <revision>
+      <id>8</id>
+      <timestamp>2017-08-09T19:18:14Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="159">* [[Imported from::foaf:name]] 
+* [[Has property description::A name for some thing or agent.@en]] 
+
+[[Category:Imported vocabulary]]{{DISPLAYTITLE:foaf:name}}</text>
+      <sha1>ncohsxx9qrs0wyig0kjyyumifnyz4sk</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Foaf:homepage</title>
+    <ns>102</ns>
+    <id>8</id>
+    <revision>
+      <id>9</id>
+      <timestamp>2017-08-09T19:18:15Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="203">* [[Imported from::foaf:homepage]] 
+* [[Has property description::URL of the homepage of something, which is a general web resource.@en]] 
+
+[[Category:Imported vocabulary]] {{DISPLAYTITLE:foaf:homepage}}</text>
+      <sha1>2ywqz2j0v9tvaqdlu13mz1xmen6dm2z</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Property:Owl:differentFrom</title>
+    <ns>102</ns>
+    <id>9</id>
+    <revision>
+      <id>10</id>
+      <timestamp>2017-08-09T19:18:15Z</timestamp>
+      <contributor>
+        <ip>127.0.0.1</ip>
+      </contributor>
+      <comment>Semantic MediaWiki default vocabulary import</comment>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text xml:space="preserve" bytes="215">* [[Imported from::owl:differentFrom]] 
+* [[Has property description::The property that determines that two given individuals are different.@en]] 
+
+[[Category:Imported vocabulary]] {{DISPLAYTITLE:owl:differentFrom}}</text>
+      <sha1>39ysbnyduz283si6e9m8qbpfxrlehcl</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Sweden</title>
+    <ns>0</ns>
+    <id>10</id>
+    <revision>
+      <id>22</id>
+      <parentid>11</parentid>
+      <timestamp>2017-08-09T19:24:41Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -118,9 +340,9 @@ Now please follow these steps:
   <page>
     <title>Property:Has capital</title>
     <ns>102</ns>
-    <id>4</id>
+    <id>11</id>
     <revision>
-      <id>5</id>
+      <id>12</id>
       <timestamp>2017-04-18T12:28:49Z</timestamp>
       <contributor>
         <ip>10.0.2.2</ip>
@@ -135,11 +357,11 @@ Now please follow these steps:
   <page>
     <title>Germany</title>
     <ns>0</ns>
-    <id>5</id>
+    <id>12</id>
     <revision>
-      <id>17</id>
-      <parentid>6</parentid>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>24</id>
+      <parentid>13</parentid>
+      <timestamp>2017-08-09T19:24:42Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -160,9 +382,9 @@ Now please follow these steps:
   <page>
     <title>Template:Country</title>
     <ns>10</ns>
-    <id>6</id>
+    <id>13</id>
     <revision>
-      <id>7</id>
+      <id>14</id>
       <timestamp>2017-04-18T12:53:15Z</timestamp>
       <contributor>
         <ip>10.0.2.2</ip>
@@ -181,9 +403,9 @@ Now please follow these steps:
   <page>
     <title>Category:Country</title>
     <ns>14</ns>
-    <id>7</id>
+    <id>14</id>
     <revision>
-      <id>8</id>
+      <id>15</id>
       <timestamp>2017-04-18T12:33:58Z</timestamp>
       <contributor>
         <ip>10.0.2.2</ip>
@@ -198,11 +420,11 @@ Now please follow these steps:
   <page>
     <title>Property:Has population</title>
     <ns>102</ns>
-    <id>8</id>
+    <id>15</id>
     <revision>
-      <id>12</id>
-      <parentid>9</parentid>
-      <timestamp>2017-08-08T20:16:39Z</timestamp>
+      <id>19</id>
+      <parentid>16</parentid>
+      <timestamp>2017-08-09T19:24:41Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -217,11 +439,11 @@ Now please follow these steps:
   <page>
     <title>Property:Has second city</title>
     <ns>102</ns>
-    <id>9</id>
+    <id>16</id>
     <revision>
-      <id>11</id>
-      <parentid>10</parentid>
-      <timestamp>2017-08-08T20:16:39Z</timestamp>
+      <id>18</id>
+      <parentid>17</parentid>
+      <timestamp>2017-08-09T19:24:40Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -236,10 +458,10 @@ Now please follow these steps:
   <page>
     <title>Property:Metadata</title>
     <ns>102</ns>
-    <id>10</id>
+    <id>17</id>
     <revision>
-      <id>13</id>
-      <timestamp>2017-08-08T20:16:39Z</timestamp>
+      <id>20</id>
+      <timestamp>2017-08-09T19:24:41Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -255,10 +477,10 @@ Now please follow these steps:
   <page>
     <title>Gothenburg</title>
     <ns>0</ns>
-    <id>11</id>
+    <id>18</id>
     <revision>
-      <id>14</id>
-      <timestamp>2017-08-08T20:16:39Z</timestamp>
+      <id>21</id>
+      <timestamp>2017-08-09T19:24:41Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -273,10 +495,10 @@ Now please follow these steps:
   <page>
     <title>Frankfurt</title>
     <ns>0</ns>
-    <id>12</id>
+    <id>19</id>
     <revision>
-      <id>16</id>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>23</id>
+      <timestamp>2017-08-09T19:24:41Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -291,10 +513,10 @@ Now please follow these steps:
   <page>
     <title>Norway</title>
     <ns>0</ns>
-    <id>13</id>
+    <id>20</id>
     <revision>
-      <id>18</id>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>25</id>
+      <timestamp>2017-08-09T19:24:42Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -304,16 +526,16 @@ Now please follow these steps:
       <text xml:space="preserve" bytes="83">
 [[Equivalent URI::http://example.org/onto/Norway]]
 [[Metadata::Blank_node_123abc]]</text>
-      <sha1>e99r3571vt87h1vdxft1dfpgwtccou0</sha1>
+      <sha1>ri6wfdz5g63dzib54futxn0nvn39o2o</sha1>
     </revision>
   </page>
   <page>
     <title>Bergen</title>
     <ns>0</ns>
-    <id>14</id>
+    <id>21</id>
     <revision>
-      <id>19</id>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>26</id>
+      <timestamp>2017-08-09T19:24:42Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
@@ -328,10 +550,10 @@ Now please follow these steps:
   <page>
     <title>Blank node 123abc</title>
     <ns>0</ns>
-    <id>15</id>
+    <id>22</id>
     <revision>
-      <id>20</id>
-      <timestamp>2017-08-08T20:16:40Z</timestamp>
+      <id>27</id>
+      <timestamp>2017-08-09T19:24:42Z</timestamp>
       <contributor>
         <ip>127.0.0.1</ip>
       </contributor>
