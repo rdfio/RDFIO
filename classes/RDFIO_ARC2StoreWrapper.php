@@ -26,7 +26,7 @@ class RDFIOARC2StoreWrapper {
 			'db_name' => $wgDBname,
 			'db_user' => $wgDBuser,
 			'db_pwd' => $wgDBpassword,
-			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+			'store_name' => preg_replace( '/s?unittest_/', '', $wgDBprefix ) . 'arc2store', // Determines table prefix
 		);
 		$this->arc2store = ARC2::getStore( $arc2StoreConfig );
 	}
