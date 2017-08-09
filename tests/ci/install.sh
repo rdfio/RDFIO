@@ -36,7 +36,7 @@ echo 'include_once "$IP/extensions/PageForms/PageForms.php";' >> LocalSettings.p
 echo "=== STARTING TO INSTALL RDFIO ==="
 
 cd $MW_DIR
-composer require rdfio/rdfio >=2.0.11 --update-no-dev
+composer require rdfio/rdfio --update-no-dev
 echo '$smwgOWLFullExport = true;' >> LocalSettings.php
 
 rm -rf $MW_DIR/extensions/Rdfio
