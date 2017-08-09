@@ -6,7 +6,7 @@ MW_DIR=$HOME/w
 MWVER_MAJOR="1.29"
 MWVER_MINOR=$MWVER_MAJOR".0"
 SMWVER="2.5.4"
-PHPUNITVER="4.7.6"
+PHPUNITVER="4.8.35"
 
 cd $HOME
 wget "http://releases.wikimedia.org/mediawiki/"$MWVER_MAJOR"/mediawiki-"$MWVER_MINOR".tar.gz"
