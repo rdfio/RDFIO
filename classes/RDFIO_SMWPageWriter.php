@@ -116,9 +116,9 @@ class RDFIOSMWPageWriter {
 			}
 
 			// ----------------------------------------------------------------------
-			// 14. Write updated article
+			// 14. Write updated page
 			// ----------------------------------------------------------------------
-			$this->writeToArticle( $wikiTitle, $newWikiText, 'Page updated by RDFIO' );
+			$this->writeToPage( $wikiTitle, $newWikiText, 'Page updated by RDFIO' );
 		}
 	}
 
@@ -338,10 +338,10 @@ class RDFIOSMWPageWriter {
 	 * @param string $content
 	 * @param string $summary
 	 */
-	private function writeToArticle( $wikiTitle, $content, $summary ) {
+	private function writeToPage( $wikiTitle, $content, $summary ) {
 		$mwTitleObj = Title::newFromText( $wikiTitle );
-		$mwArticleObj = new Article( $mwTitleObj );
-		$mwArticleObj->doEdit( $content, $summary );
+		$mwArticleObj = WikiPage::factory( $mwTitleObj );
+		$mwArticleObj->doEditContent( ContentHandler::makeContent( $content, $mwTitleObj), $summary );
 	}
 
 	/**
