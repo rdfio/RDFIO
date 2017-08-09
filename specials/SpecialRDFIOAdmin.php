@@ -16,7 +16,8 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
-		global $smwgARC2StoreConfig, $wgScriptPath, $wgServer;
+		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
+
 		$wUser = $this->getUser();
 		$wRequest = $this->getRequest();
 		$wOut = $this->getOutput();
@@ -27,7 +28,14 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 
 		$wOut->addHTML("<h3>RDF Store Setup</h3>" );
 
-		$store = ARC2::getStore( $smwgARC2StoreConfig );
+		$arc2StoreConfig = array(
+			'db_host' => $wgDBserver,
+			'db_name' => $wgDBname,
+			'db_user' => $wgDBuser,
+			'db_pwd' => $wgDBpassword,
+			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+		);
+		$store = ARC2::getStore( $arc2StoreConfig );
 		if ( $store->isSetUp() ) {
 			$this->infoMsg( 'Store is already set up.' );
 		} else {

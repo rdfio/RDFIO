@@ -19,9 +19,15 @@ class SetupArc2Store extends Maintenance {
 	}
 
 	public function execute() {
-		global $smwgARC2StoreConfig;
-
-		$store = ARC2::getStore( $smwgARC2StoreConfig );
+		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
+		$arc2StoreConfig = array(
+			'db_host' => $wgDBserver,
+			'db_name' => $wgDBname,
+			'db_user' => $wgDBuser,
+			'db_pwd' => $wgDBpassword,
+			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+		);
+		$store = ARC2::getStore( $arc2StoreConfig );
 
 		if ( $store->isSetUp() ) {
 			$this->output( "Store is already set up, so not doing anything.\n" );

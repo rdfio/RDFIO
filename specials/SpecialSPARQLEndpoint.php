@@ -378,8 +378,14 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	 * SPARQL endpoint
 	 */
 	private function getSPARQLEndpointConfig() {
-		global $smwgARC2StoreConfig;
-		$epconfig = $smwgARC2StoreConfig;
+		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
+		$epconfig = array(
+			'db_host' => $wgDBserver,
+			'db_name' => $wgDBname,
+			'db_user' => $wgDBuser,
+			'db_pwd' => $wgDBpassword,
+			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+		);
 		$epconfig['endpoint_features'] =
 			array(
 				'select',

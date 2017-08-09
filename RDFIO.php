@@ -69,28 +69,6 @@ $GLOBALS['wgSpecialPages']['RDFImport'] = 'RDFImport';
 $GLOBALS['wgSpecialPages']['SPARQLEndpoint'] = 'SPARQLEndpoint';
 $GLOBALS['wgSpecialPages']['SPARQLImport'] = 'SPARQLImport';
 
-// -------------------------------------------------------------
-// ARC2 RDF Store config
-// -------------------------------------------------------------
-// Has to be made as an wgExtensionFunction so as to get access to
-// LocalSettings variables, as suggested by @mwjames in
-// https://github.com/rdfio/RDFIO/issues/13#issuecomment-256414481
-$GLOBALS['wgExtensionFunctions'][] = function() {
-	global $wgDBtype, $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
-	global $smwgARC2StoreConfig;
-
-	// Customize these details if you
-	// want to use an external database
-	$smwgARC2StoreConfig = array(
-		'db_host' => $wgDBserver,
-		'db_name' => $wgDBname,
-		'db_user' => $wgDBuser,
-		'db_pwd' => $wgDBpassword,
-		'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
-	);
-
-};
-
 // This has to be set outside of the wgExtensionFunctions array above
 global $smwgDefaultStore;
 $smwgDefaultStore = 'SMWARC2Store';

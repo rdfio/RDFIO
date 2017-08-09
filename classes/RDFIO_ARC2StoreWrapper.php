@@ -15,13 +15,20 @@ class RDFIOARC2StoreWrapper {
 	const EQUIV_PROPERTY_URI = 'http://www.w3.org/2002/07/owl#equivalentProperty';
 
 	function __construct( $tripleStore = null ) {
-		global $smwgARC2StoreConfig;
+		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
 		$this->uriResolverUrl = '';
 		if ( !is_null( $tripleStore ) ) {
 			$this->arc2store = $tripleStore;
 			return;
 		}
-		$this->arc2store = ARC2::getStore( $smwgARC2StoreConfig );
+		$arc2StoreConfig = array(
+			'db_host' => $wgDBserver,
+			'db_name' => $wgDBname,
+			'db_user' => $wgDBuser,
+			'db_pwd' => $wgDBpassword,
+			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+		);
+		$this->arc2store = ARC2::getStore( $arc2StoreConfig );
 	}
 
 	/**

@@ -17,10 +17,18 @@ class SMWARC2Store extends SMWSQLStore3 {
 	protected $arc2store;
 
 	public function __construct() {
+		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
 		parent::__construct();
-		global $smwgARC2StoreConfig;
-
-		$this->arc2store = ARC2::getStore( $smwgARC2StoreConfig );
+		// Customize these details if you
+		// want to use an external database
+		$arc2StoreConfig = array(
+			'db_host' => $wgDBserver,
+			'db_name' => $wgDBname,
+			'db_user' => $wgDBuser,
+			'db_pwd' => $wgDBpassword,
+			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
+		);
+		$this->arc2store = ARC2::getStore( $arc2StoreConfig );
 	}
 
 	/**
