@@ -42,8 +42,6 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-**Please note:** RDFIO currently needs SMW 2.4.x. SMW 2.5.x won't work yet!
-
 ### Vagrant box
 
 The absolutely simplest way, is to use the [RDFIO Vagrant
@@ -129,9 +127,10 @@ These are some configuration options that you might want to adjust to your speci
 Dependencies
 ------------
 
-- [MediaWiki](mediawiki.org) (Tested with 1.27-1.29)
-- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) 2.4.x (2.5.x won't work yet!)
-- [The ARC2 RDF library for PHP](https://github.com/semsol/arc2) Latest version on github should work
+- PHP 5.3 - latest (SMW [might have more strict deps](https://www.semantic-mediawiki.org/wiki/Help:Compatibility))
+- [MediaWiki](mediawiki.org) - Tested with 1.27 - 1.29
+- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) - Tested with 2.4 - 2.5
+- [The ARC2 RDF library for PHP](https://github.com/semsol/arc2) - Latest version on github should work
 
 Known limitations
 -----------------
