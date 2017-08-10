@@ -126,8 +126,9 @@ Dependencies
 ------------
 
 - PHP 5.3 - latest (SMW [might have more strict deps](https://www.semantic-mediawiki.org/wiki/Help:Compatibility))
+- MySQL (MariaDB unfortunatly not supported yet. See [#48](https://github.com/rdfio/RDFIO/issues/48))
 - [MediaWiki](mediawiki.org) - Tested with 1.27 - 1.29
-- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) - Tested with 2.4 - 2.5 (Does not yet work with 3.0-alpha)
+- [Semantic MediaWiki Extension](http://www.mediawiki.org/wiki/Extension:Semantic_MediaWiki) - Tested with 2.4 - 3.0-alpha
 - [The ARC2 RDF library for PHP](https://github.com/semsol/arc2) - Latest version on github should work
 
 Known limitations
