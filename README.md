@@ -37,8 +37,6 @@ This extensions was initially developed as part of a
 [Google Summer of Code 2010 project](http://www.mediawiki.org/wiki/User:SHL/GSoC2010),
 and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.org/wiki/Extension:RDFIO/Template_matching_for_RDFIO).
 
-- Caution! *This extension is not yet ready for production use! Use it on your own risk!*
-
 Installation
 ------------
 
