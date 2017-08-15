@@ -6,8 +6,8 @@
  */
 class RDFIOSpecialPage extends SpecialPage {
 
-	function __construct( $pageName ) {
-		parent::__construct( $pageName );
+	function __construct( $pageName, $restriction ) {
+		parent::__construct( $pageName, $restriction );
 	}
 
 	/**

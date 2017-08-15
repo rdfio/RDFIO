@@ -3,7 +3,7 @@
 class RDFImport extends RDFIOSpecialPage {
 
 	function __construct() {
-		parent::__construct( 'RDFImport' );
+		parent::__construct( 'RDFImport', 'rdfio-import' );
 	}
 
 	/**
@@ -12,8 +12,13 @@ class RDFImport extends RDFIOSpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
+
+		// Require rdfio-import permission for the current user
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			throw new PermissionsError( 'rdfio-import', array( 'rdfio-import-permission-missing' ) );
+		}
+
 		$wOut = $this->getOutput();
-		$wUser = $this->getUser();
 
 		// Set HTML headers sent to the browser
 		$this->setHeaders();

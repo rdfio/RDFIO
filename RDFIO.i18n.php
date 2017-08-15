@@ -19,7 +19,12 @@ $messages['en'] = array(
 	'sparqlendpoint' => 'SPARQL Endpoint',
 	'rdfioadmin' => 'RDFIO Admin Page',
 	'rdfio-unknown-error' => 'An unknown error happened!',
-	'action-editinterface' => 'Edit RDFIO Settings',
+	'action-rdfio-admin' => 'access RDFIO administration tasks',
+	'action-rdfio-import' => 'import semantic data',
+	'action-rdfio-export' => 'export semantic data',
+	'rdfio-admin-permission-missing' => 'The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.',
+	'rdfio-import-permission-missing' => 'The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.',
+	'rdfio-export-permission-missing' => 'The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.',
 );
 
 /** Message documentation (Message documentation)
@@ -103,7 +108,7 @@ $messages['de'] = array(
 	'sparqlendpoint' => 'SPARQL-Endpunkt',
 	'rdfioadmin' => 'Administrationsseite des „ARC2-RDF“-Speichers',
 	'rdfio-unknown-error' => 'Es ist ein unbekannter Fehler aufgetreten.',
-	'action-editinterface' => 'RDFIO-Einstellungen zu bearbeiten'
+	'action-rdfio-admin' => 'RDFIO-Einstellungen zu bearbeiten'
 );
 
 /** Spanish (Español)

@@ -3,7 +3,7 @@
 class SPARQLImport extends RDFIOSpecialPage {
 
 	function __construct() {
-		parent::__construct( 'SPARQLImport' );
+		parent::__construct( 'SPARQLImport', 'rdfio-import' );
 	}
 
 	/**
@@ -12,6 +12,11 @@ class SPARQLImport extends RDFIOSpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
+
+		// Require rdfio-import permission for the current user
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			throw new PermissionsError( 'rdfio-import', array( 'rdfio-import-permission-missing' ) );
+		}
 
 		$wOut = $this->getOutput();
 		$wRequest = $this->getRequest();

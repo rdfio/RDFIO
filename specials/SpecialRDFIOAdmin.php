@@ -8,7 +8,7 @@
 class RDFIOAdmin extends RDFIOSpecialPage {
 
 	function __construct() {
-		parent::__construct( 'RDFIOAdmin' );
+		parent::__construct( 'RDFIOAdmin', 'rdfio-admin' );
 	}
 
 	/**
@@ -16,6 +16,12 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 	 */
 	function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
+
+		// Require rdfio-admin permission for the current user
+		if ( !$this->userCanExecute( $this->getUser() ) ) {
+			throw new PermissionsError( 'rdfio-admin', array( 'rdfio-admin-permission-missing' ) );
+		}
+
 		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
 
 		$wUser = $this->getUser();

@@ -69,6 +69,60 @@ $GLOBALS['wgSpecialPages']['RDFImport'] = 'RDFImport';
 $GLOBALS['wgSpecialPages']['SPARQLEndpoint'] = 'SPARQLEndpoint';
 $GLOBALS['wgSpecialPages']['SPARQLImport'] = 'SPARQLImport';
 
+// -------------------------------------------------------------
+// Set up RDFIO permissions
+// -------------------------------------------------------------
+$GLOBALS['wgAvailableRights'][] = 'rdfio-admin';
+$GLOBALS['wgAvailableRights'][] = 'rdfio-import';
+$GLOBALS['wgAvailableRights'][] = 'rdfio-export';
+
+// Admin access
+// rdfio-admin (access by sysop, smwadministrator, rdfioadministrator)
+if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-admin'] ) ) {
+	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-admin'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-admin'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-admin'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-admin'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-admin'] = true;
+}
+
+// Import (rdfio-import)
+if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-import'] ) ) {
+	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-import'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-import'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-import'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-import'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-import'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-import'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-import'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] = true;
+}
+
+// Export data access (rdfio-export)
+if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] ) ) {
+	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-export'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-export'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-export'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-export'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-export'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-export'] = true;
+}
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-export'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-export'] = true;
+}
+
+
 // This has to be set outside of the wgExtensionFunctions array above
 global $smwgDefaultStore;
 $smwgDefaultStore = 'SMWARC2Store';
