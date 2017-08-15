@@ -47,7 +47,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				return;
 			case 'insert':
 				if ( !$this->allowInsert( $wUser, $wRequest ) ) {
-					$this->errorMsg( 'Current user is not allowed to do INSERT statements.' );
+					$this->errorMsg(  );
 					$this->printHTMLForm( $options );
 					return;
 				}
@@ -56,14 +56,14 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				return;
 			case 'delete':
 				if ( !$this->allowDelete( $wUser ) ) {
-					$this->errorMsg( 'Current user is not allowed to do DELETE statements.' );
+					$this->errorMsg( wfMessage( 'rdfio-delete-not-allowed' )->parse() );
 					$this->printHTMLForm( $options );
 				}
 				$this->deleteTriplesInQuery( $options );
 				$this->printHTMLForm( $options );
 				return;
 		}
-		$this->errorMsg('Invalid query type (Valid ones are SELECT, CONSTRUCT, INSERT and DELETE), or combination of query type and output format, try another combination!');
+		$this->errorMsg( wfMessage( 'rdfio-error-invalid-query-type-or-combination' )->parse() );
 		$this->printHTMLForm( $options );
 	}
 
@@ -77,7 +77,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		$outputSer = $this->passSparqlToARC2AndGetSerializedOutput();
 
 		if ( $outputSer == '' ) {
-			$this->errorMsg( 'No results from SPARQL query!' );
+			$this->errorMsg( wfMessage( 'rdfio-error-no-sparql-results' )->parse() );
 			return;
 		}
 
@@ -101,7 +101,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				return;
 			}
 
-			$this->errorMsg( 'Invalid Output type for SELECT query' );
+			$this->errorMsg(  );
 			$this->printHTMLForm( $options );
 			return;
 		}
@@ -125,7 +125,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				return;
 
 			}
-			$this->errorMsg( 'Invalid Output type for CONSTRUCT query' );
+			$this->errorMsg( wfMessage( 'rdfio-error-invalid-output-for-construct' )->parse() );
 			$this->printHTMLForm( $options );
 			return;
 		}
@@ -275,7 +275,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	 */
 	private function sparqlResultToHTML( $resultStructure ) {
 		$html = '';
-		$html = '<h3>Result:</h3><div style="font-size: 11px;">' . $html . '</div>';
+		$html = '<h3>' . wfMessage( 'rdfio-result-from-sparql-query' )->parse() . ':</h3><div style="font-size: 11px;">' . $html . '</div>';
 		$html .= '<table class="wikitable sortable">';
 
 		$result = $resultStructure['result'];
@@ -310,9 +310,9 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		$triples = $options->queryInfos['query']['construct_triples'];
 		try {
 			$rdfImporter->importTriples( $triples );
-			$this->successMsg( 'Successfully imported the triples!' );
+			$this->successMsg( wfMessage( 'rdfio-import-success' )->parse() );
 		} catch ( MWException $e ) {
-			$this->errorMsg( 'Could not perform import!<br>' . $e->getMessage() );
+			$this->errorMsg( wfMessage( 'rdfio-import-error' )->parse() . '!<br>' . $e->getMessage() );
 		}
 	}
 
@@ -440,13 +440,13 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	        name="createEditQuery">
 	<div style="font-size: 10px">
 	<table border="0"><tbody>
-		<tr><td colspan="3">Enter SPARQL query:</td><tr>
+		<tr><td colspan="3">' . wfMessage( 'rdfio-enter-sparql-query' )->parse() . ':</td><tr>
 		<tr><td colspan="3"><textarea cols="80" rows="9" name="query">' . $query . '</textarea></td></tr>
 		<tr>
 	        <td style="vertical-align: top; border-right: 1px solid #ccc;">
 				<table border="0" style="background: transparent; font-size: 11px;">
 					<tr>
-						<td style="text-align: right">Query by Equivalent URIs:</td>
+						<td style="text-align: right">' . wfMessage( 'rdfio-query-by-equivalent-uris' )->parse() . ':</td>
 						<td><input type="checkbox" name="equivuri_q" value="1" ' . $chkEquivUriQ . '/></td>
 					</tr>
 				</table>
@@ -454,14 +454,14 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	        <td width="170" style="vertical-align: top; border-right: 1px solid #ccc;">
 				<table border="0" style="font-size: 11px; background: transparent;">
 					<tr>
-						<td style="text-align: right">Output Equivalent URIs:</td>
+						<td style="text-align: right">' . wfMessage( 'rdfio-output-equivalent-uris' )->parse() . ':</td>
 						<td><input type="checkbox" name="equivuri_o" id="outputequivuri" value="1" ' . $chkEquivUriO /* . ' onChange="toggleDisplay(\'byontology\');" */ . '/></td>
 					</tr>
 				</table>
 	        </td>
 	        <td width="260" style="vertical-align: top;">
 				<table border="0" style="font-size: 11px; background: transparent;" >
-				<tr><td style="text-align: right" width="180">Output format:</td>
+				<tr><td style="text-align: right" width="180">' . wfMessage( 'rdfio-output-format' )->parse() . ':</td>
 				<td style="vertical-align: top">
 				<select id="output" name="output" onChange="toggleDisplay(\'byontology\');" >
 				  <!-- <option value="" >default</option> -->
@@ -478,7 +478,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				</td></tr>
 				<tr>
 				<td colspan="2">
-				<span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777;">(RDF/XML requires creating triples using <a href="http://www.w3.org/TR/rdf-sparql-query/#construct">CONSTRUCT</a>)</span>
+				<span style="font-family: arial, helvetica, sans-serif; font-size: 10px; color: #777;">(' . wfMessage( 'rdfio-rdfxml-requires-using' )->parse() . ' <a href="http://www.w3.org/TR/rdf-sparql-query/#construct">CONSTRUCT</a>)</span>
 				</td>
 				</table>
 	        </td>
@@ -504,7 +504,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	    </tr>
 	</table>
 	</div>
-	<input type="submit" value="Submit">
+	<input type="submit" value="' . wfMessage( 'rdfio-submit' )->parse() . '">
 	<input type="hidden" name="token" value="' . $wUser->getEditToken() . '">
 </form>';
 		return $htmlForm;
