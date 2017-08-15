@@ -22,7 +22,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 
 		// Require rdfio-export permission for the current user
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
-			throw new PermissionsError( 'rdfio-export', array( 'rdfio-export-permission-missing' ) );
+			throw new PermissionsError( 'rdfio-export', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;

@@ -15,7 +15,7 @@ class RDFImport extends RDFIOSpecialPage {
 
 		// Require rdfio-import permission for the current user
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
-			throw new PermissionsError( 'rdfio-import', array( 'rdfio-import-permission-missing' ) );
+			throw new PermissionsError( 'rdfio-import', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
 		$wOut = $this->getOutput();
@@ -258,8 +258,8 @@ EOT;
 							<tr>
 								<td colspan="3">
 								Action:
-								<input type="radio" name="importsrc" value="url" ' . $urlCheckedContent . ' onclick="javascript:showUrlFields();" />Import RDF from URL,
-								<input type="radio" name="importsrc" value="textfield" ' . $textfieldCheckedHTML . ' onclick="javascript:showDataFields();" />Paste RDF
+								<input type="radio" name="importsrc" value="url" ' . $urlCheckedContent . ' onclick="javascript:showUrlFields();" />' . wfMessage( 'rdfio-import-rdf-from-url' )->parse() . '
+								<input type="radio" name="importsrc" value="textfield" ' . $textfieldCheckedHTML . ' onclick="javascript:showDataFields();" />' . wfMessage( 'rdfio-paste-rdf' )->parse() . '
 								</td>
 							</tr>
 						</tbody>
@@ -268,19 +268,19 @@ EOT;
 					<div id="urlfields">
 						External URL:
 						<input type="text" size="100" name="extrdfurl" id="extrdfurl">
-						<a href="#" onClick="addSourcesToMenu();">Use previous source</a>
+						<a href="#" onClick="addSourcesToMenu();">' . wfMessage( 'rdfio-use-previous-source' )->parse() . '</a>
 					</div>
 						
 					<div id="datafields" ' . $textfieldHiddenHTML . '>
 						<table style="border: none"><tbody>
 							<tr>
-								<td colspan="3">Data to import:</td>
+								<td colspan="3">' . wfMessage( 'rdfio-data-to-import' )->parse() . ':</td>
 							</tr>
 							<tr>
 								<td colspan="3"><textarea cols="80" rows="16" name="importdata" id="importdata">' . $requestData->importData . '</textarea></td>
 							</tr>
 							<tr>
-								<td style="width: 100px;">Data format:</td>
+								<td style="width: 100px;">' . wfMessage( 'rdfio-data-format' )->parse() . ':</td>
 								<td>
 									<select id="dataformat" name="dataformat">
 										<option value="turtle" selected="selected">Turtle</option>
@@ -289,8 +289,8 @@ EOT;
 								</td>
 								<td style="text-align: right; font-size: 10px;">
 									<!-- TEMPORARILY DISABLED DUE TO NON-RESOLVED BUGS: [<a href="#" onClick="pasteExampleRDFXMLData(\'importdata\');">RDFXML example data</a>] -->
-									[<a href="#" onClick="pasteExampleTurtleData(\'importdata\');">Paste example data</a>]
-									[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">Clear</a>]
+									[<a href="#" onClick="pasteExampleTurtleData(\'importdata\');">' . wfMessage( 'rdfio-paste-example-data' )->parse() . '</a>]
+									[<a href="#" onClick="document.getElementById(\'importdata\').value = \'\';">' . wfMessage( 'rdfio-clear' )->parse() . '</a>]
 								</td>
 							</tr>
 						</tbody></table>

@@ -91,7 +91,7 @@ class RDFIOSpecialPage extends SpecialPage {
 		if ( in_array( 'edit', $user->getRights() ) && in_array( 'delete', $user->getRights() ) ) {
 			return true;
 		}
-		$this->errorMsg( 'The current user lacks delete access');
+		$this->errorMsg( 'The current user lacks delete access' );
 		return false;
 	}
 

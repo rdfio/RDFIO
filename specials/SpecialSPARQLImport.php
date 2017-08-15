@@ -15,7 +15,7 @@ class SPARQLImport extends RDFIOSpecialPage {
 
 		// Require rdfio-import permission for the current user
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
-			throw new PermissionsError( 'rdfio-import', array( 'rdfio-import-permission-missing' ) );
+			throw new PermissionsError( 'rdfio-import', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
 		$wOut = $this->getOutput();

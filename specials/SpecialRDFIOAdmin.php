@@ -19,7 +19,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 
 		// Require rdfio-admin permission for the current user
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
-			throw new PermissionsError( 'rdfio-admin', array( 'rdfio-admin-permission-missing' ) );
+			throw new PermissionsError( 'rdfio-admin', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
 		global $wgDBserver, $wgDBname, $wgDBuser, $wgDBpassword, $wgDBprefix;
