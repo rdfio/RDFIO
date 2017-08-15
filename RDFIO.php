@@ -76,8 +76,8 @@ $GLOBALS['wgAvailableRights'][] = 'rdfio-admin';
 $GLOBALS['wgAvailableRights'][] = 'rdfio-import';
 $GLOBALS['wgAvailableRights'][] = 'rdfio-export';
 
-// Admin access
-// rdfio-admin (access by sysop, smwadministrator, rdfioadministrator)
+// Admin access (rdfio-admin)
+// Access by sysop, smwadministrator, rdfioadministrator
 if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-admin'] ) ) {
 	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-admin'] = true;
 }
@@ -88,7 +88,8 @@ if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-admin']
 	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-admin'] = true;
 }
 
-// Import (rdfio-import)
+// Import access (rdfio-import)
+// Access by sysop, smwadministrator, rdfioadministrator, smwcurator, rdfiocurator
 if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-import'] ) ) {
 	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-import'] = true;
 }
@@ -105,7 +106,8 @@ if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] ) ) 
 	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] = true;
 }
 
-// Export data access (rdfio-export)
+// Export access (rdfio-export)
+// Access by sysop, smwadministrator, rdfioadministrator, smwcurator, rdfiocurator
 if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] ) ) {
 	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] = true;
 }
