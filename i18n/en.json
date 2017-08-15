@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-admin-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO page] for details about the necessary settings.",
+	"rdfio-desc": "Extended RDF Import/Export functionality, including SPARQL endpoint, for Semantic MediaWiki",
+	"rdfimport": "RDF Import",
+	"sparqlimport": "SPARQL Import",
+	"rdfio-arc2admin-desc": "Administration page for the ARC2 RDF Store for Semantic MediaWiki",
+	"rdfio-rdfimport-desc": "A Special page to import semantic data in RDF/XML format",
+	"rdfio-sparqlimport-desc": "A Special page to import semantic data from external SPARQL endpoints",
+	"rdfio-sparqlendpoint-desc": "A SPARQL Endpoint provided by the RDFIO extension",
+	"sparqlendpoint": "SPARQL Endpoint",
+	"rdfioadmin": "RDFIO Admin Page",
+	"rdfio-unknown-error": "An unknown error happened!",
+	"action-rdfio-admin": "access RDFIO administration tasks",
+	"action-rdfio-import": "import semantic data",
+	"action-rdfio-export": "export semantic data",
+	"rdfio-admin-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.",
+	"rdfio-import-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.",
+	"rdfio-export-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO Extension page] for details about the necessary settings.",
+    "rdfio-import-rdf-from-url": "Import RDF from URL",
+    "rdfio-paste-rdf": "Paste RDF"
+}
+

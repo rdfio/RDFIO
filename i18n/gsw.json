@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Erwytereti RDF Import/Export-Funktione, mit ere SPARQL-Aachnipfig, fir Semantic MediaWiki",
+	"rdfimport": "RDF-Import",
+	"rdfio-arc2admin-desc": "Administrationssyte fir dr „ARC2 RDF“-Spyycher vu Semantic MediaWiki",
+	"rdfio-rdfimport-desc": "E Spezialsyte zum Importiere vu semantische Date im RDF/XML-Format",
+	"rdfio-sparqlendpoint-desc": "E SPARQL-Aachnipfig fir dr SMWRDFConnector",
+	"sparqlendpoint": "SPARQL-Aachnipfig",
+	"rdfioadmin": "„ARC2 RDF“-Spyycher-Administrationssyte"
+}
+

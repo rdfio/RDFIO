@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Karugtong na katungkulan ng Pag-aangkat/Pagluluwas, kabilang ang katapusang-dulo ng SPARQL, para sa Semantikong MediaWiki",
+	"rdfimport": "Angkat ng RDF",
+	"rdfio-arc2admin-desc": "Pahina ng pangangasiwa para sa Tindahan ng ARC2 RDF para sa Semantikong MediaWiki",
+	"rdfio-rdfimport-desc": "Isang Natatanging pahina upang maangkat ang semantikong dato na nasa anyong RDF/XML",
+	"rdfio-sparqlendpoint-desc": "Isang Katapusang-dulo ng SPARQL na bigay ng SMWRDFConnector",
+	"sparqlendpoint": "Katapusang-dulo ng SPARQL",
+	"rdfioadmin": "Pahinang pangtagapangasiwa ng Tindahan ng ARC2 RDF"
+}
+

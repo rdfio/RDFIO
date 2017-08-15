@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Proširena funkcionalnost RSF Uvoz/Izvoz, uključujući SPARQL krajnju tačku, za Semantičku MediaWiki",
+	"rdfimport": "RDF uvoz",
+	"rdfio-arc2admin-desc": "Administratorska stranica za ARC2 RDF Store za Semantičku MediaWiki",
+	"rdfio-rdfimport-desc": "Posebna stranica za uvoz semantičkih podataka u RDF/XML formatu",
+	"rdfio-sparqlendpoint-desc": "SPARQL Krajnja tačka omogućena od SMWRDFKonektora",
+	"sparqlendpoint": "SPARQL Krajnja tačka",
+	"rdfioadmin": "ARC2 RDF Store administratorska stranica"
+}
+

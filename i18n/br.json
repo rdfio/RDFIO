@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Arc'hwel enporzhiañ/ezporzhiañ RDF astennet, ennañ ur poent dibenn SPARQL, evit MediaWiki  Ereadurezh",
+	"rdfimport": "Enporzh RDF",
+	"rdfio-arc2admin-desc": "Pajenn verañ evit ar sanailh RDF ARC2, evit Mediawiki Ereadurezh",
+	"rdfio-rdfimport-desc": "Ur bajenn dibar da enporzhiañ roadennoù ereadurel er furmad RDF/XML",
+	"rdfio-sparqlendpoint-desc": "Ur poent dibenn SPARQL porchaset gant an SMWRDFConnector",
+	"sparqlendpoint": "Poent dibenn SPARQL",
+	"rdfioadmin": "Pajenn verañ ar sanailh ARC2 RDF"
+}
+

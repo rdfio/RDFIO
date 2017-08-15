@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "יכולת מורחבת של יבוא ויצוא RDF, כולל צומת קצה של SPARQL, עבור מדיה־ויקי סמנטית",
+	"rdfimport": "יבוא RDF",
+	"rdfio-arc2admin-desc": "דף ניהול של מאגר ARC2 RDF עבור מדיה־ויקי סמנטית",
+	"rdfio-rdfimport-desc": "דף מיוחד ליבוא נתונים סמנטיים בתסדיר RDF/XML",
+	"rdfio-sparqlendpoint-desc": "צומת קצה מסופק על־ידי SMWRDFConnector",
+	"sparqlendpoint": "צומת קצה של SPARQL",
+	"rdfioadmin": "דף ניהול מאגר ARC2 RDF"
+}
+

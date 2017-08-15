@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Ermöglicht erweiterte Import-Export-Funktionen für RDF, einschließlich eines SPARQL-Endpunkts",
+	"rdfimport": "RDF-Import",
+	"sparqlimport": "SPARQL-Import",
+	"rdfio-arc2admin-desc": "Stellt eine Spezialseite zur Administration des „ARC2-RDF“-Speichers bereit",
+	"rdfio-rdfimport-desc": "Stellt eine Spezialseite zum Import semantischer Daten im RDF-XML-Format bereit",
+	"rdfio-sparqlimport-desc": "Stellt Spezialseite zum Import semantischer Daten aus SPARQL-Endpunkten bereit",
+	"rdfio-sparqlendpoint-desc": "Stellt einen SPARQL-Endpunkt bereit",
+	"sparqlendpoint": "SPARQL-Endpunkt",
+	"rdfioadmin": "Administrationsseite des „ARC2-RDF“-Speichers",
+	"rdfio-unknown-error": "Es ist ein unbekannter Fehler aufgetreten.",
+	"action-rdfio-admin": "RDFIO-Einstellungen zu bearbeiten"
+}
+

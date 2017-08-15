@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Uitgebreide import- en exportfunctionaliteit voor RDF voor Semantic MediaWiki, inclusief een eindpunt voor SPARQL",
+	"rdfimport": "RDF importeren",
+	"rdfio-arc2admin-desc": "Beheerpagina voor de ARC2 RDF Store voor Semantic MediaWiki",
+	"rdfio-rdfimport-desc": "Speciale pagina om semantische gegevens in RDF/XML-formaat te importeren",
+	"rdfio-sparqlendpoint-desc": "Een SPARQL eindpunt voor de SMWRDFConnector",
+	"sparqlendpoint": "SPARQL eindpunt",
+	"rdfioadmin": "ARC2 RDF-opslag beheren"
+}
+

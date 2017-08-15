@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Mengembangkan fungsi impor/ekspor RDF, termasuk ujung SPARQL, untuk Semantic MediaWiki",
+	"rdfimport": "Impor RDF",
+	"rdfio-arc2admin-desc": "Halaman administrasi untuk RDF ARC2 Store untuk Semantic MediaWiki",
+	"rdfio-rdfimport-desc": "Halaman istimewa untuk mengimpor data semantik berformat RDF/XML",
+	"rdfio-sparqlendpoint-desc": "Ujung SPARQL yang disediakan oleh SMWRDFConnector",
+	"sparqlendpoint": "Ujung SPARQL",
+	"rdfioadmin": "Halaman admin ARC2 RDF Store"
+}
+

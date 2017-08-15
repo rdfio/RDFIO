@@ -31,7 +31,7 @@ $GLOBALS['wgExtensionCredits']['other'][] = array(
 // -------------------------------------------------------------
 // internationalization
 // -------------------------------------------------------------
-$GLOBALS['wgExtensionMessagesFiles']['RDFIO'] = __DIR__ . '/RDFIO.i18n.php';
+$GLOBALS['wgMessagesDirs']['RDFIO'] = __DIR__ . '/i18n';
 $GLOBALS['wgExtensionMessagesFiles']['RDFIOAliases'] = __DIR__ . '/RDFIO.alias.php';
 
 // -------------------------------------------------------------

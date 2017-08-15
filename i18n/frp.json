@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfimport": "Importacion RDF",
+	"sparqlendpoint": "Pouent final SPARQL",
+	"rdfioadmin": "Pâge d’administracion du dèpôt RDF ARC2"
+}
+

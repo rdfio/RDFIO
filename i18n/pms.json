@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Fonsionalità estèisa RDF d'amportassion e esportassion, comprendenta un pont final SPARQL, për MediaWiki Semàntica",
+	"rdfimport": "Amportassion RDF",
+	"rdfio-arc2admin-desc": "Pàgina d'aministrassion për ël depòsit ARC2 RDF për MediaWiki Semàntica",
+	"rdfio-rdfimport-desc": "Na pàgina Special për amporté dat semàntich an formà RDF/XML",
+	"rdfio-sparqlendpoint-desc": "Un pont final SPARQL dàit dal SMWRDFConnector",
+	"sparqlendpoint": "Pont final SPARQL",
+	"rdfioadmin": "Pàgina d'aministrassion dël depòsit ARC2 RDF"
+}
+

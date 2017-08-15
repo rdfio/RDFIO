@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Erweidert RDF Import/Export Fonctionalitéit, inklusiv SPARQL-Endpunkt, fir Semantic MediaWiki",
+	"rdfimport": "RDF-Import"
+}
+

@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Напредна функција за RDF увоз/извоз, вклучувајќи кориснички места за SPARQL за семантички МедијаВики",
+	"rdfimport": "Увоз - RDF",
+	"rdfio-arc2admin-desc": "Административна страница за ARC2 RDF Store за семантички МедијаВики",
+	"rdfio-rdfimport-desc": "Специјална страница за увоз на семантички податоци во RDF/XML формат",
+	"rdfio-sparqlendpoint-desc": "Кориснички дел на SPARQL со поддршка од SMWRDFConnector",
+	"sparqlendpoint": "SPARQL - кориснички дел",
+	"rdfioadmin": "Администраторска страница на ARC2 RDF Store"
+}
+

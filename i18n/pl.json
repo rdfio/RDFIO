@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfio-desc": "Dodatkowe funkcje importu i eksportu RDF, wraz z punktem końcowym SPARQL dla Semantic MediaWiki",
+	"rdfimport": "Import RDF",
+	"rdfio-arc2admin-desc": "Strona administracji magazynem ARC2 RDF dla Semantic MediaWiki",
+	"rdfio-rdfimport-desc": "Strona specjalna importu danych semantycznych w formatach RDF i XML",
+	"rdfio-sparqlendpoint-desc": "Punkt końcowy SPARQL wyznaczony przez SMWRDFConnector",
+	"sparqlendpoint": "Punkt końcowy SPARQL",
+	"rdfioadmin": "Strona administracji magazynem ARC2 RDF"
+}
+

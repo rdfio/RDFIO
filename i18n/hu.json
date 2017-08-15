@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Samuel Lampa",
+            "Ali King"
+		]
+	},
+	"rdfimport": "RDF importálása",
+	"sparqlendpoint": "SPARQL végpont"
+}
+
