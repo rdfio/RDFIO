@@ -30,9 +30,9 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 
 		$this->setHeaders();
 
-		$rdfioAction = $wRequest->getText( 'rdfio_action', '' );
+		$rdfioAction = $wRequest->getText( 'rdfio-action', '' );
 
-		$wOut->addHTML("<h3>RDF Store Setup</h3>" );
+		$wOut->addHTML('<h3>' . wfMessage( 'rdfio-triplestore-setup' )->parse() . '</h3>' );
 
 		$arc2StoreConfig = array(
 			'db_host' => $wgDBserver,
@@ -43,27 +43,28 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 		);
 		$store = ARC2::getStore( $arc2StoreConfig );
 		if ( $store->isSetUp() ) {
-			$this->infoMsg( 'Store is already set up.' );
+			$this->infoMsg( wfMessage( 'rdfio-triplestore-is-already-setup' )->parse() );
 		} else {
 			if ( $rdfioAction === 'setup' ) {
 				$this->setUpStore( $store, $wUser, $wRequest );
 			} else {
 				$this->infoMsg( 'Store is <b>not</b> set up' );
 				$setupStoreForm = '
-				<form method="get"
+				<form method="post"
 					action=""
 					name="createEditQuery">
 					<input
 						type="submit"
-						name="rdfio_action"
-						value="setup">' .
+						name="submit-button"
+						value="' . wfMessage( 'rdfio-set-up-triplestore' )->parse() . '">' .
+					Html::Hidden(  'rdfio-action', 'setup' ) .
 					Html::Hidden( 'token', $wUser->getEditToken() ) .
 				'</form>';
 				$wOut->addHTML( $setupStoreForm );
 			}
 		}
 
-		$wOut->addWikiText( "\n===Data Sources===\n" );
+		$wOut->addWikiText( "\n===" . wfMessage( 'rdfio-data-sources' )->parse() . "===\n" );
 		$wOut->addWikiText( "\n{{#ask: [[Category:RDFIO Data Source]]
 					|?Equivalent URI
 					|?RDFIO Import Type
@@ -72,13 +73,13 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 					|limit=10
 					}}\n" );
 
-		$wOut->addWikiText( "\n===Pages and Templates===\n" );
-		$wOut->addWikiText( "To associate a template with a category, add <nowiki>[[Has template::Template:Name]]</nowiki> to the Category page" );
+		$wOut->addWikiText( "\n===" . wfMessage( 'rdfio-pages-and-templates' )->parse() . "===\n" );
+		$wOut->addHTML( wfMessage( 'rdfio-associate-template-with-category-howto' )->parse() );
 		$wOut->addWikiText( "{{#ask:  [[:Category:+]]
 					|?Equivalent URI
 					|?Has template
 					|format=table
-					|mainlabel=Category
+					|mainlabel=" . wfMessage( 'rdfio-category' )->parse() . "
 					|limit=10
 					}}" );
 	}
@@ -91,27 +92,27 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 	 */
 	private function setUpStore( $store, $wUser, $wRequest ) {
 		if ( !$this->editTokenOk( $wUser, $wRequest ) ) {
-			$this->errorMsg( 'Cross-site request forgery detected!' );
+			$this->errorMsg( wfMessage( 'rdfio-csrf-detected' )->parse() );
 			return;
 		}
 
 		if ( !in_array( 'sysop', $wUser->getGroups() ) ) {
-			$this->errorMsg( 'Permission Error: Only sysops can perform this operation!' );
+			$this->errorMsg( wfMessage( 'rdfio-permission-error-only-sysops' )->parse() );
 			return;
 		}
 
 		$store->setUp();
 
 		if ( $store->getErrors() ) {
-			$this->errorMsg( 'Error setting up store: ' . implode( "\n", $store->getErrors() ));
+			$this->errorMsg( wfMessage( 'rdfio-error-setting-up-store' )->parse() . ': ' . implode( "\n", $store->getErrors() ));
 			return;
 		}
 
 		if ( !$store->isSetUp() ) {
-			$this->errorMsg( 'Failed ot set up store, for unknown reason (no errors reported)' );
+			$this->errorMsg( wfMessage( 'rdfio-error-setting-up-store' )->parse() . '. ' . wfMessage( 'rdfio-error-reason-unknown-no-errors-reported' )->parse() );
 			return;
 		}
 
-		$this->successMsg( 'Store successfully set up!' );
+		$this->successMsg( wfMessage( 'rdfio-triplestore-successfully-set-up' )->parse() );
 	}
 }
