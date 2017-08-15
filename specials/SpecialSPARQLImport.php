@@ -136,7 +136,7 @@ class SPARQLImport extends RDFIOSpecialPage {
 		$extSparqlUrl = $wRequest->getText( 'extsparqlurl', '' );
 
 		$htmlForm = '
-		<form method="get" action="" style="clear: none;">
+		<form method="post" action="" style="clear: none;">
 				' . wfMessage( 'rdfio-remote-sparql-endpoint-url' )->parse() . ':<br>
 				<input type="hidden" name="action" value="import">
 				<div id="urlfields">
