@@ -10,6 +10,13 @@ class RDFIOSpecialPage extends SpecialPage {
 		parent::__construct( $pageName, $restriction );
 	}
 
+    /**
+     * {@inheritDoc}
+     */
+    protected function getGroupName() {
+        return 'rdfio_group';
+    }
+
 	/**
 	 * Do preparations for getting outputted data as a downloadable file
 	 * rather than written to the current page
