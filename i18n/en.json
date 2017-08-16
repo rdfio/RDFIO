@@ -64,6 +64,16 @@
 	"rdfio-use-previous-source": "Use previous source",
 	"action-rdfio-admin": "access RDFIO administration tasks",
 	"action-rdfio-import": "import semantic data",
-	"action-rdfio-export": "export semantic data"
+	"action-rdfio-export": "export semantic data",
+	"group-rdfioadministrator": "Administrators (RDFIO)",
+	"group-rdfioadministrator-member": "{{GENDER:$1|administrator (RDFIO)}}",
+	"grouppage-rdfioadministrator": "{{ns:project}}:Administrators (RDFIO)",
+	"group-rdfiocurator": "Curators (RDFIO)",
+	"group-rdfiocurator-member": "{{GENDER:$1|curator (RDFIO)}}",
+	"grouppage-rdfiocurator": "{{ns:project}}:Curators (RDFIO)",
+	"right-rdfio-admin": "Access RDFIO administration tasks",
+	"right-rdfio-import": "Import semantic data",
+	"right-rdfio-export": "Export semantic data",
+	"specialpages-group-rdfio_group": "RDFIO"
 }
 
