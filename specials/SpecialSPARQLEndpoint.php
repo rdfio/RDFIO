@@ -5,7 +5,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	protected $storewrapper;
 
 	public function __construct() {
-		parent::__construct( 'SPARQLEndpoint', 'rdfio-export' );
+		parent::__construct( 'SPARQLEndpoint', 'rdfio-sparql' );
 		$this->sparqlendpoint = new ARC2_StoreEndpoint( $this->getSPARQLEndpointConfig(), $this );
 		if ( !$this->sparqlendpoint->isSetUp() ) {
 			$this->sparqlendpoint->setUp();
@@ -20,9 +20,9 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 	public function execute( $par ) {
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
 
-		// Require rdfio-export permission for the current user
+		// Require rdfio-sparql permission for the current user
 		if ( !$this->userCanExecute( $this->getUser() ) ) {
-			throw new PermissionsError( 'rdfio-export', array( 'rdfio-specialpage-access-permission-missing' ) );
+			throw new PermissionsError( 'rdfio-sparql', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
 		global $rogQueryByEquivURIs, $rogOutputEquivUris;

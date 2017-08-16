@@ -74,7 +74,7 @@ $GLOBALS['wgSpecialPages']['SPARQLImport'] = 'SPARQLImport';
 // -------------------------------------------------------------
 $GLOBALS['wgAvailableRights'][] = 'rdfio-admin';
 $GLOBALS['wgAvailableRights'][] = 'rdfio-import';
-$GLOBALS['wgAvailableRights'][] = 'rdfio-export';
+$GLOBALS['wgAvailableRights'][] = 'rdfio-sparql';
 
 // Admin access (rdfio-admin)
 // Access by sysop, smwadministrator, rdfioadministrator
@@ -106,22 +106,22 @@ if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] ) ) 
 	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-import'] = true;
 }
 
-// Export access (rdfio-export)
+// SPARQL access (querying, export and import via SPARQL) (rdfio-sparql)
 // Access by sysop, smwadministrator, rdfioadministrator, smwcurator, rdfiocurator
-if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] ) ) {
-	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-export'] = true;
+if ( !isset( $GLOBALS['wgGroupPermissions']['sysop']['rdfio-sparql'] ) ) {
+	$GLOBALS['wgGroupPermissions']['sysop']['rdfio-sparql'] = true;
 }
-if ( !isset( $GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-export'] ) ) {
-	$GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-export'] = true;
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-sparql'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwadministrator']['rdfio-sparql'] = true;
 }
-if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-export'] ) ) {
-	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-export'] = true;
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-sparql'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfioadministrator']['rdfio-sparql'] = true;
 }
-if ( !isset( $GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-export'] ) ) {
-	$GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-export'] = true;
+if ( !isset( $GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-sparql'] ) ) {
+	$GLOBALS['wgGroupPermissions']['smwcurator']['rdfio-sparql'] = true;
 }
-if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-export'] ) ) {
-	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-export'] = true;
+if ( !isset( $GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-sparql'] ) ) {
+	$GLOBALS['wgGroupPermissions']['rdfiocurator']['rdfio-sparql'] = true;
 }
 
 
