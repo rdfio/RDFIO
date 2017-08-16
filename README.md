@@ -99,15 +99,15 @@ These are some configuration options that you might want to adjust to your speci
 #       "http://example.org/someOntology#" => "ont1",
 #       "http://example.org/anotherOntology#" => "ont2"
 #      );
-# $rogBaseURIs = array();
+# $rdfiogBaseURIs = array();
 # ---------------------------------------------------------------
 # Query by /Output Equivalent URIs SPARQL Endpoint 
 # (overrides settings in HTML Form)
 # 
-# $rogQueryByEquivURI = false;
-# $rogOutputEquivURIs = false;
+# $rdfiogQueryByEquivURI = false;
+# $rdfiogOutputEquivURIs = false;
 #
-# $rogTitleProperties = array(
+# $rdfiogTitleProperties = array(
 #  'http://semantic-mediawiki.org/swivt/1.0#page',
 #  'http://www.w3.org/2000/01/rdf-schema#label',
 #  'http://purl.org/dc/elements/1.1/title',
@@ -118,7 +118,7 @@ These are some configuration options that you might want to adjust to your speci
 # ---------------------------------------------------------------
 # Allow edit operations via SPARQL from remote services
 #
-# $rogAllowRemoteEdit = false;
+# $rdfiogAllowRemoteEdit = false;
 # ---------------------------------------------------------------
 ```
 

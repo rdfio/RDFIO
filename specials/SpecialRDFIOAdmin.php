@@ -30,7 +30,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 
 		$this->setHeaders();
 
-		$rdfioAction = $wRequest->getText( 'rdfio-action', '' );
+		$rdfiogAction = $wRequest->getText( 'rdfio-action', '' );
 
 		$wOut->addHTML('<h3>' . wfMessage( 'rdfio-triplestore-setup' )->parse() . '</h3>' );
 
@@ -45,7 +45,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 		if ( $store->isSetUp() ) {
 			$this->infoMsg( wfMessage( 'rdfio-triplestore-is-already-setup' )->parse() );
 		} else {
-			if ( $rdfioAction === 'setup' ) {
+			if ( $rdfiogAction === 'setup' ) {
 				$this->setUpStore( $store, $wUser, $wRequest );
 			} else {
 				$this->infoMsg( 'Store is <b>not</b> set up' );

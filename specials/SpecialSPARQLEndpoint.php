@@ -25,12 +25,12 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 			throw new PermissionsError( 'rdfio-sparql', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
-		global $rogQueryByEquivURIs, $rogOutputEquivUris;
+		global $rdfiogQueryByEquivURIs, $rdfiogOutputEquivUris;
 		$wUser = $this->getUser();
 		$wRequest = $this->getRequest();
 
 		$this->setHeaders();
-		$options = $this->buildOptionsObj( $this->getRequest(), $rogQueryByEquivURIs, $rogOutputEquivUris );
+		$options = $this->buildOptionsObj( $this->getRequest(), $rdfiogQueryByEquivURIs, $rdfiogOutputEquivUris );
 
 		if ( $options->query == '' ) {
 			$this->printHTMLForm( $options );
