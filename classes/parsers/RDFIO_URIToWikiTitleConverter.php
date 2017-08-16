@@ -203,30 +203,12 @@ class RDFIOURIToTitleConverter {
 			}
 		}
 
-		/*
-		 * Take care of some special cases:
-		 */
-		if ( $basepart === '' &&  $localpart === '' ) {
-			$uriParts = $this->splitURI( $uri );
-			$basepart = $uriParts[0];
-			$localpart = $uriParts[1];
+		// Make sure both basepart and localpart contains anything before proceeding
+		if ( $basepart === '' ||  $localpart === '' ) {
+			return '';
 		}
 
-		if ( $localpart === '' ) {
-			$abbreviatedUri = $basepart;
-		} elseif ( substr( $basepart, 0, 4 ) === 'http' ) {
-			// If the abbreviation does not seem to have succeeded,
-			// fall back to use only the local part
-			$abbreviatedUri = $localpart;
-		} elseif ( substr( $basepart, -1 ) === ':' ) {
-			// Don't add another colon
-			$abbreviatedUri = $basepart . $localpart;
-		} elseif ( $basepart == false || $basepart == '' ) {
-			$abbreviatedUri = $localpart;
-		} else {
-			$abbreviatedUri = $basepart . ':' . $localpart;
-		}
-
+		$abbreviatedUri = $basepart . ':' . $localpart;
 		return $abbreviatedUri;
 	}
 
