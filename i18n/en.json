@@ -46,6 +46,8 @@
 	"rdfio-pages-and-templates": "Pages and templates",
 	"rdfio-paste-rdf": "Paste RDF",
 	"rdfio-paste-example-data": "Paste example data",
+	"rdfio-rdfxml-format": "RDF/XML format",
+	"rdfio-turtle-format": "Turtle format",
 	"rdfio-query-by-equivalent-uris": "Query by Equivalent URIs",
 	"rdfio-rdfimport-desc": "A Special page to import semantic data in RDF/XML format",
 	"rdfio-rdfxml-requires-using": "RDF/XML requires creating triples using",
