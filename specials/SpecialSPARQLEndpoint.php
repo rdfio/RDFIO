@@ -87,6 +87,12 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		}
 
 		if ( $options->queryType == 'select' ) {
+			if ( $options->outputType == 'rdfxml' ) {
+				$this->errorMsg( wfMessage( 'rdfio-error-invalid-output-for-select' )->parse() );
+				$this->printHTMLForm( $options );
+				return;
+			}
+
 			if ( $options->outputType == 'htmltab' ) {
 				$resultHtml = $this->sparqlResultToHTML( $outputArr );
 				$this->printHTMLForm( $options );
@@ -94,15 +100,10 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				return;
 			}
 
-			if ( $options->outputType == 'xml' ) {
-				$this->prepareCreatingDownloadableFile( $options );
-				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
-				echo $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputArr );
-				return;
-			}
-
-			$this->errorMsg(  );
-			$this->printHTMLForm( $options );
+			// Default option: Return SPARQL result document
+			$this->prepareCreatingDownloadableFile( $options );
+			// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+			echo $this->sparqlendpoint->getSPARQLXMLSelectResultDoc( $outputArr );
 			return;
 		}
 
@@ -160,6 +161,9 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		$seOptions->queryByEquivUris = isset( $queryByEquivURIs ) ? $queryByEquivURIs : $request->getBool( 'equivuri_q' );
 		$seOptions->outputEquivUris = isset( $outputEquivURIs ) ? $outputEquivURIs : $request->getBool( 'equivuri_o' );
 		$seOptions->outputType = $request->getText( 'output' );
+		if ( $seOptions->outputType === '' ) {
+			$seOptions->outputType = 'sparqlresult'; // Default according to https://www.w3.org/TR/sparql11-protocol
+		}
 
 		if ( $seOptions->query != '' ) {
 			$result = $this->extractQueryInfosAndType( $seOptions->query );
@@ -470,7 +474,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				  <!-- <option value="php_ser" >Serialized PHP</option> -->
 				  <!-- <option value="turtle" >Turtle</option> -->
 				  <option value="htmltab" ' . $selOutputHTML . '>HTML</option>
-				  <option value="xml" >XML Resultset</option>
+				  <option value="sparqlresult" >SPARQL Resultset (XML)</option>
 				  <option value="rdfxml" ' . $selOutputRDFXML . '>RDF/XML</option>
 				  <!-- <option value="infos" >Query Structure</option> -->
 				  <!-- <option value="tsv" >TSV</option> -->
