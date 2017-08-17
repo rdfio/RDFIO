@@ -42,9 +42,9 @@ class RDFIOSpecialPage extends SpecialPage {
 
 		$contentTypeMap = array(
 			'sparqlresult' => 'application/sparql-results+xml',
-			'rdfxml'       => 'application/xml',
+			'rdfxml'       => 'application/rdf+xml',
 			'json'         => 'application/json',
-			'turtle'       => 'text/html',
+			'turtle'       => 'text/turtle',
 			'htmltab'      => '', // Not applicable
 			'tsv'          => 'text/html'
 		);

@@ -87,7 +87,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		}
 
 		if ( $options->queryType == 'select' ) {
-			if ( $options->outputType == 'rdfxml' ) {
+			if ( in_array( $options->outputType, array( 'rdfxml' ) ) ) {
 				$this->errorMsg( wfMessage( 'rdfio-error-invalid-output-for-select' )->parse() );
 				$this->printHTMLForm( $options );
 				return;
@@ -108,26 +108,25 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		}
 
 		if ( $options->queryType == 'construct' ) {
-			if ( $options->outputType == 'rdfxml' ) {
-				// Here the results should be RDF/XML triples,
-				// not just plain XML SPARQL result set
-				$tripleindex = $outputArr['result'];
-
-				$arc2 = new ARC2_Class( array(), $this );
-				$triples = $arc2->toTriples( $tripleindex );
-
-				if ( $options->outputEquivUris ) {
-					$triples = $this->storewrapper->toEquivUrisInTriples( $triples );
-				}
-
-				$this->prepareCreatingDownloadableFile( $options );
-				// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
-				echo $this->triplesToRDFXML( $triples );
-				return;
-
+			if ( $options->outputType !== 'turtle' ) {
+				// Falling back on using RDF/XML as default
+				$options->outputType = 'rdfxml';
 			}
-			$this->errorMsg( wfMessage( 'rdfio-error-invalid-output-for-construct' )->parse() );
-			$this->printHTMLForm( $options );
+
+			// Here the results should be RDF/XML triples,
+			// not just plain XML SPARQL result set
+			$tripleindex = $outputArr['result'];
+
+			$arc2 = new ARC2_Class( array(), $this );
+			$triples = $arc2->toTriples( $tripleindex );
+
+			if ( $options->outputEquivUris ) {
+				$triples = $this->storewrapper->toEquivUrisInTriples( $triples );
+			}
+
+			$this->prepareCreatingDownloadableFile( $options );
+			// Using echo instead of $wgOut->addHTML() here, since output format is not HTML
+			echo $this->triplesToRDFXML( $triples );
 			return;
 		}
 	}
@@ -434,6 +433,7 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 		$chkFilterVocab = $wRequest->getBool( 'filtervocab', false ) == 1 ? ' checked="true" ' : '';
 		$selOutputHTML = $wRequest->getText( 'output', '' ) == 'htmltab' ? ' selected="selected" ' : '';
 		$selOutputRDFXML = $wRequest->getText( 'output', '' ) == 'rdfxml' ? ' selected="selected" ' : '';
+		//$selOutputTurtle = $wRequest->getText( 'output', '' ) == 'turtle' ? ' selected="selected" ' : '';
 
 		// Make the HTML format selected by default
 		if ( $selOutputRDFXML == '' ) {
@@ -472,10 +472,10 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 				  <!-- <option value="json" >JSON</option> -->
 				  <!-- <option value="plain" >Plain</option> -->
 				  <!-- <option value="php_ser" >Serialized PHP</option> -->
-				  <!-- <option value="turtle" >Turtle</option> -->
 				  <option value="htmltab" ' . $selOutputHTML . '>HTML</option>
 				  <option value="sparqlresult" >SPARQL Resultset (XML)</option>
 				  <option value="rdfxml" ' . $selOutputRDFXML . '>RDF/XML</option>
+				  <!-- option value="turtle" >Turtle</option -->
 				  <!-- <option value="infos" >Query Structure</option> -->
 				  <!-- <option value="tsv" >TSV</option> -->
 				</select>
