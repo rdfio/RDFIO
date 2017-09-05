@@ -154,3 +154,10 @@ Links
 
 - [RDFIO's page on MediaWiki.org](https://www.mediawiki.org/wiki/Extension:RDFIO)
 - [RDFIO project page on pharmb.io (where it is partly developed)](https://pharmb.io/project/rdfio/)
+
+Related work
+------------
+
+- [FresnelForms](http://is.cs.ou.nl/OWF/index.php5/Fresnel_Forms)
+- [KnowledgeWiki](http://knoesis.org/node/2696)
+- [LinkedData Extension](https://www.mediawiki.org/wiki/Extension:LinkedWiki)
