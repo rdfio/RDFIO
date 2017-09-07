@@ -73,20 +73,35 @@ minutes.
 
 ### Medium-hard: Install semi-manually using composer
 
-1. Provided you have the PHP package manager
-   [Composer](https://getcomposer.org/) installed (See [this page](https://getcomposer.org/doc/00-intro.md)
-   for install instructions), you should now be able to install RDFIO via
-   packagist.org, like so:
+#### Install dependencies
+
+- [Composer](https://getcomposer.org/)
+  - See [this page](https://www.mediawiki.org/wiki/Composer) for installation instructions.
+- [MediaWiki](https://www.mediawiki.org)
+  - See [this page](https://www.mediawiki.org/wiki/Installation) for installation instructions.
+- [Semantic MediaWiki](https://www.semantic-mediawiki.org)
+  - See [this page](http://semantic-mediawiki.org/wiki/Help:Installation) for installation instructions.
+  - To show the "Semantic factbox" on all pages, make sure to include this in your LocalSettings.php file:
+
+```php
+$smwgShowFactbox = SMW_FACTBOX_NONEMPTY;
+```
+
+#### Installation steps
+
+Assuming you have followed the steps above to install the dependencies for RDFIO:
+
+1. Install RDFIO by executing the following commands in a terminal:
 
    ```bash
    cd <wiki_folder>
    composer require rdfio/rdfio --update-no-dev
    ```
 
-2.  After installing RDFIO using composer, only one manual step is required,
-   namely to go to the `Special:RDFIOAdmin` page on your wiki, and hit the "setup"
-   button, to initialize the MySQL tables needed by the ARC2 library that RDFIO
-   builds upon.
+2. Log in to your wiki as a super user
+3. Browse to `http://[your-domain]/wiki/Special:RDFIOAdmin`
+4. Click the "Setup" button to set up ARC2 database tables.
+5. If you already have semantic annotations in your wiki, you need to go to the article "Special:SMWAdmin" in your wiki, and click "Start updating data", and let it complete, in order for the data to be available in the SPARQL endpoint.
    
 #### Optional but recommended steps
 
@@ -104,9 +119,9 @@ minutes.
 
 #### Test that it works
 
-* Access the **SPARQL endpoint** at http://[url-to-your-wiki]/Special:SPARQLEndpoint
-* Access the **RDF Import page** at http://[url-to-your-wiki]/Special:RDFImport
-* Access the **SPARQL Import page** at http://[url-to-your-wiki]/Special:SPARQLImport
+* Access the **SPARQL endpoint** at `http://[url-to-your-wiki]/Special:SPARQLEndpoint`
+* Access the **RDF Import page** at `http://[url-to-your-wiki]/Special:RDFImport`
+* Access the **SPARQL Import page** at `http://[url-to-your-wiki]/Special:SPARQLImport`
 * Optionally, if you want to really see that it works, try adding some semantic data to wiki pages, and then check the database (using phpMyAdmin e.g.) to see if you get some triples in the table named `arc2store_triple`.
 
 ### Additional configuration
