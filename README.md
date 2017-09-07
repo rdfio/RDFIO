@@ -47,11 +47,11 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-### Easiest: A ready-made Virtual Machine
+### Easiest: Use the ready-made Virtual Machine
 
 The absolute easiest way to try out RDFIO is to import the [Ready-made Virtual Machine with RDFIO 3.0.2 (with MW 1.29 and SMW 2.5)](https://doi.org/10.6084/m9.figshare.5383966) into VirtualBox or VMWare, and just start browsing the local wiki installation. 
 
-Steps:
+**Steps:**
 
 1. Download the `.ova` file from [doi.org/10.6084/m9.figshare.5383966.v1](https://doi.org/10.6084/m9.figshare.5383966.v1)
 2. In VirtualBox (should be similar in VMWare), select _"File > Import appliance"_
