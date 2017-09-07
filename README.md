@@ -47,14 +47,31 @@ and further extended as part of a [FOSS OPW 2014 project](https://www.mediawiki.
 Installation
 ------------
 
-### Vagrant box
+### Easiest: A ready-made Virtual Machine
 
-The absolutely simplest way, is to use the [RDFIO Vagrant
+The absolute easiest way to try out RDFIO is to import the [Ready-made Virtual Machine with RDFIO 3.0.2 (with MW 1.29 and SMW 2.5)](https://doi.org/10.6084/m9.figshare.5383966) into VirtualBox or VMWare, and just start browsing the local wiki installation. 
+
+Steps:
+
+1. Download the `.ova` file from [doi.org/10.6084/m9.figshare.5383966.v1](https://doi.org/10.6084/m9.figshare.5383966.v1)
+2. In VirtualBox (should be similar in VMWare), select _"File > Import appliance"_
+3. Click the folder icon
+4. Locate the `.ova` file you downloaded
+5. Click _"Next"_, _"Agree"_ to the license, and finally _"Import"_, to start the import
+6. Start the virtual machine
+7. Click log in (No password required)
+8. Click the icon on the desktop
+9. You will now see a local wiki installation with an RDFIO enabled wiki, in a browser!
+10. Enjoy!
+
+### Easy: Vagrant box
+
+Another quite easy way, is to use the [RDFIO Vagrant
 box](https://github.com/rdfio/rdfio-vagrantbox), which will automatically set
 up MediaWiki, SemanticMediaWiki and RDFIO in a virtual machine in under 20
 minutes.
 
-### Install semi-manually using composer
+### Medium-hard: Install semi-manually using composer
 
 1. Provided you have the PHP package manager
    [Composer](https://getcomposer.org/) installed (See [this page](https://getcomposer.org/doc/00-intro.md)
