@@ -253,7 +253,11 @@ class RDFIOSMWPageWriter {
 		$propName = $matches[1];
 		$propVal = $matches[2];
 		foreach ( $propName as $idx => $pName ) {
-			$facts[$pName] = array( 'property' => $pName, 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
+			$facts[$pName+$idx] = array(
+				'property' => $pName,
+				'value' => $propVal[$idx],
+				'wikitext' => $wikiText[$idx]
+			);
 		}
 		return $facts;
 	}
