@@ -88,9 +88,17 @@ class SPARQLEndpoint extends RDFIOSpecialPage {
 
 		if ( $options->queryType == 'select' ) {
 			if ( in_array( $options->outputType, array( 'rdfxml' ) ) ) {
-				$this->errorMsg( wfMessage( 'rdfio-error-invalid-output-for-select' )->parse() );
-				$this->printHTMLForm( $options );
-				return;
+				$ser = ARC2::getRDFXMLSerializer();
+				$array = unserialize( $outputSer );
+
+				$rdf = $ser->getSerializedTriples($array{'result'}{'rows'});
+				if ( $ser->getErrors() ) {
+					$this->error("Exited RDF Export script due to previous errors:\n" . implode("\n", $ser->getErrors() ), 1 );
+					exit;
+				}
+				$this->prepareCreatingDownloadableFile( $options );
+				echo $rdf;
+				exit;
 			}
 
 			if ( $options->outputType == 'htmltab' ) {
