@@ -7,6 +7,8 @@
  */
 class RDFIOAdmin extends RDFIOSpecialPage {
 
+	private $wOut;
+
 	function __construct() {
 		parent::__construct( 'RDFIOAdmin', 'rdfio-admin' );
 	}
@@ -26,13 +28,13 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 
 		$wUser = $this->getUser();
 		$wRequest = $this->getRequest();
-		$wOut = $this->getOutput();
+		$this->wOut = $this->getOutput();
 
 		$this->setHeaders();
 
 		$rdfiogAction = $wRequest->getText( 'rdfio-action', '' );
 
-		$wOut->addHTML('<h3>' . wfMessage( 'rdfio-triplestore-setup' )->parse() . '</h3>' );
+		$this->addHTML('<h3>' . wfMessage( 'rdfio-triplestore-setup' )->parse() . '</h3>' );
 
 		$arc2StoreConfig = array(
 			'db_host' => $wgDBserver,
@@ -42,6 +44,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 		);
 		$store = ARC2::getStore( $arc2StoreConfig );
+
 		if ( $store->isSetUp() ) {
 			$this->infoMsg( wfMessage( 'rdfio-triplestore-is-already-setup' )->parse() );
 		} else {
@@ -60,12 +63,12 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 					Html::Hidden(  'rdfio-action', 'setup' ) .
 					Html::Hidden( 'token', $wUser->getEditToken() ) .
 				'</form>';
-				$wOut->addHTML( $setupStoreForm );
+				$this->addHTML( $setupStoreForm );
 			}
 		}
 
-		$wOut->addWikiText( "\n===" . wfMessage( 'rdfio-data-sources' )->parse() . "===\n" );
-		$wOut->addWikiText( "\n{{#ask: [[Category:RDFIO Data Source]]
+		$this->addWikiText( "\n===" . wfMessage( 'rdfio-data-sources' )->parse() . "===\n" );
+		$this->addWikiText( "\n{{#ask: [[Category:RDFIO Data Source]]
 					|?Equivalent URI
 					|?RDFIO Import Type
 					|format=table
@@ -73,15 +76,37 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 					|limit=10
 					}}\n" );
 
-		$wOut->addWikiText( "\n===" . wfMessage( 'rdfio-pages-and-templates' )->parse() . "===\n" );
-		$wOut->addHTML( wfMessage( 'rdfio-associate-template-with-category-howto' )->parse() );
-		$wOut->addWikiText( "{{#ask:  [[:Category:+]]
+		$this->addWikiText( "\n===" . wfMessage( 'rdfio-pages-and-templates' )->parse() . "===\n" );
+		$this->addHTML( wfMessage( 'rdfio-associate-template-with-category-howto' )->parse() );
+		$this->addWikiText( "{{#ask:  [[:Category:+]]
 					|?Equivalent URI
 					|?Has template
 					|format=table
 					|mainlabel=" . wfMessage( 'rdfio-category' )->parse() . "
 					|limit=10
 					}}" );
+	}
+
+	/**
+	 * Add wiki text to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The wiki text to add.
+	 */
+	private function addWikiText( $text ) {
+		if ( method_exists( $this->wOut, 'addWikiTextAsInterface' ) ) {
+			$this->wOut->addWikiTextAsInterface( $text );
+		} else {
+			$this->wOut->addWikiText( $text );
+		}
+	}
+
+	/**
+	 * Add HTML content to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The HTML content to add.
+	 */
+	private function addHTML( $html ) {
+		$this->wOut->addHTML( $html );
 	}
 
 	/**

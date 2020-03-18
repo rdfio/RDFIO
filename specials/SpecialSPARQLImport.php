@@ -2,6 +2,8 @@
 
 class SPARQLImport extends RDFIOSpecialPage {
 
+	private $wOut;
+
 	function __construct() {
 		parent::__construct( 'SPARQLImport', 'rdfio-import' );
 	}
@@ -18,7 +20,7 @@ class SPARQLImport extends RDFIOSpecialPage {
 			throw new PermissionsError( 'rdfio-import', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
-		$wOut = $this->getOutput();
+		$this->wOut = $this->getOutput();
 		$wRequest = $this->getRequest();
 		$wUser = $this->getUser();
 
@@ -36,7 +38,7 @@ class SPARQLImport extends RDFIOSpecialPage {
 			}
 
 			$submitButtonText = wfMessage( 'rdfio-import-next-batch-of-triples' )->parse();
-			$wOut->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset + $limit ) );
+			$this->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset + $limit ) );
 
 			try {
 				$importInfo = $this->import( $limit, $offset );
@@ -51,10 +53,32 @@ class SPARQLImport extends RDFIOSpecialPage {
 			return;
 		}
 
-		$wOut->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset ) );
-		$wOut->addHTML( '<div id=sources style="display:none">' );
-		$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
-		$wOut->addHTML( '</div>' );
+		$this->addHTML( $this->getHTMLForm( $submitButtonText, $limit, $offset ) );
+		$this->addHTML( '<div id=sources style="display:none">' );
+		$this->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::SPARQL]] |format=list }}' );
+		$this->addHTML( '</div>' );
+	}
+
+	/**
+	 * Add wiki text to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The wiki text to add.
+	 */
+	private function addWikiText( $text ) {
+		if ( method_exists( $this->wOut, 'addWikiTextAsInterface' ) ) {
+			$this->wOut->addWikiTextAsInterface( $text );
+		} else {
+			$this->wOut->addWikiText( $text );
+		}
+	}
+
+	/**
+	 * Add HTML content to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The HTML content to add.
+	 */
+	private function addHTML( $html ) {
+		$this->wOut->addHTML( $html );
 	}
 
 	function resourceType( $resourceStr ) {
@@ -114,7 +138,7 @@ class SPARQLImport extends RDFIOSpecialPage {
 
 		$rdfImporter = new RDFIORDFImporter();
 		$rdfImporter->importTriples( $triples );
-		$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
+		$this->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 
 		return array( 'externalSparqlUrl' => $externalSparqlUrl );
 	}

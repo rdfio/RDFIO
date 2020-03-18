@@ -2,6 +2,8 @@
 
 class RDFImport extends RDFIOSpecialPage {
 
+	private $wOut;
+
 	function __construct() {
 		parent::__construct( 'RDFImport', 'rdfio-import' );
 	}
@@ -18,7 +20,7 @@ class RDFImport extends RDFIOSpecialPage {
 			throw new PermissionsError( 'rdfio-import', array( 'rdfio-specialpage-access-permission-missing' ) );
 		}
 
-		$wOut = $this->getOutput();
+		$this->wOut = $this->getOutput();
 
 		// Set HTML headers sent to the browser
 		$this->setHeaders();
@@ -41,7 +43,7 @@ class RDFImport extends RDFIOSpecialPage {
 
 					// Show imported triples
 					$rdfImporter = new RDFIORDFImporter();
-					$wOut->addHTML( $rdfImporter->showImportedTriples( $triples ) );
+					$this->addHTML( $rdfImporter->showImportedTriples( $triples ) );
 
 					if ( $requestData->externalRdfUrl ) {
 						$rdfImporter->addDataSource( $requestData->externalRdfUrl, 'RDF' );
@@ -56,6 +58,28 @@ class RDFImport extends RDFIOSpecialPage {
 			}
 		}
 		$this->showHTMLFormAndInfo( $requestData );
+	}
+
+	/**
+	 * Add wiki text to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The wiki text to add.
+	 */
+	private function addWikiText( $text ) {
+		if ( method_exists( $this->wOut, 'addWikiTextAsInterface' ) ) {
+			$this->wOut->addWikiTextAsInterface( $text );
+		} else {
+			$this->wOut->addWikiText( $text );
+		}
+	}
+
+	/**
+	 * Add HTML content to output. Requires that $this->wOut is already
+	 * initialized to $this->getOutput();
+	 * @param $text The HTML content to add.
+	 */
+	private function addHTML( $html ) {
+		$this->wOut->addHTML( $html );
 	}
 
 	/**
@@ -116,13 +140,12 @@ class RDFImport extends RDFIOSpecialPage {
 	 * Show the RDF Import Form HTML, and some additional info HTML
 	 */
 	function showHTMLFormAndInfo( $requestData ) {
-		$wOut = $this->getOutput();
 		$wUser = $this->getUser();
 
-		$wOut->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
-		$wOut->addHTML( '<div id=sources style="display:none">' );
-		$wOut->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
-		$wOut->addHTML( '</div>' );
+		$this->addHTML( $this->getHTMLForm( $requestData, $wUser ) );
+		$this->addHTML( '<div id=sources style="display:none">' );
+		$this->addWikiText( '{{#ask: [[Category:RDFIO Data Source]] [[RDFIO Import Type::RDF]] |format=list }}' );
+		$this->addHTML( '</div>' );
 	}
 
 	/**
