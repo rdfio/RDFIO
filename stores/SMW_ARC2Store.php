@@ -29,6 +29,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 		);
 		$this->arc2store = ARC2::getStore( $arc2StoreConfig );
+		$this->arc2store->createDBCon();
 	}
 
 	/**

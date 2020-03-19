@@ -44,6 +44,7 @@ class RDFIOAdmin extends RDFIOSpecialPage {
 			'store_name' => $wgDBprefix . 'arc2store', // Determines table prefix
 		);
 		$store = ARC2::getStore( $arc2StoreConfig );
+		$store->createDBCon();
 
 		if ( $store->isSetUp() ) {
 			$this->infoMsg( wfMessage( 'rdfio-triplestore-is-already-setup' )->parse() );
