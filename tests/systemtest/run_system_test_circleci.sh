@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Starting simple system test..."
 
-mysql -u root circle_test < emptydb.sql
+mysql -u root --password=changethis circle_test < emptydb.sql
 
 php ../../maintenance/importRdf.php --in data/testdata.ttl
 php ../../../../maintenance/dumpBackup.php --current | sed -r 's#(</text>|</title>)#\n\1#' | sed 's#<title>#<title>\n#' | grep -vP '[<>]' > simple_content_actual.xml

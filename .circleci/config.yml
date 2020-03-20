@@ -1,0 +1,15 @@
+version: 2.1
+jobs:
+  test:
+    docker: 
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run: bash /root/project/tests/ci/install.sh
+      - run: bash /root/project/tests/ci/run-tests.sh
+      - run: bash <(curl -s https://codecov.io/bash)
+workflows:
+  version: 2
+  test_workflow:
+    jobs:
+      - test

@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Starting advanced system test ...";
 
-mysql -u root circle_test < emptydb.sql
+mysql -u root --password=changethis circle_test < emptydb.sql
 
 php ../../../../maintenance/importDump.php advanced_content_initial.xml
 
