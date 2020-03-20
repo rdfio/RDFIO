@@ -1,2 +1,2 @@
 #!/bin/bash
-php ../../../../tests/phpunit/phpunit.php --configuration suite.rdfio.xml --verbose
+php ../../../../tests/phpunit/phpunit.php --use-normal-tables --configuration=suite.rdfio.xml --verbose

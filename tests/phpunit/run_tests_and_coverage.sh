@@ -1,2 +1,2 @@
 #!/bin/bash
-php ../../../../tests/phpunit/phpunit.php --configuration=suite.rdfio.xml --coverage-clover=coverage.xml
+php ../../../../tests/phpunit/phpunit.php --use-normal-tables --configuration=suite.rdfio.xml --coverage-clover=coverage.xml
