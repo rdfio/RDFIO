@@ -114,7 +114,7 @@ class RDFIOARC2StoreWrapper {
 
 		$rows = $results['result']['rows'];
 
-		if ( count( $rows ) > 0 ) {
+		if ( $rows !== null && count( $rows ) > 0 ) {
 			foreach ( $rows as $equivUriId => $equivUri ) {
 				$equivUris[$equivUriId] = $equivUri['equivUri'];
 			}
