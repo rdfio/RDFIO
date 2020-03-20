@@ -342,6 +342,8 @@ class RDFIOSMWPageWriter {
 		$mwTitleObj = Title::newFromText( $wikiTitle );
 		$mwArticleObj = WikiPage::factory( $mwTitleObj );
 		$mwArticleObj->doEditContent( ContentHandler::makeContent( $content, $mwTitleObj), $summary );
+		// This is needed to populate the semantic data in the ARC2 store:
+		$mwArticleObj->doSecondaryDataUpdates();
 	}
 
 	/**
