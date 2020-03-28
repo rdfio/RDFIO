@@ -66,8 +66,7 @@ class SMWARC2Store extends SMWSQLStore3 {
 			$predicateStr = '';
 
 			if ( $object instanceof SMWExpLiteral ) {
-				// NOTE: Add escaping for results of getLexicalForm()?
-				$objectStr = '"' . $object->getLexicalForm() . '"' . ( ( $object->getDatatype() == '' ) ? '' : '^^<' . $object->getDatatype() . '>' );
+				$objectStr = '"' . addslashes( $object->getLexicalForm() ) . '"' . ( ( $object->getDatatype() == '' ) ? '' : '^^<' . $object->getDatatype() . '>' );
 			} elseif ( $object instanceof SMWExpResource ) {
 				$objectStr = '<' . SMWExporter::getInstance()->expandURI( $object->getUri() ) . '>';
 			} else {
