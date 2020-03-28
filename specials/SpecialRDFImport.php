@@ -13,6 +13,8 @@ class RDFImport extends RDFIOSpecialPage {
 	 * @param string $par (unused)
 	 */
 	function execute( $par ) {
+	    global $wgShowExceptionDetails;
+
 		unset( $par ); // Needed to suppress warning about unused variable which we include just for consistency.
 
 		// Require rdfio-import permission for the current user
@@ -55,6 +57,9 @@ class RDFImport extends RDFIOSpecialPage {
 				}
 			} catch ( MWException $e ) {
 				$this->errorMsg( $e->getMessage() );
+				if ( $wgShowExceptionDetails ) {
+				    $this->errorMsg( '<pre>' . $e->getTraceAsString() . '</pre>' );
+				}
 			}
 		}
 		$this->showHTMLFormAndInfo( $requestData );
