@@ -71,12 +71,14 @@ class RDFIOARC2ToWikiConverterTest extends RDFIOTestCase {
 	public function testAddCategoryToPage() {
 		$arc2ToWiki = new RDFIOARC2ToWikiConverter();
 
-		$category = 'ExampleCategory';
+		$expectedCategory = 'ExampleCategory';
 		$pageTitle = 'ExamplePage';
 
-		$this->invokeMethod( $arc2ToWiki, 'addCategoryToPage', array( $category, $pageTitle ) );
+		$this->invokeMethod( $arc2ToWiki, 'addCategoryToPage', array( $expectedCategory, $pageTitle ) );
 		$page = $this->invokeMethod( $arc2ToWiki, 'getPage', array( $pageTitle ) );
+		$actualCategories = $page->getCategories();
 
+		$this->assertArrayEquals( array( $expectedCategory ), $actualCategories );
 	}
 
 	public function testAddDataTypeToPage() {
