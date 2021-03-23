@@ -6,6 +6,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 global $IP;
 
+use SMW\DIWikiPage;
+
 /**
  * SMWARC2Store extends SMWSQLStore3 and forwards all update/delete to ARC2 via SPARQL+
  * queries. The class was based on JosekiStore in the SparqlExtension, which in turn is
@@ -106,13 +108,13 @@ class SMWARC2Store extends SMWSQLStore3 {
 		$oldUri = SMWExporter::getInstance()->expandURI( $this->getURI( $oldTitle ) );
 		$this->removeDataForURI( $oldUri );
 
-		$newpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-		$newpage->setValues( $newTitle->getDBkey(), $newTitle->getNamespace(), $pageId );
+		$newpage = new DIWikiPage($newTitle->getDBkey(), $newTitle->getNamespace());
+                $newpage->setId($pageId);
 		$semdata = $this->getSemanticData( $newpage );
 		$this->updateData( $semdata );
 
-		$oldpage = SMWDataValueFactory::newTypeIDValue( '_wpg' );
-		$oldpage->setValues( $oldTitle->getDBkey(), $oldTitle->getNamespace(), $redirectId );
+                $oldpage = new DIWikiPage($oldTitle->getDBkey(), $oldTitle->getNamespace());
+                $oldpage->setId($redirectId);
 		$semdata = $this->getSemanticData( $oldpage );
 		$this->updateData( $semdata, false );
 	}
