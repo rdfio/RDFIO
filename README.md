@@ -3,9 +3,9 @@ RDFIO Extension for Semantic MediaWiki
 
 [![Build Status](https://img.shields.io/circleci/project/github/rdfio/RDFIO.svg)](https://circleci.com/gh/rdfio/RDFIO)
 [![Test Coverage](https://img.shields.io/codecov/c/github/rdfio/RDFIO/master.svg)](https://codecov.io/gh/rdfio/RDFIO)
-[![Code Climate Maintenance](https://img.shields.io/codeclimate/maintenance/rdfio/RDFIO)](https://codeclimate.com/github/rdfio/RDFIO)
+[![Code Climate Maintenance](https://img.shields.io/codeclimate/maintainability/rdfio/RDFIO)](https://codeclimate.com/github/rdfio/RDFIO)
 [![Code Climate Tech Debt](https://img.shields.io/codeclimate/tech-debt/rdfio/RDFIO)](https://codeclimate.com/github/rdfio/RDFIO)
-[![Code Climate Issues](https://img.shields.io/codeclimate/issues/github/rdfio/RDFIO)](https://codeclimate.com/github/rdfio/RDFIO/issues)
+[![Code Climate Issues](https://img.shields.io/codeclimate/issues/rdfio/RDFIO)](https://codeclimate.com/github/rdfio/RDFIO/issues)
 [![Codacy Grade](https://app.codacy.com/project/badge/Grade/4c2af982043d449fbdda26983ef9b199)](https://app.codacy.com/gh/rdfio/RDFIO/dashboard)
 [![Latest Stable Version](https://img.shields.io/packagist/v/rdfio/rdfio.svg)](https://packagist.org/packages/rdfio/rdfio)
 [![Licence](https://img.shields.io/packagist/l/rdfio/rdfio.svg)]()
