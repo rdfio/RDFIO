@@ -56,7 +56,7 @@
 	"rdfio-set-up-triplestore": "Set up triplestore",
 	"rdfio-sparqlendpoint-desc": "A SPARQL Endpoint provided by the RDFIO extension",
 	"rdfio-sparqlimport-desc": "A Special page to import semantic data from external SPARQL endpoints",
-	"rdfio-specialpage-access-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Extension:RDFIO RDFIO extension page] for details about the necessary settings.",
+	"rdfio-specialpage-access-permission-missing": "The access to this page has been blocked due to missing permissions, please consult the [https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:RDFIO RDFIO extension page] for details about the necessary settings.",
 	"rdfio-start-import": "Start import",
 	"rdfio-submit": "Submit",
 	"rdfio-triplestore-setup": "Triplestore setup",
