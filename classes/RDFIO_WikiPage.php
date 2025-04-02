@@ -28,7 +28,10 @@ class RDFIOWikiPage {
 
 	public function addFact( $fact ) {
 		if ( !is_null( $fact ) ) {
-			$this->factIndex[$fact['p']] = $fact['o'];
+			$this->factIndex[$fact['p'].$fact['o']] = array(
+				'p' => $fact['p'],
+				'o' => $fact['o']
+			);
 		}
 	}
 
@@ -79,8 +82,8 @@ class RDFIOWikiPage {
 
 	public function getFacts() {
 		$facts = array();
-		foreach( $this->factIndex as $prop => $obj ) {
-			$facts[] = array( 'p' => $prop, 'o' => $obj );
+		foreach( $this->factIndex as $str_po => $arr_po ) {
+			$facts[] = array( 'p' => $arr_po['p'], 'o' => $arr_po['o'] );
 		}
 		return $facts;
 	}
@@ -108,4 +111,3 @@ class RDFIOWikiPage {
 		return in_array( $category, $this->categories );
 	}
 }
-

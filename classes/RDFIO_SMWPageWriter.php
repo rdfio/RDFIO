@@ -96,7 +96,7 @@ class RDFIOSMWPageWriter {
 				// 11. If neither of 8-10 was done, add as new fact statements
 				// ----------------------------------------------------------------------
 				$prop = $fact['p'];
-				if ( !array_key_exists( $prop, $oldFacts ) && !( $propTplIndex[$prop] ) ) {
+				if ( !array_key_exists( $prop.$fact['o'], $oldFacts ) && !( $propTplIndex[$prop] ) ) {
 					$wikiTextUpdated = $this->addNewExplicitFact( $fact, $wikiTextUpdated );
 				}
 
@@ -253,7 +253,11 @@ class RDFIOSMWPageWriter {
 		$propName = $matches[1];
 		$propVal = $matches[2];
 		foreach ( $propName as $idx => $pName ) {
-			$facts[$pName] = array( 'property' => $pName, 'value' => $propVal[$idx], 'wikitext' => $wikiText[$idx] );
+			$facts[$pName.$propVal[$idx]] = array(
+				'property' => $pName,
+				'value' => $propVal[$idx],
+				'wikitext' => $wikiText[$idx]
+			);
 		}
 		return $facts;
 	}
